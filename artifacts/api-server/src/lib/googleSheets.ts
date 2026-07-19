@@ -1,0 +1,47 @@
+import { google } from "googleapis";
+import { logger } from "./logger";
+
+const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID;
+const SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+
+function getAuth() {
+  if (!SERVICE_ACCOUNT_KEY) {
+    logger.warn("GOOGLE_SERVICE_ACCOUNT_KEY not set — Google Sheets sync disabled");
+    return null;
+  }
+  try {
+    const credentials = JSON.parse(SERVICE_ACCOUNT_KEY);
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+    return auth;
+  } catch (err) {
+    logger.error({ err }, "Failed to parse GOOGLE_SERVICE_ACCOUNT_KEY");
+    return null;
+  }
+}
+
+export async function appendToSheet(sheetName: string, values: string[][]): Promise<void> {
+  if (!SPREADSHEET_ID) {
+    logger.warn("GOOGLE_SHEETS_ID not set — skipping Google Sheets sync");
+    return;
+  }
+  const auth = getAuth();
+  if (!auth) return;
+
+  try {
+    const sheets = google.sheets({ version: "v4", auth });
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${sheetName}!A1`,
+      valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
+      requestBody: { values },
+    });
+    logger.info({ sheetName, rows: values.length }, "Appended rows to Google Sheets");
+  } catch (err) {
+    logger.error({ err, sheetName }, "Failed to append to Google Sheets — continuing anyway");
+    // Don't throw — Google Sheets failure should not block the form submission
+  }
+}

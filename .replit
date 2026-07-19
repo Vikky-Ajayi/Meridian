@@ -18,3 +18,10 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[userenv]
+
+[userenv.shared]
+GOOGLE_SHEETS_ID = "1boeUUyhKIKHxCtKCLQsyw1DqNJw5DhnNQeA77fbWAPI"
+WHATSAPP_LINK = ""
+WHATSAPP_NUMBER = ""

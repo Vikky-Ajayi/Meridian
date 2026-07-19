@@ -3,13 +3,15 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Meridian API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: enquiries
+    description: Client enquiry submissions
 paths:
   /healthz:
     get:
@@ -24,6 +26,71 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /enquiries/move-money:
+    post:
+      operationId: submitMoveMoneyEnquiry
+      tags: [enquiries]
+      summary: Submit Move Money Abroad enquiry
+      description: Submits a 7-step Move Money Abroad form, saves to DB and Google Sheets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveMoneyInput"
+      responses:
+        "201":
+          description: Enquiry submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnquiryResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /enquiries/private-banking:
+    post:
+      operationId: submitPrivateBankingEnquiry
+      tags: [enquiries]
+      summary: Submit Private Banking Introduction enquiry
+      description: Submits a 6-step Private Banking Introduction form, saves to DB and Google Sheets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrivateBankingInput"
+      responses:
+        "201":
+          description: Enquiry submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnquiryResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +101,115 @@ components:
       required:
         - status
 
+    MoveMoneyInput:
+      type: object
+      required:
+        - amountRange
+        - fundsLocation
+        - destination
+        - purpose
+        - timeline
+        - regulatedInstitution
+        - fullName
+        - countryOfResidence
+        - whatsappNumber
+        - emailAddress
+      properties:
+        amountRange:
+          type: string
+          description: "Approximate amount to move"
+        fundsLocation:
+          type: string
+          description: "Current location of funds"
+        destination:
+          type: string
+          description: "Intended destination for funds"
+        purpose:
+          type: string
+          description: "Purpose of the transfer"
+        timeline:
+          type: string
+          description: "When looking to proceed"
+        regulatedInstitution:
+          type: string
+          description: "Whether funds held with regulated institution"
+        fullName:
+          type: string
+        countryOfResidence:
+          type: string
+        whatsappNumber:
+          type: string
+        emailAddress:
+          type: string
+
+    PrivateBankingInput:
+      type: object
+      required:
+        - bankingRelationshipType
+        - investableWealth
+        - jurisdictions
+        - reasons
+        - timeline
+        - fullName
+        - countryOfResidence
+        - whatsappNumber
+        - emailAddress
+      properties:
+        bankingRelationshipType:
+          type: string
+          description: "Type of banking relationship sought"
+        investableWealth:
+          type: string
+          description: "Approximate investable wealth"
+        jurisdictions:
+          type: array
+          items:
+            type: string
+          description: "Jurisdictions of interest (multiple)"
+        reasons:
+          type: array
+          items:
+            type: string
+          description: "Main reasons for seeking private banking (multiple)"
+        timeline:
+          type: string
+          description: "How soon to establish relationship"
+        fullName:
+          type: string
+        countryOfResidence:
+          type: string
+        whatsappNumber:
+          type: string
+        emailAddress:
+          type: string
+
+    EnquiryResult:
+      type: object
+      required:
+        - referenceNumber
+        - fullName
+        - type
+      properties:
+        referenceNumber:
+          type: string
+          description: "Generated reference number for the enquiry"
+        fullName:
+          type: string
+          description: "Client full name"
+        type:
+          type: string
+          description: "Enquiry type: move-money or private-banking"
+        whatsappNumber:
+          type: ["string", "null"]
+          description: "WhatsApp number for the desk"
+        whatsappLink:
+          type: ["string", "null"]
+          description: "wa.me link for the desk"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string

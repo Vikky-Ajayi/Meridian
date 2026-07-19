@@ -1,8 +1,10 @@
-import { Router, type IRouter } from "express";
+import { Router } from "express";
 import healthRouter from "./health";
+import enquiriesRouter from "./enquiries";
 
-const router: IRouter = Router();
+const router = Router();
 
-router.use(healthRouter);
+router.use("/healthz", healthRouter);
+router.use("/enquiries", enquiriesRouter);
 
 export default router;
