@@ -1,16 +1,18 @@
 import { Link } from 'wouter';
 
 export function Logo({ theme = 'light', className = '' }: { theme?: 'light' | 'dark', className?: string }) {
-  const isDark = theme === 'dark';
+  const textColor = theme === 'dark' ? 'text-white' : 'text-[#000B2D]';
   return (
-    <Link href="/" className={`flex items-center gap-2 group ${className}`}>
-      <div className="flex items-end gap-[3px] h-6">
-        <div className="w-1.5 h-6 bg-[#0F61E9]"></div>
-        <div className="w-1.5 h-[18px] bg-[#0F61E9]"></div>
-        <div className="w-1.5 h-3 bg-[#0F61E9]"></div>
-      </div>
-      <span className={`font-bold text-xl tracking-[0.15em] uppercase ${isDark ? 'text-white' : 'text-[#000B2D]'}`}>
-        Meridian
+    <Link href="/" className={`flex items-center group leading-none ${className}`}>
+      {/* Three equal-height bars that visually form the "M" */}
+      <span className="flex items-center gap-[3px] mr-[2px]">
+        <span className="block w-[4px] h-[20px] bg-[#0F61E9]" />
+        <span className="block w-[4px] h-[20px] bg-[#0F61E9]" />
+        <span className="block w-[4px] h-[20px] bg-[#0F61E9]" />
+      </span>
+      {/* ERIDIAN — together with bars reads as |||ERIDIAN = MERIDIAN */}
+      <span className={`font-bold text-[17px] tracking-[0.08em] uppercase ${textColor}`}>
+        ERIDIAN
       </span>
     </Link>
   );

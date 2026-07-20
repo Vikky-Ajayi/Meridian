@@ -1,143 +1,141 @@
+function Section({ num, title, children }: { num: string; title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h2 className="text-[20px] font-bold text-[#000B2D] mb-3">{num}. {title}</h2>
+      {children}
+    </div>
+  );
+}
+
+function Bullets({ items }: { items: string[] }) {
+  return (
+    <ul className="space-y-2 mt-3">
+      {items.map(item => (
+        <li key={item} className="flex items-start gap-2 text-[15px] text-[#272626]">
+          <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#272626] flex-shrink-0" />
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function AMLPolicy() {
   return (
     <div className="w-full">
-      {/* Hero Section */}
-      <section className="bg-primary text-white py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-6 tracking-tight">Anti-Money Laundering Policy</h1>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto font-light">
-            Last Updated: October 2023
+      {/* Hero */}
+      <section className="bg-[#0F61E9] text-white px-6 py-16 lg:px-20 lg:py-20">
+        <div className="max-w-4xl">
+          <h1 className="text-[40px] lg:text-[52px] font-semibold leading-[1.1] tracking-[-0.04em] mb-5">AML Policy</h1>
+          <p className="text-base lg:text-[17px] text-white/80 font-medium leading-relaxed max-w-3xl">
+            At Meridian we are committed to preventing money laundering, terrorist financing, and financial crime. Our AML Policy ensures
+            compliance with international and local regulatory requirements, while providing secure, discreet, and high-quality service
+            to our clients.
           </p>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="py-24 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-lg prose-blue">
-          <p className="text-gray-600 leading-relaxed mb-8">
-            Meridian Advisory Limited ("Meridian", "we", "us", or "our") is committed to the highest standards of Anti-Money Laundering (AML) and Counter-Terrorist Financing (CTF) compliance. We operate in strict adherence to the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017 (as amended) and the Proceeds of Crime Act 2002.
-          </p>
-          <p className="text-gray-600 leading-relaxed mb-12">
-            This policy outlines our approach to identifying, mitigating, and managing the risks associated with money laundering and terrorist financing.
-          </p>
+      {/* Content */}
+      <section className="bg-white px-6 py-16 lg:px-20">
+        <div className="max-w-4xl space-y-10 text-[#272626] text-[15px] leading-relaxed">
 
-          <div className="space-y-12 not-prose">
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">01.</span>
-                Introduction and Scope
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                The purpose of this Policy is to establish the general framework for the fight against money laundering, financing of terrorism, and corruption. Meridian maintains a zero-tolerance policy towards involvement in any illegal activity and will cease relationships with any client where there is a suspicion of involvement in such activities.
-              </p>
-            </div>
+          <Section num="1" title="Purpose">
+            <p>The purpose of this policy is to:</p>
+            <Bullets items={[
+              'Prevent the use of Meridian for money laundering or terrorist financing.',
+              'Ensure full compliance with applicable laws, regulations, and industry best practices.',
+              'Protect our clients, our platform, and our reputation.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">02.</span>
-                Risk-Based Approach
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Meridian adopts a risk-based approach to customer due diligence. We assess the risk associated with each client, taking into account factors such as the client's jurisdiction, the nature of their business, the complexity of the proposed transaction, and the source of funds. Enhanced Due Diligence (EDD) is applied to high-risk clients.
-              </p>
-            </div>
+          <Section num="2" title="Scope">
+            <p>This policy applies to:</p>
+            <Bullets items={[
+              'All employees, contractors, and representatives of Meridian.',
+              'All clients using Meridian services, including high-net-worth individuals, family offices, and institutions.',
+              'All transactions, including cross-border fund transfers and related advisory services.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">03.</span>
-                Customer Due Diligence (CDD)
-              </h3>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                Before establishing a business relationship, we are required by law to verify the identity of our clients. This process includes:
-              </p>
-              <ul className="list-disc pl-10 space-y-2 text-gray-600">
-                <li>Identifying the customer and verifying their identity using reliable, independent source documents.</li>
-                <li>Identifying the beneficial owner(s) and taking reasonable measures to verify their identity.</li>
-                <li>Understanding the ownership and control structure of corporate clients.</li>
-                <li>Assessing the purpose and intended nature of the business relationship.</li>
-              </ul>
-            </div>
+          <Section num="3" title="Client Due Diligence (CDD)">
+            <p>Meridian performs rigorous due diligence on all clients, including:</p>
+            <Bullets items={[
+              'Verification of identity using government-issued documents (passport, ID, proof of address).',
+              'Assessment of source of funds and wealth to ensure legitimacy.',
+              'Screening against sanctions lists, politically exposed persons (PEPs), and adverse media.',
+              'Risk-based categorisation of clients to determine ongoing monitoring levels.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">04.</span>
-                Enhanced Due Diligence (EDD)
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                EDD measures are applied in situations that are assessed as higher risk. This includes, but is not limited to, dealings with Politically Exposed Persons (PEPs), clients from high-risk third countries, or unusually large or complex transactions. EDD requires senior management approval and involves deeper investigation into the source of wealth and funds.
-              </p>
-            </div>
+          <Section num="4" title="Enhanced Due Diligence (EDD)">
+            <p>For high-risk clients or transactions, Meridian applies enhanced due diligence, including:</p>
+            <Bullets items={[
+              'Detailed verification of beneficial ownership.',
+              'Scrutiny of transaction purpose, jurisdictions, and volume.',
+              'Additional documentation or assurances to verify legitimacy.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">05.</span>
-                Ongoing Monitoring
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                We conduct ongoing monitoring of the business relationship. Transactions undertaken throughout the course of the relationship are scrutinized to ensure that they are consistent with our knowledge of the customer, their business, and risk profile. We also ensure that documents, data, or information held are kept up to date.
-              </p>
-            </div>
+          <Section num="5" title="Transaction Monitoring">
+            <p>All transactions are monitored for unusual or suspicious activity, including:</p>
+            <Bullets items={[
+              'Large or irregular fund transfers inconsistent with the client\'s profile.',
+              'Transactions involving high-risk jurisdictions or entities.',
+              'Structuring or splitting transactions to avoid reporting thresholds.',
+            ]} />
+            <p className="mt-3">Suspicious transactions are escalated immediately to our Compliance Officer.</p>
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">06.</span>
-                Suspicious Activity Reporting
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our staff are trained to recognize red flags and suspicious activities. We are legally obliged to report any knowledge or suspicion of money laundering or terrorist financing to the National Crime Agency (NCA) via a Suspicious Activity Report (SAR). We are prohibited by law from disclosing to the client that a report has been made (tipping off).
-              </p>
-            </div>
+          <Section num="6" title="Reporting Obligations">
+            <p>Meridian is committed to regulatory reporting:</p>
+            <Bullets items={[
+              'Suspicious activity is reported to relevant authorities in accordance with local laws.',
+              'All regulatory obligations, including record-keeping and reporting thresholds, are strictly adhered to.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">07.</span>
-                Record Keeping
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Meridian maintains records of all customer due diligence measures, account files, business correspondence, and transaction records. These records are kept securely for a minimum of five years after the business relationship has ended or the date of the occasional transaction, in accordance with legal requirements and data protection regulations.
-              </p>
-            </div>
+          <Section num="7" title="Record-Keeping">
+            <p>Meridian maintains secure records of:</p>
+            <Bullets items={[
+              'Client identification and verification documents.',
+              'Transaction details.',
+              'Compliance checks and risk assessments.',
+            ]} />
+            <p className="mt-3">Records are retained in accordance with all regulatory requirements and internal policies.</p>
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">08.</span>
-                Staff Training
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                All relevant employees receive comprehensive training on the law relating to money laundering and terrorist financing, and on how to recognize and deal with transactions and other activities which may be related to money laundering or terrorist financing. Training is updated regularly to reflect new legal or regulatory developments.
-              </p>
-            </div>
+          <Section num="8" title="Employee Training">
+            <p>All Meridian personnel undergo mandatory AML training, including:</p>
+            <Bullets items={[
+              'Identification of suspicious activity.',
+              'Procedures for client onboarding and enhanced due diligence.',
+              'Awareness of applicable AML laws and regulations.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">09.</span>
-                Sanctions Compliance
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                We screen all clients, beneficial owners, and associated parties against relevant global sanctions lists, including those issued by the UN, EU, UK (OFSI), and US (OFAC). We will not conduct business with any individual or entity subject to applicable financial sanctions.
-              </p>
-            </div>
+          <Section num="9" title="Roles And Responsibilities">
+            <Bullets items={[
+              'Compliance Officer: Oversees implementation of the AML Policy, reporting, and ongoing monitoring.',
+              'Employees: Required to comply with the policy, report suspicious activity, and maintain confidentiality.',
+              'Management: Ensures adequate resources, training, and enforcement of AML standards.',
+            ]} />
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">10.</span>
-                Compliance Officer
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Meridian has appointed a Money Laundering Reporting Officer (MLRO) who is responsible for the oversight of AML/CTF activities. The MLRO acts as the focal point for all activity relating to AML and is responsible for receiving and evaluating internal suspicious activity reports.
-              </p>
-            </div>
+          <Section num="10" title="Review And Updates">
+            <p>
+              This policy is reviewed periodically to ensure alignment with current laws, regulations, and best practices. Updates are
+              communicated to all personnel and applied immediately to Meridian operations.
+            </p>
+          </Section>
 
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-4 flex items-baseline gap-3">
-                <span className="text-primary font-mono text-xl">11.</span>
-                Audit and Review
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our AML policy and procedures are subject to regular independent review to ensure their continued effectiveness and compliance with evolving regulatory standards. This policy is updated as necessary to reflect changes in the legal environment or our business operations.
-              </p>
-            </div>
-          </div>
+          <Section num="11" title="Contact And Reporting">
+            <p className="font-medium text-[#000B2D]">Compliance Officer: Robert Tiji</p>
+            <p>
+              <a href="mailto:robert@yourmeridian.com" className="text-[#0F61E9] hover:underline">robert@yourmeridian.com</a>
+            </p>
+            <p>Phone: 07908909896</p>
+          </Section>
+
         </div>
       </section>
     </div>
