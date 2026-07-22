@@ -17,9 +17,9 @@ export function Logo({ theme = 'light', className = '' }: LogoProps) {
   return (
     <Link href="/" className={`inline-flex items-center group ${className}`}>
       <svg
-        width="168"
+        width="160"
         height="22"
-        viewBox="0 0 168 22"
+        viewBox="0 0 160 22"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-label="Meridian"
@@ -30,9 +30,9 @@ export function Logo({ theme = 'light', className = '' }: LogoProps) {
         <rect x="9"  y="0" width="6" height="22" fill="#1A56E8" />
         <rect x="18" y="0" width="6" height="22" fill="#1A56E8" />
 
-        {/* ERIDIAN — cap height matches bar height; 12 px gap after last bar */}
+        {/* ERIDIAN — cap height matches bar height; 4 px gap after last bar */}
         <text
-          x="36"
+          x="28"
           y="22"
           dominantBaseline="auto"
           fontFamily="'Instrument Sans', 'Arial Black', 'Arial', sans-serif"
