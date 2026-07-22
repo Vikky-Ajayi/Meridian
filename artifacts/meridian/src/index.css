@@ -1033,6 +1033,10 @@
     min-height: 0;
     overflow: hidden;
   }
+  .testimonial-viewport::before,
+  .testimonial-viewport::after {
+    display: none;
+  }
   .testimonial-track {
     animation-duration: 36s;
     animation-delay: 1s;
