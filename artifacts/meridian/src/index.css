@@ -1103,17 +1103,31 @@
     max-width: 100%;
   }
 
-  /* Reason grid */
+  /* Reason grid — horizontal scroll on mobile */
   .reason-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    margin-top: 28px;
+    display: flex;
+    flex-direction: row;
     gap: 14px;
+    margin-top: 28px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 4px;
+  }
+  .reason-grid::-webkit-scrollbar {
+    display: none;
   }
   .reason-card {
+    flex: 0 0 272px;
     height: auto;
-    min-height: auto;
+    min-height: 220px;
     padding: 20px;
+    scroll-snap-align: start;
   }
   .reason-card b {
     font-size: 17px;
