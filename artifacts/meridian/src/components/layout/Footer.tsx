@@ -59,7 +59,7 @@ export function Footer() {
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
-      <div className="footer-watermark">IIERIDIAN</div>
+      <div className="footer-watermark">IIIERIDIAN</div>
     </footer>
   );
 }
