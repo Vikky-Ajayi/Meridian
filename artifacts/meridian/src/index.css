@@ -880,17 +880,11 @@
 }
 
 .footer-watermark {
-  /* Scale with viewport: centred so left-I and right-N are the only letters clipped */
   bottom: 0;
-  color: #e9e9eb;
-  font-size: 22.5vw;
-  font-weight: 700;
-  left: 50%;
-  letter-spacing: -0.05em;
-  line-height: 0.78;
+  display: block;
+  left: 0;
   position: absolute;
-  transform: translateX(-50%);
-  white-space: nowrap;
+  width: 100%;
   z-index: 0;
 }
 

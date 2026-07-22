@@ -59,7 +59,19 @@ export function Footer() {
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
-      <div className="footer-watermark">IIERIDIAN</div>
+      <svg className="footer-watermark" viewBox="0 0 1000 720" aria-hidden="true">
+        <text
+          x="0"
+          y="720"
+          textLength="1000"
+          lengthAdjust="spacingAndGlyphs"
+          fontFamily="'Instrument Sans', sans-serif"
+          fontWeight="700"
+          fill="#e9e9eb"
+        >
+          MERIDIAN
+        </text>
+      </svg>
     </footer>
   );
 }
