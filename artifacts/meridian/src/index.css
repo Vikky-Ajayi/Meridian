@@ -376,12 +376,13 @@
 
 .meridian-globe {
   display: block;
-  filter: grayscale(0.82) saturate(0.55) opacity(0.82);
+  filter: grayscale(1) saturate(0) opacity(0.85);
   left: 50%;
   position: absolute;
-  top: 250px;
+  top: -120px;
   transform: translateX(-50%);
-  width: 1357px;
+  width: 120%;
+  min-width: 700px;
   z-index: 0;
 }
 
@@ -988,7 +989,7 @@
     color: #000;
   }
   .meridian-globe {
-    content: url('./assets/Mask group-mobile.png');
+    content: url('./assets/Mask_group_new.png');
     display: block;
     left: 50%;
     margin-top: -70px;
