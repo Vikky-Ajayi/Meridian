@@ -880,14 +880,17 @@
 }
 
 .footer-watermark {
-  bottom: -48px;
+  /* Scale with viewport: centred so left-I and right-N are the only letters clipped */
+  bottom: 0;
   color: #e9e9eb;
-  font-size: 350px;
+  font-size: 22.5vw;
   font-weight: 700;
-  left: -8px;
-  letter-spacing: -18px;
+  left: 50%;
+  letter-spacing: -0.05em;
   line-height: 0.78;
   position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
   z-index: 0;
 }
 
@@ -1239,10 +1242,7 @@
     margin-top: 20px;
   }
   .footer-watermark {
-    bottom: -8px;
-    font-size: 88px;
-    left: -4px;
-    letter-spacing: -4px;
+    bottom: 0;
   }
 }
 
