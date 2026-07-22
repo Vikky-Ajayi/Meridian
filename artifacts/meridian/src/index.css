@@ -944,34 +944,35 @@
 
 /* ── Mobile (700px and below) ──────────────────────────────────────────── */
 @media (max-width: 700px) {
-  /* Hero — dark background matching design reference */
+  /* Hero — white background for mobile */
   .meridian-hero {
-    background: #000b2d;
+    background: #fff;
     height: auto;
     min-height: 520px;
     overflow: hidden;
     padding: 44px 20px 0;
     position: relative;
+    text-align: center;
   }
   .meridian-hero h1 {
-    color: #fff;
-    font-size: 28px;
+    color: var(--ink);
+    font-size: 32px;
     line-height: 1.1;
     max-width: 100%;
-    text-align: left;
+    text-align: center;
   }
   .meridian-hero p {
-    color: rgba(255, 255, 255, 0.72);
+    color: var(--ink);
     font-size: 14px;
     line-height: 1.5;
     max-width: 100%;
-    text-align: left;
+    text-align: center;
   }
   .meridian-hero-actions {
     align-items: stretch;
     flex-direction: column;
     gap: 10px;
-    justify-content: flex-start;
+    justify-content: center;
   }
   .meridian-btn {
     border-radius: 6px;
@@ -982,9 +983,9 @@
     width: 100%;
   }
   .meridian-btn-light {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    color: #fff;
+    background: #fff;
+    border: 1px solid #000;
+    color: #000;
   }
   .meridian-globe {
     content: url('./assets/Mask group-mobile.png');
