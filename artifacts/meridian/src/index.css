@@ -891,79 +891,171 @@
   z-index: 0;
 }
 
+/* ── Tablet (1024px and below) ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .meridian-stats {
+    padding: 44px 40px;
+  }
+  .meridian-stat b {
+    font-size: 48px;
+  }
+  .capital-section,
+  .payments-section,
+  .desk-section,
+  .banking-intro-section {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .capital-head,
+  .payments-head {
+    gap: 48px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .capital-head p,
+  .payments-head p {
+    margin-top: 0;
+  }
+  .reason-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .solution-section {
+    gap: 48px;
+    grid-template-columns: 1fr 1fr;
+    padding: 60px 40px;
+  }
+  .desk-section {
+    gap: 48px;
+    grid-template-columns: 380px 1fr;
+  }
+  .desk-card {
+    width: 100%;
+  }
+  .banking-intro-section {
+    gap: 48px;
+  }
+  .meridian-footer {
+    padding: 40px 40px 0;
+  }
+  .footer-top nav {
+    gap: 28px;
+  }
+}
+
+/* ── Mobile (700px and below) ──────────────────────────────────────────── */
 @media (max-width: 700px) {
+  /* Hero — dark background matching design reference */
   .meridian-hero {
-    height: 590px;
-    padding: 27px 16px 0;
+    background: #000b2d;
+    height: auto;
+    min-height: 520px;
+    overflow: hidden;
+    padding: 44px 20px 0;
+    position: relative;
   }
   .meridian-hero h1 {
-    font-size: 25px;
-    line-height: 1.02;
-    max-width: 256px;
+    color: #fff;
+    font-size: 28px;
+    line-height: 1.1;
+    max-width: 100%;
+    text-align: left;
   }
   .meridian-hero p {
-    font-size: 8px;
-    max-width: 258px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 100%;
+    text-align: left;
   }
   .meridian-hero-actions {
-    display: block;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-start;
   }
   .meridian-btn {
-    border-radius: 2px;
-    font-size: 8px;
-    height: 28px;
-    margin-bottom: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    height: 44px;
+    margin-bottom: 0;
     min-width: 0;
     width: 100%;
   }
+  .meridian-btn-light {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #fff;
+  }
   .meridian-globe {
     content: url('./assets/Mask group-mobile.png');
-    top: 280px;
-    width: 390px;
+    left: 50%;
+    position: relative;
+    transform: translateX(-50%);
+    top: auto;
+    width: 100%;
+    margin-top: 28px;
   }
+
+  /* Stats */
   .meridian-stats {
     grid-template-columns: repeat(2, 1fr);
-    height: 245px;
-    padding: 22px 16px;
+    height: auto;
+    min-height: 0;
+    padding: 28px 20px 24px;
+    gap: 24px 12px;
   }
   .meridian-stat img {
-    height: 16px;
-    margin-bottom: 28px;
-    width: 16px;
+    height: 20px;
+    margin-bottom: 18px;
+    width: 20px;
   }
   .meridian-stat b {
-    font-size: 30px;
+    font-size: 36px;
   }
   .meridian-stat span {
-    font-size: 8px;
-    margin-top: 3px;
+    font-size: 12px;
+    margin-top: 4px;
   }
+
+  /* Testimonials */
   .meridian-testimonials {
-    height: 560px;
-    padding: 30px 0 0 16px;
+    height: auto;
+    min-height: 0;
+    padding: 40px 0 0 20px;
   }
   .meridian-testimonials h2 {
-    font-size: 17px;
-    margin-bottom: 28px;
-  }
-  .testimonial-card {
-    flex-basis: 300px;
-    height: 300px;
-    width: 300px;
+    font-size: 22px;
+    margin-bottom: 24px;
   }
   .testimonial-viewport {
-    margin-right: -16px;
-    min-height: 320px;
+    margin-right: -20px;
+    min-height: 0;
     overflow: hidden;
   }
   .testimonial-track {
-    animation-duration: 34s;
-    animation-delay: 2s;
-    gap: 16px;
+    animation-duration: 36s;
+    animation-delay: 1s;
+    gap: 14px;
+  }
+  .testimonial-card {
+    flex-basis: 272px;
+    height: auto;
+    min-height: 220px;
+    width: 272px;
+    padding: 20px;
   }
   .testimonial-card p {
-    font-size: 11px;
+    font-size: 13px;
+    line-height: 1.5;
   }
+  .testimonial-card b {
+    font-size: 12px;
+  }
+  .quote-mark {
+    font-size: 32px;
+    margin-bottom: 14px;
+  }
+
+  /* Capital / Payments / Desk / Banking intro / Solution — single column */
   .capital-section,
   .payments-section,
   .desk-section,
@@ -971,57 +1063,155 @@
   .solution-section {
     display: block;
     min-height: auto;
-    padding: 36px 16px;
+    padding: 44px 20px;
   }
   .capital-head,
-  .payments-head,
-  .reason-grid {
+  .payments-head {
     display: block;
+  }
+  .capital-head .eyebrow,
+  .payments-head .eyebrow {
+    margin-bottom: 12px;
   }
   .capital-head h2,
   .payments-head h2,
   .solution-section h2,
   .advisory-copy h2,
   .banking-intro-section h2 {
-    font-size: 20px;
+    font-size: 24px;
+    line-height: 1.15;
   }
   .capital-head p,
-  .payments-head p,
+  .payments-head p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 18px 0 0;
+    max-width: 100%;
+  }
   .solution-section p,
   .advisory-copy p,
   .banking-intro-section p {
-    font-size: 9px;
-    margin: 20px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 12px 0 18px;
+    max-width: 100%;
   }
+
+  /* Reason grid */
   .reason-grid {
-    margin-top: 23px;
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-top: 28px;
+    gap: 14px;
   }
   .reason-card {
     height: auto;
-    margin-bottom: 10px;
-    min-height: 170px;
+    min-height: auto;
+    padding: 20px;
   }
-  .desk-card {
-    border-radius: 10px;
-    height: auto;
+  .reason-card b {
+    font-size: 17px;
+  }
+  .reason-card p {
+    font-size: 13px;
+  }
+
+  /* Solution section */
+  .solution-section {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .solution-section::before {
+    display: none;
+  }
+  .solution-section > div:first-child {
     margin-bottom: 28px;
-    min-height: 206px;
+  }
+  .solution-section > div:first-child p {
+    font-size: 14px;
+    max-width: 100%;
+  }
+  .solution-steps article {
+    grid-template-columns: 52px 1fr 0;
+    padding: 26px 0;
+  }
+  .solution-steps strong {
+    font-size: 28px;
+  }
+  .solution-steps b {
+    font-size: 17px;
+  }
+  .solution-steps p {
+    font-size: 13px;
+    margin: 10px 0 0;
+  }
+  .solution-steps span {
+    display: none;
+  }
+
+  /* Desk section */
+  .desk-card {
+    border-radius: 16px;
+    height: auto;
+    margin-bottom: 32px;
+    min-height: auto;
     width: 100%;
   }
+  .desk-avatar {
+    font-size: 16px;
+    height: 44px;
+    margin-bottom: 16px;
+    width: 44px;
+  }
+  .desk-title b {
+    font-size: 20px;
+  }
+  .desk-title p {
+    font-size: 13px;
+    margin: 4px 0 20px;
+  }
+  .desk-card dt,
+  .desk-card dd {
+    font-size: 13px;
+  }
+  .desk-card dl div {
+    padding: 14px 0;
+  }
+  .advisory-copy {
+    padding-top: 0;
+  }
+
+  /* Payments world map */
+  .world-map {
+    margin-top: 28px;
+    width: 100%;
+  }
+
+  /* Light stats wrap */
+  .stats-light-wrap .meridian-stats {
+    height: auto;
+  }
+
+  /* Banking intro form */
   .intro-form {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
   .intro-form label {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
   .intro-form .full {
     grid-column: auto;
     width: 100%;
   }
+
+  /* Footer */
   .meridian-footer {
     height: auto;
-    min-height: 900px;
-    padding: 36px 16px 150px;
+    min-height: auto;
+    overflow: hidden;
+    padding: 36px 20px 120px;
   }
   .footer-top {
     display: block;
@@ -1029,20 +1219,30 @@
   }
   .footer-top nav {
     display: grid;
-    gap: 24px;
-    grid-template-columns: repeat(3, 1fr);
-    margin-top: 36px;
+    font-size: 13px;
+    gap: 14px 20px;
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 28px;
   }
   .footer-legal {
     font-size: 12px;
+    line-height: 1.5;
+    margin-top: 24px;
+  }
+  .footer-legal p {
+    margin: 0 0 14px;
   }
   .footer-copy {
+    flex-direction: column;
     font-size: 11px;
+    gap: 2px;
+    margin-top: 20px;
   }
   .footer-watermark {
-    bottom: 0;
-    font-size: 78px;
-    letter-spacing: -3px;
+    bottom: -8px;
+    font-size: 88px;
+    left: -4px;
+    letter-spacing: -4px;
   }
 }
 
@@ -1155,39 +1355,97 @@
   color: #1767e8;
 }
 
-@media (max-width: 700px) {
-  .content-page {
-    padding: 0 8px;
-  }
+/* ── Content pages tablet ──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
   .blue-panel {
-    border-radius: 8px;
-    margin-bottom: 32px;
-    padding: 14px 16px;
-  }
-  .blue-panel h1 {
-    font-size: 29px;
-    margin: 8px 0 18px;
-  }
-  .blue-panel p {
-    font-size: 12px;
+    margin: 0 0 40px;
+    max-width: 100%;
+    padding: 48px 40px;
   }
   .text-body {
-    font-size: 12px;
-    padding: 0 8px;
+    max-width: 100%;
+    padding: 0 40px;
+  }
+}
+
+/* ── Content pages mobile ──────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .content-page {
+    padding: 0;
+  }
+  /* Remove blue background on mobile; present as clean white */
+  .blue-panel {
+    background: #fff;
+    border-radius: 0;
+    color: #000b2d;
+    margin: 0 0 8px;
+    padding: 28px 20px 20px;
+  }
+  .blue-panel .eyebrow {
+    color: #1767e8;
+    font-size: 13px;
+  }
+  .blue-panel h1 {
+    color: #000b2d;
+    font-size: 26px;
+    line-height: 1.15;
+    margin: 8px 0 16px;
+  }
+  .blue-panel p {
+    color: #444;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .text-body {
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 100%;
+    padding: 0 20px 40px;
+  }
+  .text-body > p {
+    margin: 0 0 16px;
   }
   .text-body h2 {
-    font-size: 25px;
-    margin: 24px 0;
+    color: #000b2d;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 36px 0 16px;
+  }
+  .process-block {
+    margin: 0 0 36px;
   }
   .process-num {
-    font-size: 24px;
+    color: #bbb;
+    font-size: 22px;
+    font-weight: 700;
   }
   .process-block h3 {
-    font-size: 28px;
+    color: #000b2d;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 8px 0 10px;
+  }
+  .text-body ul {
+    margin: 10px 0 0;
+    padding-left: 18px;
+  }
+  .text-body li {
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.5;
   }
   .policy-block h2 {
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: 700;
     letter-spacing: -0.02em;
+    margin: 28px 0 10px;
+  }
+  .policy-block p {
+    font-size: 13px;
+    margin: 0 0 10px;
   }
 }
 
