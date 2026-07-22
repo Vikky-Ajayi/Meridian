@@ -455,9 +455,9 @@
 .testimonial-viewport::before,
 .testimonial-viewport::after {
   content: '';
-  height: 420px;
+  height: 100%;
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   top: 0;
   width: 180px;
   z-index: 3;
