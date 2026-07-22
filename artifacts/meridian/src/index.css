@@ -989,12 +989,21 @@
   }
   .meridian-globe {
     content: url('./assets/Mask group-mobile.png');
+    display: block;
     left: 50%;
+    margin-top: -70px;
     position: relative;
     transform: translateX(-50%);
     top: auto;
-    width: 100%;
-    margin-top: 28px;
+    width: 110%;
+    mask-image:
+      linear-gradient(to bottom, black 55%, transparent 100%),
+      linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      linear-gradient(to bottom, black 55%, transparent 100%),
+      linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
   }
 
   /* Stats */
