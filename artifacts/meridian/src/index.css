@@ -447,6 +447,7 @@
 
 .testimonial-viewport {
   margin-right: calc((1200px - 100vw) / 2);
+  min-height: 366px;
   overflow: hidden;
   position: relative;
 }
@@ -474,6 +475,7 @@
 
 .testimonial-track {
   animation: testimonial-scroll 30s linear infinite;
+  animation-delay: 2s;
   display: flex;
   gap: 36px;
   width: max-content;
@@ -948,6 +950,16 @@
     flex-basis: 300px;
     height: 300px;
     width: 300px;
+  }
+  .testimonial-viewport {
+    margin-right: -16px;
+    min-height: 320px;
+    overflow: hidden;
+  }
+  .testimonial-track {
+    animation-duration: 34s;
+    animation-delay: 2s;
+    gap: 16px;
   }
   .testimonial-card p {
     font-size: 11px;
