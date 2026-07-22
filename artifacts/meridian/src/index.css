@@ -882,12 +882,13 @@
 .footer-watermark {
   bottom: -48px;
   color: #e9e9eb;
-  font-size: 350px;
+  font-size: 380px;
   font-weight: 700;
-  left: 10px;
+  left: -20px;
   letter-spacing: -18px;
   line-height: 0.78;
   position: absolute;
+  white-space: nowrap;
   z-index: 0;
 }
 
