@@ -1257,9 +1257,6 @@
     display: flex;
     gap: 20px;
   }
-  /* Staircase: each row steps right by 32px */
-  .footer-nav-row:nth-child(2) { padding-left: 32px; }
-  .footer-nav-row:nth-child(3) { padding-left: 64px; }
   .footer-legal {
     font-size: 12px;
     line-height: 1.5;
