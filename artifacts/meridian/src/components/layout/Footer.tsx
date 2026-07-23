@@ -2,12 +2,12 @@ import { Link } from 'wouter';
 import { Logo } from '@/components/ui/Logo';
 
 const footerLinks = [
-  ['About', '/about'],
   ['Solutions', '/'],
   ['Global Payments', '/'],
   ['Contact', '/'],
   ['Advisory', '/'],
   ['Privacy', '/'],
+  ['Security', '/'],
   ['Regulatory information', '/aml-policy'],
 ];
 
