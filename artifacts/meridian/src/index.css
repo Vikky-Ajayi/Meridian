@@ -949,7 +949,7 @@
   .meridian-hero {
     background: #fff;
     height: auto;
-    min-height: 520px;
+    min-height: 0;
     overflow: hidden;
     padding: 44px 20px 0;
     position: relative;
@@ -993,15 +993,16 @@
   .meridian-globe {
     content: url('./assets/Mask_group_new.png');
     display: block;
-    filter: none;
-    left: 50%;
-    margin-top: -50px;
+    filter: grayscale(1) saturate(0) opacity(0.85);
+    left: auto;
+    margin: -20px auto 0;
     mask-image: none;
     -webkit-mask-image: none;
+    min-width: 0;
     position: relative;
     top: auto;
-    transform: translateX(-50%);
-    width: 110%;
+    transform: none;
+    width: 76%;
   }
 
   /* Stats */
