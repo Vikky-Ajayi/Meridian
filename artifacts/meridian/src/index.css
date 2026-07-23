@@ -1361,13 +1361,11 @@
 
 .process-block h3 {
   color: #000b2d;
-  font-family: 'Instrument Sans', sans-serif;
-  font-size: 56px;
+  font-size: 52px;
   font-weight: 600;
   letter-spacing: -0.04em;
-  line-height: 1.15;
+  line-height: 1.1;
   margin: 18px 0;
-  text-transform: capitalize;
 }
 
 .text-body ul {
