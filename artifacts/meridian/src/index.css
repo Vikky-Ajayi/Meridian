@@ -953,27 +953,29 @@
     overflow: hidden;
     padding: 44px 20px 0;
     position: relative;
-    text-align: center;
+    text-align: left;
   }
   .meridian-hero h1 {
     color: var(--ink);
     font-size: 32px;
     line-height: 1.1;
+    margin: 0 0 14px;
     max-width: 100%;
-    text-align: center;
+    text-align: left;
   }
   .meridian-hero p {
     color: var(--ink);
     font-size: 14px;
     line-height: 1.5;
+    margin: 0 0 20px;
     max-width: 100%;
-    text-align: center;
+    text-align: left;
   }
   .meridian-hero-actions {
     align-items: stretch;
     flex-direction: column;
     gap: 10px;
-    justify-content: center;
+    justify-content: flex-start;
   }
   .meridian-btn {
     border-radius: 6px;
@@ -991,20 +993,15 @@
   .meridian-globe {
     content: url('./assets/Mask_group_new.png');
     display: block;
+    filter: none;
     left: 50%;
-    margin-top: -70px;
+    margin-top: -50px;
+    mask-image: none;
+    -webkit-mask-image: none;
     position: relative;
-    transform: translateX(-50%);
     top: auto;
+    transform: translateX(-50%);
     width: 110%;
-    mask-image:
-      linear-gradient(to bottom, black 55%, transparent 100%),
-      linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-    mask-composite: intersect;
-    -webkit-mask-image:
-      linear-gradient(to bottom, black 55%, transparent 100%),
-      linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-    -webkit-mask-composite: source-in;
   }
 
   /* Stats */
