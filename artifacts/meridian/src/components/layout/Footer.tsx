@@ -1,14 +1,10 @@
 import { Link } from 'wouter';
 import { Logo } from '@/components/ui/Logo';
 
-const footerLinks = [
-  ['Solutions', '/'],
-  ['Global Payments', '/'],
-  ['Contact', '/'],
-  ['Advisory', '/'],
-  ['Privacy', '/'],
-  ['Security', '/'],
-  ['Regulatory information', '/aml-policy'],
+const footerLinkRows = [
+  [['Solutions', '/'], ['Global Payments', '/'], ['Contact', '/']],
+  [['Advisory', '/'], ['Privacy', '/'], ['Security', '/']],
+  [['Regulatory information', '/aml-policy']],
 ];
 
 export function Footer() {
@@ -17,9 +13,13 @@ export function Footer() {
       <div className="footer-inner">
         <div className="footer-top">
           <Logo theme="light" />
-          <nav>
-            {footerLinks.map(([label, href]) => (
-              <Link key={label} href={href}>{label}</Link>
+          <nav className="footer-nav">
+            {footerLinkRows.map((row, i) => (
+              <div className="footer-nav-row" key={i}>
+                {row.map(([label, href]) => (
+                  <Link key={label} href={href}>{label}</Link>
+                ))}
+              </div>
             ))}
           </nav>
         </div>
