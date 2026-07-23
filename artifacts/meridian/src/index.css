@@ -1294,11 +1294,13 @@
 }
 
 .blue-panel h1 {
+  font-family: 'Instrument Sans', sans-serif;
   font-size: 56px;
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.15;
   margin: 10px 0 48px;
+  text-transform: capitalize;
 }
 
 .policy-page .blue-panel h1 {
