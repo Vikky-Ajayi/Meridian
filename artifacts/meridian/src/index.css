@@ -850,19 +850,13 @@
   padding: 0 0 32px;
 }
 
-.footer-nav {
+.footer-top nav {
   align-items: center;
   display: flex;
-  flex-wrap: wrap;
   font-size: 14px;
-  gap: 12px 43px;
+  gap: 43px;
   line-height: 1.4;
   padding-top: 9px;
-}
-
-/* On desktop rows are invisible — links flow directly into the flex container */
-.footer-nav-row {
-  display: contents;
 }
 
 .footer-legal {
@@ -1244,18 +1238,12 @@
     display: block;
     height: auto;
   }
-  .footer-nav {
-    display: flex;
-    flex-direction: column;
+  .footer-top nav {
+    display: grid;
     font-size: 13px;
-    gap: 14px;
+    gap: 14px 12px;
+    grid-template-columns: repeat(3, 1fr);
     margin-top: 28px;
-    padding-top: 0;
-  }
-  /* Each row is a visible flex row on mobile */
-  .footer-nav-row {
-    display: flex;
-    gap: 20px;
   }
   .footer-legal {
     font-size: 12px;
