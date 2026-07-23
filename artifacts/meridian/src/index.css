@@ -995,7 +995,7 @@
     position: relative;
     transform: translateX(-50%);
     top: auto;
-    width: 120%;
+    width: 100vw;
   }
 
   /* Stats */
