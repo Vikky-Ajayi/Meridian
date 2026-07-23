@@ -996,8 +996,6 @@
     transform: translateX(-50%);
     top: auto;
     width: 100%;
-    mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
   }
 
   /* Stats */
