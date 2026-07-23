@@ -1315,9 +1315,11 @@
 }
 
 .blue-panel p {
-  font-size: 20px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 18px;
   font-weight: 500;
-  line-height: 1.35;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
   margin: 0;
 }
 
