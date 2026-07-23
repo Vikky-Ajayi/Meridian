@@ -376,13 +376,12 @@
 
 .meridian-globe {
   display: block;
-  filter: grayscale(1) saturate(0) opacity(0.85);
+  filter: grayscale(0.82) saturate(0.55) opacity(0.82);
   left: 50%;
   position: absolute;
-  top: -120px;
+  top: 250px;
   transform: translateX(-50%);
-  width: 120%;
-  min-width: 700px;
+  width: 1357px;
   z-index: 0;
 }
 
@@ -949,33 +948,31 @@
   .meridian-hero {
     background: #fff;
     height: auto;
-    min-height: 0;
+    min-height: 520px;
     overflow: hidden;
     padding: 44px 20px 0;
     position: relative;
-    text-align: left;
+    text-align: center;
   }
   .meridian-hero h1 {
     color: var(--ink);
     font-size: 32px;
     line-height: 1.1;
-    margin: 0 0 14px;
     max-width: 100%;
-    text-align: left;
+    text-align: center;
   }
   .meridian-hero p {
     color: var(--ink);
     font-size: 14px;
     line-height: 1.5;
-    margin: 0 0 20px;
     max-width: 100%;
-    text-align: left;
+    text-align: center;
   }
   .meridian-hero-actions {
     align-items: stretch;
     flex-direction: column;
     gap: 10px;
-    justify-content: flex-start;
+    justify-content: center;
   }
   .meridian-btn {
     border-radius: 6px;
@@ -991,18 +988,22 @@
     color: #000;
   }
   .meridian-globe {
-    content: url('./assets/Mask_group_new.png');
+    content: url('./assets/Mask group-mobile.png');
     display: block;
-    filter: grayscale(1) saturate(0) opacity(0.85);
-    left: auto;
-    margin: -20px auto 0;
-    mask-image: none;
-    -webkit-mask-image: none;
-    min-width: 0;
+    left: 50%;
+    margin-top: -70px;
     position: relative;
+    transform: translateX(-50%);
     top: auto;
-    transform: none;
-    width: 76%;
+    width: 110%;
+    mask-image:
+      linear-gradient(to bottom, black 55%, transparent 100%),
+      linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      linear-gradient(to bottom, black 55%, transparent 100%),
+      linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
   }
 
   /* Stats */

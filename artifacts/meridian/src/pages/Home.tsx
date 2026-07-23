@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import heroGlobe from '@/assets/Mask_group_new.png';
+import heroGlobe from '@/assets/Mask group-desktop.png';
 import worldMap from '@/assets/Frame 1410106951.png';
 import iconHandshake from '@/assets/Frame.png';
 import iconCurrency from '@/assets/Frame-1.png';
