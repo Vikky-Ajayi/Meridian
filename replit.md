@@ -1,15 +1,17 @@
-# [Project name]
+# Meridian
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A financial services web app (private banking, international money transfers) with an Express API backend and a React/Vite frontend.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- **Frontend** — `PORT=3000 BASE_PATH=/ pnpm --filter @workspace/meridian run dev` (port 3000) — managed by the "Meridian" workflow
+- **API Server** — `PORT=8080 pnpm --filter @workspace/api-server run dev` (port 8080) — managed by the "API Server" workflow
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- The Vite dev server proxies `/api` requests to the API server on port 8080
+- Required env: `DATABASE_URL` — Postgres connection string (provisioned automatically by Replit)
 
 ## Stack
 
