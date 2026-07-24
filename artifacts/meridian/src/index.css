@@ -382,6 +382,7 @@
   display: block;
   filter: grayscale(0.82) saturate(0.55) opacity(0.82);
   left: 50%;
+  margin: 0;
   position: absolute;
   top: 250px;
   transform: translateX(-50%) translateY(-10%);
