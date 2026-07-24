@@ -19,10 +19,10 @@ const stats = [
 ];
 
 const testimonials = [
-  ['Meridian provided a highly professional and discreet approach to navigating an international financial requirement. Their ability to understand our objectives and coordinate the right banking relationships made the process seamless.', 'Private Client, United Kingdom'],
-  ['The level of attention, confidentiality, and professionalism demonstrated by Meridian was exceptional. They understood that every financial situation is unique and provided a structured approach tailored to our circumstances.', 'International Client'],
-  ['Meridian helped us identify suitable private banking solutions aligned with our requirements. Their advisory approach gave us confidence throughout the process.', 'Business Owner, Europe'],
-  ['When our transaction became too complex for a retail service, Meridian helped us understand the institutional route.', 'Private Client'],
+  ['Aldric Private provided a highly professional and discreet approach to navigating an international financial requirement. Their ability to understand our objectives and coordinate the right banking relationships made the process seamless.', 'Private Client, United Kingdom'],
+  ['The level of attention, confidentiality, and professionalism demonstrated by Aldric Private was exceptional. They understood that every financial situation is unique and provided a structured approach tailored to our circumstances.', 'International Client'],
+  ['Aldric Private helped us identify suitable private banking solutions aligned with our requirements. Their advisory approach gave us confidence throughout the process.', 'Business Owner, Europe'],
+  ['When our transaction became too complex for a retail service, Aldric Private helped us understand the institutional route.', 'Private Client'],
 ];
 
 const reasons = [
@@ -195,7 +195,7 @@ export default function Home() {
           <p>
             Whether you are looking to open a personal or business account, require
             multi-currency banking, or need a specialist private banking relationship,
-            Meridian introduces qualified clients to banks within our trusted global
+            Aldric Private introduces qualified clients to banks within our trusted global
             network that best match their financial needs and circumstances.
           </p>
           <p>

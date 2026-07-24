@@ -26,7 +26,7 @@ export function Footer() {
 
         <div className="footer-legal">
           <p>
-            Meridian acts as a business banking and foreign exchange introducer, connecting
+            Aldric Private acts as a business banking and foreign exchange introducer, connecting
             eligible individuals and businesses with suitable regulated financial service
             providers and banking partners.
           </p>
@@ -42,20 +42,20 @@ export function Footer() {
             Account openings, banking relationships, and financial services are subject to
             the independent approval processes, compliance requirements, and risk
             assessments of the relevant financial institutions and service providers.
-            Meridian does not guarantee acceptance or approval by any banking partner.
+            Aldric Private does not guarantee acceptance or approval by any banking partner.
           </p>
           <p>
-            Meridian provides its services in partnership with licensed financial
+            Aldric Private provides its services in partnership with licensed financial
             institutions and payment providers within their respective jurisdictions.
             <br />
             All trademarks, logos, and brand names referenced belong to their respective
             owners. The use of these trademarks and brand names does not imply endorsement
-            by, affiliation with, or association with Meridian.
+            by, affiliation with, or association with Aldric Private.
           </p>
         </div>
 
         <div className="footer-copy">
-          <span>© 2025 by Meridian</span>
+          <span>© 2025 by Aldric Private</span>
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
