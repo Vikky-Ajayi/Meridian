@@ -380,7 +380,7 @@
   left: 50%;
   position: absolute;
   top: 250px;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-30%);
   width: 1357px;
   z-index: 0;
 }
@@ -884,10 +884,10 @@
   color: #e9e9eb;
   font-size: 380px;
   font-weight: 700;
-  left: -20px;
   letter-spacing: -18px;
   line-height: 0.78;
   position: absolute;
+  right: 0;
   white-space: nowrap;
   z-index: 0;
 }
