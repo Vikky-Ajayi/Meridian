@@ -338,7 +338,9 @@
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.04;
+  position: relative;
   text-transform: capitalize;
+  z-index: 1;
 }
 
 .meridian-hero p {
@@ -349,6 +351,8 @@
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.4;
+  position: relative;
+  z-index: 1;
 }
 
 .meridian-hero-actions {
