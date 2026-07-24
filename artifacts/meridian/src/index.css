@@ -884,15 +884,11 @@
 }
 
 .footer-watermark {
-  bottom: -48px;
-  color: #e9e9eb;
-  font-size: 380px;
-  font-weight: 700;
-  letter-spacing: -18px;
-  line-height: 0.78;
+  bottom: 0;
+  display: block;
+  left: 0;
   position: absolute;
-  right: 0;
-  white-space: nowrap;
+  width: 100%;
   z-index: 0;
 }
 

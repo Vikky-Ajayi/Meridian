@@ -1,5 +1,6 @@
 import { Link } from 'wouter';
 import { Logo } from '@/components/ui/Logo';
+import footerWatermark from '@/assets/footer-watermark.png';
 
 const footerLinks = [
   ['Solutions', '/'],
@@ -59,7 +60,7 @@ export function Footer() {
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
-      <div className="footer-watermark">IIIERIDIAN</div>
+      <img className="footer-watermark" src={footerWatermark} alt="" aria-hidden="true" />
     </footer>
   );
 }
