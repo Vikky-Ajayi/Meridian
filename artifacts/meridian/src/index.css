@@ -380,9 +380,9 @@
 
 .meridian-globe {
   display: block;
-  filter: grayscale(0.82) saturate(0.55) opacity(0.82);
   left: 50%;
   margin: 0;
+  mix-blend-mode: luminosity;
   position: absolute;
   top: 250px;
   transform: translateX(-50%) translateY(-10%);
@@ -993,6 +993,7 @@
     display: block;
     left: 50%;
     margin-top: -70px;
+    mix-blend-mode: luminosity;
     position: relative;
     transform: translateX(-50%);
     top: auto;
