@@ -58,17 +58,15 @@ export default function Home() {
   return (
     <div className="meridian-home">
       <section className="meridian-hero">
-        <div className="meridian-hero-content">
-          <h1>Move Significant Capital Across Borders, On Your Terms.</h1>
-          <p>
-            A dedicated desk for large-value international transfers, property purchases,
-            business sales, relocations, portfolio consolidation, priced and executed like an
-            institutional treasury, not a retail wire.
-          </p>
-          <div className="meridian-hero-actions">
-            <Link className="meridian-btn meridian-btn-dark" href="/move-money-abroad">Move money abroad</Link>
-            <Link className="meridian-btn meridian-btn-light" href="/private-banking-introduction">Request banking introduction</Link>
-          </div>
+        <h1>Move Significant Capital Across Borders, On Your Terms.</h1>
+        <p>
+          A dedicated desk for large-value international transfers, property purchases,
+          business sales, relocations, portfolio consolidation, priced and executed like an
+          institutional treasury, not a retail wire.
+        </p>
+        <div className="meridian-hero-actions">
+          <Link className="meridian-btn meridian-btn-dark" href="/move-money-abroad">Move money abroad</Link>
+          <Link className="meridian-btn meridian-btn-light" href="/private-banking-introduction">Request banking introduction</Link>
         </div>
         <img className="meridian-globe" src={heroGlobe} alt="Global banking network" />
       </section>
