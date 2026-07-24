@@ -1004,6 +1004,7 @@
   .meridian-stats {
     grid-template-columns: repeat(2, 1fr);
     height: auto;
+    margin-top: -20vw;
     min-height: 0;
     padding: 28px 20px 24px;
     gap: 24px 12px;
