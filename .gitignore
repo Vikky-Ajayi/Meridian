@@ -47,3 +47,13 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Browser profiles (screenshots tooling artifacts)
+**/screenshots/browser-profile/
+**/screenshots/chrome-profile/
+
+# pnpm store
+.pnpm-store/
+
+# Canvas assets
+.canvas/
