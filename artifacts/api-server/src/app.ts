@@ -39,7 +39,12 @@ app.use("/api", router);
 if (process.env.NODE_ENV === "production") {
   const frontendDir = path.resolve(__dirname, "../../meridian/dist/public");
   app.use(express.static(frontendDir));
-  app.use((_req, res) => {
+  // Only fall back to index.html for non-API routes so unmatched /api/* requests
+  // still return a proper 404 JSON response rather than silently returning HTML.
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
     res.sendFile(path.join(frontendDir, "index.html"));
   });
 }
