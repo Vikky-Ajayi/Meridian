@@ -68,7 +68,9 @@ export default function Home() {
           <Link className="meridian-btn meridian-btn-dark" href="/move-money-abroad">Move money abroad</Link>
           <Link className="meridian-btn meridian-btn-light" href="/private-banking-introduction">Request banking introduction</Link>
         </div>
-        <img className="meridian-globe" src={heroGlobe} alt="Global banking network" />
+        <div className="meridian-globe-wrap">
+          <img className="meridian-globe" src={heroGlobe} alt="Global banking network" />
+        </div>
       </section>
 
       <StatsBar />
