@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Navbar } from '@/components/layout/Navbar';
+import { PhoneDialCodeSelect } from '@/components/PhoneDialCodeSelect';
 import {
   useSubmitMoveMoneyEnquiry,
   useSubmitPrivateBankingEnquiry,
@@ -82,6 +83,7 @@ function Progress({ step, total }: { step: number; total: number }) {
 interface ContactState {
   fullName: string;
   countryOfResidence: string;
+  dialCode: string;
   whatsappNumber: string;
   emailAddress: string;
 }
@@ -106,6 +108,7 @@ function ContactStep({
   const [contact, setContact] = useState<ContactState>({
     fullName: '',
     countryOfResidence: '',
+    dialCode: '+44',
     whatsappNumber: '',
     emailAddress: '',
   });
@@ -144,9 +147,12 @@ function ContactStep({
         <label>
           Best WhatsApp number
           <div className="phone-input">
-            <span>●</span>
+            <PhoneDialCodeSelect
+              value={contact.dialCode}
+              onChange={(dial) => setContact((prev) => ({ ...prev, dialCode: dial }))}
+            />
             <input
-              placeholder="e.g. +44 7700 000000"
+              placeholder="7700 000000"
               value={contact.whatsappNumber}
               onChange={set('whatsappNumber')}
             />
@@ -239,6 +245,8 @@ export function FlowPage({ type }: { type: FlowType }) {
 
   async function handleSubmit(contact: ContactState) {
     setSubmitError(null);
+    // Combine country dial code + number into one field
+    const fullWhatsapp = `${contact.dialCode} ${contact.whatsappNumber}`.trim();
     try {
       let result;
       if (isBank) {
@@ -251,7 +259,7 @@ export function FlowPage({ type }: { type: FlowType }) {
             timeline: selections[4] as string,
             fullName: contact.fullName,
             countryOfResidence: contact.countryOfResidence,
-            whatsappNumber: contact.whatsappNumber,
+            whatsappNumber: fullWhatsapp,
             emailAddress: contact.emailAddress,
           },
         });
@@ -268,7 +276,7 @@ export function FlowPage({ type }: { type: FlowType }) {
             regulatedInstitution: selections[5] as string,
             fullName: contact.fullName,
             countryOfResidence: contact.countryOfResidence,
-            whatsappNumber: contact.whatsappNumber,
+            whatsappNumber: fullWhatsapp,
             emailAddress: contact.emailAddress,
           },
         });
@@ -276,8 +284,12 @@ export function FlowPage({ type }: { type: FlowType }) {
         setLocation('/move-money-success');
       }
     } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      // Surface a cleaner message for network/404 errors
       setSubmitError(
-        err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+        msg.includes('404') || msg.includes('NOT_FOUND')
+          ? 'Unable to reach the server. Please try again shortly.'
+          : msg
       );
     }
   }

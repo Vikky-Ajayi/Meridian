@@ -1,0 +1,7 @@
+{
+  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/meridian run build",
+  "outputDirectory": "artifacts/meridian/dist/public",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
