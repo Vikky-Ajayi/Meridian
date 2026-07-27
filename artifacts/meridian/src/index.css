@@ -1352,8 +1352,8 @@
   left: 0;
   pointer-events: none;
   position: fixed;
-  height: 55vh;
-  width: 45vw;
+  height: 80vh;
+  width: 65vw;
   mix-blend-mode: luminosity;
   opacity: 0.45;
   z-index: 0;
