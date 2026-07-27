@@ -252,7 +252,13 @@ export function PhoneDialCodeSelect({ value, onChange }: Props) {
         onClick={() => setOpen((o) => !o)}
         aria-label="Select country code"
       >
-        <span className="dial-flag">{selected.flag}</span>
+        <img
+          src={`https://flagcdn.com/w20/${selected.code.toLowerCase()}.png`}
+          width="20"
+          height="15"
+          alt={selected.name}
+          className="dial-flag-img"
+        />
         <span className="dial-code">{selected.dial}</span>
         <span className="dial-chevron">▾</span>
       </button>
@@ -280,7 +286,14 @@ export function PhoneDialCodeSelect({ value, onChange }: Props) {
                     setSearch('');
                   }}
                 >
-                  <span className="dial-flag">{c.flag}</span>
+                  <img
+                    src={`https://flagcdn.com/w20/${c.code.toLowerCase()}.png`}
+                    width="20"
+                    height="15"
+                    alt={c.name}
+                    className="dial-flag-img"
+                    loading="lazy"
+                  />
                   <span className="dial-item-name">{c.name}</span>
                   <span className="dial-item-code">{c.dial}</span>
                 </button>

@@ -1334,10 +1334,35 @@
 }
 
 .flow-page {
+  position: relative;
   min-height: 100vh;
   background: #fff;
   color: #000;
   font-family: 'Instrument Sans', sans-serif;
+}
+
+/* Road vector decoration — bottom-left on desktop */
+.flow-page::after {
+  background-image: url('/road-vector.png');
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: contain;
+  bottom: 0;
+  content: '';
+  left: 0;
+  pointer-events: none;
+  position: fixed;
+  height: 55vh;
+  width: 45vw;
+  mix-blend-mode: luminosity;
+  opacity: 0.45;
+  z-index: 0;
+}
+
+@media (max-width: 700px) {
+  .flow-page::after {
+    display: none;
+  }
 }
 
 .content-page {
@@ -1797,9 +1822,13 @@
   white-space: nowrap;
 }
 
-.dial-flag {
-  font-size: 20px;
-  line-height: 1;
+.dial-flag-img {
+  border-radius: 2px;
+  display: block;
+  flex-shrink: 0;
+  height: 15px;
+  object-fit: cover;
+  width: 20px;
 }
 
 .dial-code {

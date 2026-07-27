@@ -1,5 +1,9 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="2"  y="5" width="8" height="22" rx="1" fill="#1A56E8" />
-  <rect x="13" y="5" width="8" height="22" rx="1" fill="#1A56E8" />
-  <rect x="24" y="5" width="8" height="22" rx="1" fill="#1A56E8" />
+  <!-- Aldric brand mark: three rays converging to a vanishing point, forming the A symbol -->
+  <!-- Left outer ray -->
+  <polygon points="1,31 10,31 16,5 13,5" fill="#1A56E8"/>
+  <!-- Center narrow bar -->
+  <polygon points="14.5,5 17.5,5 18,31 14,31" fill="#1A56E8"/>
+  <!-- Right outer ray -->
+  <polygon points="19,5 22,5 31,31 22,31" fill="#1A56E8"/>
 </svg>
