@@ -1,6 +1,6 @@
-# [Project name]
+# Aldric Private (Meridian)
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Private banking and international capital transfer web app. Prospects complete a multi-step flow then submit an enquiry; submissions are saved to Postgres and synced to Google Sheets.
 
 ## Run & Operate
 
@@ -10,6 +10,24 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+
+## Production environment variables
+
+### Vercel (frontend — adricprivate.com)
+| Variable | Value |
+|---|---|
+| `VITE_API_BASE_URL` | `https://meridian-production-960e.up.railway.app` |
+
+**Must include `https://`.** Without it the browser treats the Railway hostname as a relative path on the Vercel domain, causing 405 errors.
+
+### Railway (backend — meridian-production-960e.up.railway.app)
+| Variable | Value |
+|---|---|
+| `ALLOW_ORIGIN` | `https://adricprivate.com` |
+| `DATABASE_URL` | (Postgres connection string) |
+| `GOOGLE_SHEETS_ID` | (Sheet ID) |
+| `WHATSAPP_NUMBER` | (optional) |
+| `WHATSAPP_LINK` | (optional) |
 
 ## Stack
 

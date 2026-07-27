@@ -9,7 +9,12 @@ import './index.css';
 // In dev the API is served relative to this origin (same Replit proxy domain).
 const apiUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
 if (apiUrl) {
-  setBaseUrl(apiUrl);
+  // Normalise: if the env var was set without a protocol (e.g. "example.railway.app"
+  // instead of "https://example.railway.app") the browser treats it as a relative
+  // path on the current origin and the request never leaves the frontend host.
+  // Always ensure an absolute HTTPS URL.
+  const normalized = /^https?:\/\//i.test(apiUrl) ? apiUrl : `https://${apiUrl}`;
+  setBaseUrl(normalized);
 }
 
 createRoot(document.getElementById('root')!).render(<App />);

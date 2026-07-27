@@ -29,7 +29,29 @@ app.use(
     },
   }),
 );
-app.use(cors());
+// ALLOW_ORIGIN: comma-separated list of allowed origins for CORS.
+// In production set this to the frontend URL (e.g. "https://adricprivate.com").
+// Falls back to allow all origins when unset (useful for local dev).
+const rawAllowOrigin = process.env.ALLOW_ORIGIN;
+const allowedOrigins = rawAllowOrigin
+  ? rawAllowOrigin.split(",").map((o) => o.trim()).filter(Boolean)
+  : null;
+
+app.use(
+  cors({
+    origin: allowedOrigins
+      ? (origin, callback) => {
+          // Allow server-to-server requests (no Origin header) and listed origins.
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error(`CORS: origin "${origin}" not allowed`));
+          }
+        }
+      : true, // allow all when ALLOW_ORIGIN is not set
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
