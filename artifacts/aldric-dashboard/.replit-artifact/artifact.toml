@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/aldric-dashboard/"
+title = "ALDRIC Private Dashboard"
+description = "A private client dashboard for ALDRIC Private — a platform for registering capabilities and submitting requirements for matched introductions. Includes public-facing forms (Register a Capability, Submit a Requirement) with auth modals, and an authenticated dashboard with sidebar navigation showing submitted capabilities, requirements, detail views, profile management, and a WhatsApp CTA."
+version = "1.0.0"
+id = "artifacts/aldric-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/aldric-dashboard/" ]
+localPort = 23038
+
+[services.development]
+run = "pnpm --filter @workspace/aldric-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/aldric-dashboard", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/aldric-dashboard/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23038"
+BASE_PATH = "/aldric-dashboard/"
