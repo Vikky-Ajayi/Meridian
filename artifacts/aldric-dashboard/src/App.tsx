@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 
+import PrivateIntroductions from '@/pages/PrivateIntroductions';
 import RegisterCapabilityPublic from '@/pages/RegisterCapabilityPublic';
 import SubmitRequirementPublic from '@/pages/SubmitRequirementPublic';
 import DashboardHome from '@/pages/DashboardHome';
@@ -22,7 +23,7 @@ function ProtectedRoute({ component: Comp }: { component: React.ComponentType })
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={() => <Redirect to="/register-capability" />} />
+      <Route path="/" component={PrivateIntroductions} />
       <Route path="/register-capability" component={RegisterCapabilityPublic} />
       <Route path="/submit-requirement" component={SubmitRequirementPublic} />
       <Route path="/dashboard" component={() => <ProtectedRoute component={DashboardHome} />} />
