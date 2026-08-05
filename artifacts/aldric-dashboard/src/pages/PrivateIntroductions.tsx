@@ -188,45 +188,91 @@ function Stats() {
 /* ─────────────────────────────────────────────────────────
    THE MODEL
 ───────────────────────────────────────────────────────── */
+const CAPABILITY_POINTS = [
+  'No cost to register — there is nothing to pay to be on the record',
+  'Nothing about you is shared, published, or searchable by anyone outside Aldric Private',
+  "You're only ever approached for a genuine, reviewed match to your stated capability",
+  'You decide, deal by deal, whether you want to proceed once we reach out',
+  "The requirement's identity and details are verified before you're ever introduced",
+];
+
+const REQUIREMENT_POINTS = [
+  'A private search against contacts that were never publicly listed anywhere',
+  'Both sides identity-verified before any names are exchanged',
+  'A clearly stated facilitation fee, payable only once a real introduction is made',
+  'No obligation to proceed with the facilitator beyond the introduction itself',
+];
+
+function CheckItem({ text }: { text: string }) {
+  return (
+    <li className="flex gap-3 items-start">
+      <svg className="flex-shrink-0 mt-[3px]" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8.5L6.5 12L13 5" stroke="#3b82f6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span className="text-[13px] text-[#8fa3c0] leading-relaxed">{text}</span>
+    </li>
+  );
+}
+
 function TheModel() {
   return (
-    <section className="bg-[#080f1f] py-16 md:py-20 px-6 md:px-12 lg:px-20">
+    <section className="bg-[#000B2D] py-16 md:py-20 px-6 md:px-12 lg:px-20">
       <div className="max-w-6xl mx-auto">
-        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.16em] uppercase mb-5">The Model</p>
-        <h2 className="text-[28px] md:text-[34px] font-extrabold text-white tracking-tight leading-[1.1] mb-5 max-w-lg">
-          Not A Marketplace.<br />A Private Ledger.
+
+        {/* Header */}
+        <p className="text-[11px] font-bold text-white tracking-[0.18em] uppercase mb-4">The Model</p>
+        <h2 className="text-[28px] md:text-[38px] lg:text-[42px] font-extrabold text-white tracking-tight leading-[1.05] mb-4">
+          Not A Marketplace. A Private Ledger.
         </h2>
-        <p className="text-[#6b7a99] text-sm leading-relaxed mb-12 max-w-2xl">
-          Building a functioning ability is not the same as having a transaction. Registering a requirement in
-          expectation is not the same as sourcing an opportunity. ALDRIC Private structures both sides separately —
-          quietly, to ensure only confirmed matches are surfaced.
+        <p className="text-[#6b7a99] text-[14px] leading-relaxed mb-12 max-w-2xl">
+          Nothing is listed publicly, and nothing is browsable. Capabilities and requirements sit privately in
+          the same system, and Aldric Private is the only party that ever sees both sides at once.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
-          <div>
-            <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.16em] uppercase mb-3">
-              # You Can Facilitate
+        {/* Two-column cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 border border-white/10 rounded-xl overflow-hidden">
+
+          {/* Left card */}
+          <div className="border-b md:border-b-0 md:border-r border-white/10 p-8 md:p-10">
+            <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-6">
+              If You Can Facilitate
             </p>
-            <h3 className="text-[17px] font-bold text-white mb-3">Register The Capability</h3>
-            <p className="text-[#6b7a99] text-[13px] leading-relaxed">
-              If you hold an established relationship, access, or arrangement within a private network
-              that could facilitate the movement of capital, goods, or commercial introductions —
-              register it. ALDRIC Private reviews internally. Nothing is visible to the other side
-              until a match is confirmed and both parties are verified.
+            <h3 className="text-[22px] md:text-[26px] font-extrabold text-white tracking-tight leading-tight mb-4">
+              Register The Capability
+            </h3>
+            <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-8">
+              If you have a genuine contact, access, or arrangement you can bring to the right deal,
+              tell us in confidence — the type of introduction, the sector, and the scale you operate at.
+              Our team reviews it before it's added to the record. It stays there privately until a
+              matching requirement comes in; you're never contacted with anything else, and nothing is
+              shared about you until we've confirmed a real match and verified both sides.
             </p>
+            <ul className="space-y-4">
+              {CAPABILITY_POINTS.map(p => <CheckItem key={p} text={p} />)}
+            </ul>
           </div>
-          <div>
-            <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.16em] uppercase mb-3">
-              # You Need Facilitation
+
+          {/* Right card */}
+          <div className="p-8 md:p-10">
+            <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-6">
+              If You Need An Introduction
             </p>
-            <h3 className="text-[17px] font-bold text-white mb-3">Submit The Requirement</h3>
-            <p className="text-[#6b7a99] text-[13px] leading-relaxed">
-              If you have a specific capital movement, commercial transaction, or structured introduction
-              requirement — your requirement is logged, reviewed, and held privately against the capability
-              register. Your requirement to enter a new market, source a counterparty, or sub-introduce
-              confidentially is treated as commercially sensitive.
+            <h3 className="text-[22px] md:text-[26px] font-extrabold text-white tracking-tight leading-tight mb-4">
+              Submit The Requirement
+            </h3>
+            <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-8">
+              If you need help getting a deal done and think the right contact exists somewhere, describe
+              what you're trying to achieve and the size of it. We search the existing record privately
+              for a facilitator who's already told us they can support exactly this kind of deal. Your
+              requirement is never published, listed, or shared beyond that private search — only a
+              facilitator we've identified as a genuine, verified match ever sees it, and only once
+              you've both cleared verification.
             </p>
+            <ul className="space-y-4">
+              {REQUIREMENT_POINTS.map(p => <CheckItem key={p} text={p} />)}
+            </ul>
           </div>
+
         </div>
       </div>
     </section>
