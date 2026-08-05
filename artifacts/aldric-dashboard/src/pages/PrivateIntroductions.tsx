@@ -285,19 +285,19 @@ function TheModel() {
 const STEPS = [
   {
     title: 'Requirement received',
-    body: 'A structured requirement is submitted by the principal — specifying transaction type, geography, scale, and confidentiality terms. No requirement is visible externally.',
+    body: 'A requirement is submitted with the deal type, scale, and what\'s needed from the other side.',
   },
   {
     title: 'Private search',
-    body: 'ALDRIC Private conducts a discreet internal search across the capability register. Only pre-registered facilitators relevant to the requirement are approached — not a public broadcast, not a document exchange.',
+    body: 'Aldric Private searches the existing record of registered capabilities for a genuine match — not a keyword match, a judged one.',
   },
   {
     title: 'Identity verification',
-    body: 'Both parties are verified before names are exchanged. Source of identity, standard of engagement, and capacity to facilitate are all confirmed ahead of any introduction being arranged.',
+    body: "Both parties are verified before either name is shared with the other — and a registered capability is checked well beyond identity before it's ever matched. Neither side sees the other's details until this is complete.",
   },
   {
     title: 'Introduction',
-    body: 'Once verified, ALDRIC Private facilitates the introduction directly. Where relevant, two sides are connected, after which you can take matters forward from there.',
+    body: 'Once verified, Aldric Private makes the introduction directly. What happens between the two parties afterward is between them.',
   },
 ];
 
@@ -305,27 +305,30 @@ function Process() {
   return (
     <section className="bg-white py-16 md:py-20 px-6 md:px-12 lg:px-20">
       <div className="max-w-6xl mx-auto">
-        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.16em] uppercase mb-5">Process</p>
-        <h2 className="text-[28px] md:text-[34px] font-extrabold text-[#0b1733] tracking-tight leading-[1.1] mb-12">
-          How An Introduction<br />Is Made
+
+        {/* Header */}
+        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-4">Process</p>
+        <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0b1733] tracking-tight leading-[1.05] mb-10">
+          How An Introduction Is Made
         </h2>
 
-        <div className="max-w-2xl space-y-0">
+        {/* Steps */}
+        <div className="border-t border-[#e8ecf2]">
           {STEPS.map((step, i) => (
-            <div key={i} className="flex gap-5 relative pb-8">
-              {i < STEPS.length - 1 && (
-                <div className="absolute left-[17px] top-10 bottom-0 w-px bg-[#e5e9f0]" />
-              )}
-              <div className="flex-shrink-0 w-9 h-9 rounded-full border border-[#dde2ec] bg-white flex items-center justify-center relative z-10">
-                <span className="text-[12px] font-semibold text-[#9baac0]">{i + 1}</span>
-              </div>
-              <div className="pt-1">
-                <h3 className="text-[15px] font-semibold text-[#0b1733] mb-1.5">{step.title}</h3>
-                <p className="text-[#6b7a99] text-[13px] leading-relaxed">{step.body}</p>
+            <div key={i} className="flex items-start gap-8 md:gap-14 py-10 border-b border-[#e8ecf2]">
+              {/* Step number */}
+              <span className="flex-shrink-0 text-[32px] md:text-[38px] font-black text-[#d0d7e3] leading-none tracking-tight w-12 text-right">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              {/* Content */}
+              <div className="flex-1 pt-1">
+                <h3 className="text-[15px] font-bold text-[#0b1733] mb-2">{step.title}</h3>
+                <p className="text-[#6b7a99] text-[13px] leading-relaxed max-w-2xl">{step.body}</p>
               </div>
             </div>
           ))}
         </div>
+
       </div>
     </section>
   );
