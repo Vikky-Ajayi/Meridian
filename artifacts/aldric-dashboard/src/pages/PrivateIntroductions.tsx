@@ -31,118 +31,134 @@ function Navbar() {
 ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="bg-white px-6 md:px-12 lg:px-20 pt-14 pb-10">
-      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-end lg:gap-12">
+    <section className="bg-white px-6 md:px-12 lg:px-20 pt-14 pb-16">
+      <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
 
-        {/* ── Left: copy ── */}
-        <div className="lg:w-[400px] flex-shrink-0 pb-8 lg:pb-10">
-          <h1 className="text-[40px] md:text-[48px] lg:text-[52px] font-extrabold text-[#0b1733] leading-[1.05] tracking-[-0.03em] mb-5">
-            Access, Plotted<br />And Matched<br />Privately.
-          </h1>
-          <p className="text-[#6b7a99] text-sm leading-relaxed mb-8 max-w-sm">
-            ALDRIC Private builds a private network of pre-verified facilitators and
-            counterparties — matched only when both sides confirm — quantity not a factor,
-            quality and confidentiality are.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/register-capability">
-              <button className="bg-[#0b1733] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#0b1733]/85 transition-colors">
-                Register the Capability
-              </button>
-            </Link>
-            <Link href="/submit-requirement">
-              <button className="bg-white text-[#0b1733] border border-[#d0d7e3] text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-                Submit Requirement
-              </button>
-            </Link>
-          </div>
+        {/* Heading */}
+        <h1 className="text-[38px] md:text-[50px] lg:text-[56px] font-extrabold text-[#0b1733] leading-[1.08] tracking-[-0.03em] mb-5">
+          Access, Plotted<br />And Matched Privately.
+        </h1>
+
+        {/* Subtext */}
+        <p className="text-[#6b7a99] text-[15px] leading-relaxed mb-8 max-w-[520px]">
+          Aldric Private holds a private record of who can facilitate what, and who needs it.
+          When a requirement matches a capability already on file, we make the introduction
+          ourselves — quietly, and only once both sides are verified.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
+          <Link href="/register-capability">
+            <button className="bg-[#111827] text-white text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
+              Register a Capability
+            </button>
+          </Link>
+          <Link href="/submit-requirement">
+            <button className="text-[#0b1733] text-[13px] font-semibold px-2 py-2.5 hover:text-[#1a56db] transition-colors whitespace-nowrap">
+              Submit a Requirement
+            </button>
+          </Link>
         </div>
 
-        {/* ── Right: diagram ── */}
-        <div className="flex-1 flex items-end justify-center lg:justify-end overflow-visible pb-0">
-          <div className="flex items-end gap-0 relative pb-8">
+        {/* Diagram */}
+        <div className="w-full max-w-2xl flex items-start justify-center gap-0">
 
-            {/* Capability card */}
-            <DiagramCard
-              imgSrc="/aldric-dashboard/assets/requirement-person.svg"
-              label="Capability"
-              sub="On the Private"
-            />
+          {/* Capability */}
+          <DiagramCard
+            imgSrc="/aldric-dashboard/assets/hero-capability.svg"
+            label="Capability"
+            sub="On file, Private"
+            align="left"
+          />
 
-            {/* Arrow left → centre */}
-            <div className="flex items-center self-center mb-10 mx-1">
-              <ArrowRight flip />
-            </div>
-
-            {/* Centre: ALDRIC mark */}
-            <div className="flex flex-col items-center self-center gap-1.5 mb-10 mx-3">
-              <img
-                src="/aldric-dashboard/assets/aldric-mark.svg"
-                alt="ALDRIC"
-                className="w-8 h-7"
-              />
-              <span className="text-[9px] font-bold text-[#0b1733] tracking-[0.14em] uppercase whitespace-nowrap">
-                ALDRIC Private
-              </span>
-              <span className="text-[8px] text-[#9baac0] whitespace-nowrap">
-                Verified and Confirmed
-              </span>
-            </div>
-
-            {/* Arrow centre → right */}
-            <div className="flex items-center self-center mb-10 mx-1">
-              <ArrowRight />
-            </div>
-
-            {/* Requirement card */}
-            <DiagramCard
-              imgSrc="/aldric-dashboard/assets/capability-person.svg"
-              label="Requirement"
-              sub="Sub-Introduced Confidential"
-            />
-
+          {/* Arrow left → centre */}
+          <div className="flex items-center justify-center flex-shrink-0 mt-[90px]">
+            <CurvedArrow />
           </div>
+
+          {/* Centre: ALDRIC */}
+          <DiagramCard
+            imgSrc="/aldric-dashboard/assets/hero-aldric-center.svg"
+            label={null}
+            sub="Verifies and Connects"
+            align="center"
+            isCenter
+          />
+
+          {/* Arrow centre → right */}
+          <div className="flex items-center justify-center flex-shrink-0 mt-[90px]">
+            <CurvedArrow />
+          </div>
+
+          {/* Requirement */}
+          <DiagramCard
+            imgSrc="/aldric-dashboard/assets/hero-requirement.svg"
+            label="Requirement"
+            sub="submitted, confidential"
+            align="right"
+          />
+
         </div>
       </div>
     </section>
   );
 }
 
-function DiagramCard({ imgSrc, label, sub }: { imgSrc: string; label: string; sub: string }) {
+function DiagramCard({
+  imgSrc,
+  label,
+  sub,
+  align,
+  isCenter = false,
+}: {
+  imgSrc: string;
+  label: string | null;
+  sub: string;
+  align: 'left' | 'center' | 'right';
+  isCenter?: boolean;
+}) {
+  const textAlign = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
   return (
-    <div className="flex flex-col items-center gap-2.5 w-[130px] md:w-[150px]">
-      <div
-        className="w-full rounded-2xl overflow-hidden border border-[#e8edf5] shadow-sm bg-white"
-        style={{ height: 160 }}
-      >
-        <img src={imgSrc} alt={label} className="w-full h-full object-cover object-top" />
+    <div className={`flex flex-col ${align === 'center' ? 'items-center' : align === 'left' ? 'items-start' : 'items-end'} gap-3 flex-1`}>
+      {/* Illustration */}
+      <div className="w-[140px] md:w-[160px] aspect-[200/270]">
+        <img src={imgSrc} alt={label ?? 'ALDRIC Private'} className="w-full h-full object-contain" />
       </div>
-      <div className="text-center">
-        <p className="text-[13px] font-semibold text-[#0b1733]">{label}</p>
-        <p className="text-[11px] text-[#9baac0] mt-0.5 leading-snug">{sub}</p>
+      {/* Label */}
+      <div className={`${textAlign}`}>
+        {isCenter ? (
+          <p className="text-[14px] font-extrabold text-[#0b1733]">
+            <span className="text-[#1a56db] font-black">ALDRIC</span>
+            <span className="text-[11px] font-semibold text-[#6b7a99] ml-1">Private</span>
+          </p>
+        ) : (
+          <p className="text-[15px] font-bold text-[#0b1733]">{label}</p>
+        )}
+        <p className="text-[12px] text-[#9baac0] mt-0.5">{sub}</p>
       </div>
     </div>
   );
 }
 
-function ArrowRight({ flip = false }: { flip?: boolean }) {
+function CurvedArrow() {
   return (
-    <svg
-      width="56"
-      height="40"
-      viewBox="0 0 56 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={flip ? { transform: 'scaleX(-1)' } : undefined}
-    >
+    <svg width="72" height="50" viewBox="0 0 72 50" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M4 32 C 16 32, 20 8, 28 8 C 36 8, 40 32, 52 32"
-        stroke="#cbd5e1"
+        d="M4 38 C 18 38, 24 12, 36 12 C 48 12, 54 38, 68 38"
+        stroke="#c7d2e0"
         strokeWidth="1.5"
-        strokeDasharray="4 3"
+        strokeDasharray="5 4"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M62 34 L68 38 L62 42"
+        stroke="#c7d2e0"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         fill="none"
       />
-      <path d="M48 29 L52 32 L48 35" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   );
 }
@@ -152,15 +168,17 @@ function ArrowRight({ flip = false }: { flip?: boolean }) {
 ───────────────────────────────────────────────────────── */
 function Stats() {
   return (
-    <section className="bg-[#08122a] border-t-[3px] border-[#1a56db]">
-      <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 py-10 grid grid-cols-2 divide-x divide-white/10">
-        <div className="pr-8 md:pr-16">
-          <p className="text-[42px] md:text-5xl font-black text-[#3b82f6] tracking-tight leading-none">[N]+</p>
-          <p className="text-[#6b7a99] text-sm mt-2.5 leading-snug">Introductions facilitated to date</p>
-        </div>
-        <div className="pl-8 md:pl-16">
-          <p className="text-[42px] md:text-5xl font-black text-[#3b82f6] tracking-tight leading-none">100%</p>
-          <p className="text-[#6b7a99] text-sm mt-2.5 leading-snug">Findings identified without introduction</p>
+    <section className="bg-white px-6 md:px-12 lg:px-20 pb-14">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-[#1a56db] rounded-2xl px-8 md:px-14 py-10 grid grid-cols-2 divide-x divide-white/20">
+          <div className="pr-8 md:pr-14">
+            <p className="text-[42px] md:text-5xl font-black text-white tracking-tight leading-none">[N]+</p>
+            <p className="text-white/70 text-sm mt-2.5 leading-snug">Introductions facilitated to date</p>
+          </div>
+          <div className="pl-8 md:pl-14">
+            <p className="text-[42px] md:text-5xl font-black text-white tracking-tight leading-none">100%</p>
+            <p className="text-white/70 text-sm mt-2.5 leading-snug">Parties identity-verified before introduction</p>
+          </div>
         </div>
       </div>
     </section>
