@@ -207,7 +207,7 @@ function CheckItem({ text }: { text: string }) {
   return (
     <li className="flex gap-3 items-start">
       <svg className="flex-shrink-0 mt-[3px]" width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M3 8.5L6.5 12L13 5" stroke="#3b82f6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M3 8.5L6.5 12L13 5" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <span className="text-[13px] text-[#8fa3c0] leading-relaxed">{text}</span>
     </li>
