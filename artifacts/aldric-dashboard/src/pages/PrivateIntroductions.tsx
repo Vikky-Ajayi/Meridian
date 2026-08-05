@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/auth-context';
 function Navbar() {
   const { openModal } = useAuth();
   return (
-    <header className="bg-white border-b border-gray-100 px-6 md:px-10 h-[60px] flex items-center justify-between sticky top-0 z-30">
+    <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between sticky top-0 z-30">
       <AldricLogo />
       <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
         {['Moving Capital', 'Global Network', 'Contact'].map(l => (
@@ -31,7 +31,7 @@ function Navbar() {
 ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="bg-white px-6 md:px-12 lg:px-20 pt-14 pb-16">
+    <section className="bg-white px-6 lg:px-[150px] pt-14 pb-16">
       <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
 
         {/* Heading */}
@@ -168,7 +168,7 @@ function CurvedArrow() {
 ───────────────────────────────────────────────────────── */
 function Stats() {
   return (
-    <section className="bg-white px-6 md:px-12 lg:px-20 pb-14">
+    <section className="bg-white px-6 lg:px-[150px] pb-14">
       <div className="max-w-3xl mx-auto">
         <div className="bg-[#1a56db] rounded-2xl px-8 md:px-14 py-10 grid grid-cols-2 divide-x divide-white/20">
           <div className="pr-8 md:pr-14">
@@ -216,7 +216,7 @@ function CheckItem({ text }: { text: string }) {
 
 function TheModel() {
   return (
-    <section className="bg-[#000B2D] py-16 md:py-20 px-6 md:px-12 lg:px-20">
+    <section className="bg-[#000B2D] py-16 md:py-20 px-6 lg:px-[150px]">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
@@ -303,7 +303,7 @@ const STEPS = [
 
 function Process() {
   return (
-    <section className="bg-white py-16 md:py-20 px-6 md:px-12 lg:px-20">
+    <section className="bg-white py-16 md:py-20 px-6 lg:px-[150px]">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
@@ -347,7 +347,7 @@ const FEE_NOTES = [
 
 function Pricing() {
   return (
-    <section className="bg-white py-16 md:py-20 px-6 md:px-12 lg:px-20">
+    <section className="bg-white py-16 md:py-20 px-6 lg:px-[150px]">
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
@@ -427,7 +427,7 @@ const STANDING_CHECKS = [
 
 function Verification() {
   return (
-    <section id="verification" className="bg-[#08122a] py-16 md:py-20 px-6 md:px-12 lg:px-20">
+    <section id="verification" className="bg-[#08122a] py-16 md:py-20 px-6 lg:px-[150px]">
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
@@ -499,7 +499,7 @@ function Verification() {
 ───────────────────────────────────────────────────────── */
 function CTASection() {
   return (
-    <section className="bg-white py-10 px-6 md:px-12 lg:px-20">
+    <section className="bg-white py-10 px-6 lg:px-[150px]">
       <div className="max-w-4xl mx-auto">
         <div className="bg-[#1a56db] rounded-2xl px-8 md:px-16 py-14 flex flex-col items-center text-center">
           <p className="text-[11px] font-bold text-white/80 tracking-[0.18em] uppercase mb-5">
