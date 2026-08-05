@@ -337,67 +337,78 @@ function Process() {
 /* ─────────────────────────────────────────────────────────
    PRICING
 ───────────────────────────────────────────────────────── */
+const FEE_NOTES = [
+  'The £5,000 deposit is non-refundable once sourcing begins, whether or not a match is found.',
+  'If no match is sourced, you are not charged the deposit again on a future request — it\'s only payable once more once a contact is successfully sourced.',
+  'The facilitation fee itself is only payable once a verified introduction has actually been made.',
+  'The facilitator you\'re introduced to may set their own separate fee for the work of making the deal happen — this is agreed directly between you and them, and is not set, capped, or collected by Aldric Private.',
+  'Exact terms are set out in the engagement agreement provided before any payment is taken.',
+];
+
 function Pricing() {
   return (
-    <section className="bg-[#080f1f] py-16 md:py-20 px-6 md:px-12 lg:px-20">
-      <div className="max-w-6xl mx-auto">
-        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.16em] uppercase mb-5">Facilitation</p>
-        <h2 className="text-[28px] md:text-[34px] font-extrabold text-white tracking-tight leading-[1.1] mb-4 max-w-md">
-          Priced To The Size Of<br />The Requirement
+    <section className="bg-white py-16 md:py-20 px-6 md:px-12 lg:px-20">
+      <div className="max-w-4xl mx-auto">
+
+        {/* Header */}
+        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-4">Facilitation Fee</p>
+        <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0b1733] tracking-tight leading-[1.1] mb-4 max-w-sm">
+          Priced To The Size Of The Requirement
         </h2>
-        <p className="text-[#6b7a99] text-sm leading-relaxed mb-12 max-w-xl">
-          The facilitator fee scales with the size of the deal you're seeking — you only pay to the scale
-          of what you're sourcing. Nothing is guaranteed without payment.
+        <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-10 max-w-xs">
+          The facilitation fee scales with the size of the deal you're seeking help with. A representative example is set out below.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mb-12">
-          <div>
-            <p className="text-[10px] font-bold text-[#6b7a99] tracking-[0.14em] uppercase mb-3">Sourcing Fee</p>
-            <p className="text-[38px] font-black text-white tracking-tight leading-none mb-4">£100,000</p>
-            <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-5">
-              Payable once a verified introduction has been made. Covers with the end of the requirement
-              cycle — the sourcing phase.
-            </p>
-            <ul className="space-y-2.5">
-              {[
-                'Covers the internal sourcing process and vetting of candidates',
-                'Applies to transactions above a qualifying threshold',
-                'Paid at the point of confirmed capability match',
-              ].map(t => (
-                <li key={t} className="flex gap-2.5 text-[13px] text-[#6b7a99]">
-                  <span className="text-[#3b82f6] mt-0.5 flex-shrink-0">—</span>{t}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-[#6b7a99] tracking-[0.14em] uppercase mb-3">Introduction Fee</p>
-            <p className="text-[38px] font-black text-white tracking-tight leading-none mb-4">£5,000</p>
-            <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-5">
-              Payable to begin the research. This covers the initial phase and is held as a search deposit.
-            </p>
-            <ul className="space-y-2.5">
-              {[
-                'Paid before search commences to confirm intent',
-                'Non-refundable once sourcing is initiated',
-                'Credited against the sourcing fee upon a successful match',
-              ].map(t => (
-                <li key={t} className="flex gap-2.5 text-[13px] text-[#6b7a99]">
-                  <span className="text-[#3b82f6] mt-0.5 flex-shrink-0">—</span>{t}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        {/* Card */}
+        <div className="bg-[#f4f5f7] rounded-2xl overflow-hidden">
 
-        <div className="border-t border-white/8 pt-8">
-          <p className="text-[#6b7a99] text-[13px] leading-relaxed max-w-2xl mb-6">
-            Read the full terms before anything is paid — what the deposit covers, how sourcing is defined,
-            and what happens if no match is found.
-          </p>
-          <button className="bg-[#1a2540] border border-white/10 text-white text-[13px] font-semibold px-6 py-3 rounded-lg hover:bg-[#1a2540]/70 transition-colors">
-            Reviewed Terms and CTA
-          </button>
+          {/* Fee columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#e2e5ea] p-8 md:p-10 gap-0">
+            <div className="pb-8 md:pb-0 md:pr-10">
+              <p className="text-[12px] text-[#6b7a99] mb-3">Facilitation fee</p>
+              <p className="text-[36px] md:text-[42px] font-black text-[#1a56db] tracking-tight leading-none mb-4">£100,000</p>
+              <p className="text-[#374151] text-[13px] leading-relaxed">
+                Payable once a verified introduction has been made. Scales with the size of the requirement submitted.
+              </p>
+            </div>
+            <div className="pt-8 md:pt-0 md:pl-10">
+              <p className="text-[12px] text-[#6b7a99] mb-3">Sourcing deposit</p>
+              <p className="text-[36px] md:text-[42px] font-black text-[#1a56db] tracking-tight leading-none mb-4">£5,000</p>
+              <p className="text-[#374151] text-[13px] leading-relaxed">
+                Payable upfront to begin the search. This covers the sourcing work itself, not a guaranteed outcome.
+              </p>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-[#e2e5ea] mx-8 md:mx-10" />
+
+          {/* Notes list */}
+          <ul className="px-8 md:px-10 py-8 space-y-4">
+            {FEE_NOTES.map(note => (
+              <li key={note} className="flex gap-3 text-[13px] text-[#4b5563] leading-relaxed">
+                <span className="flex-shrink-0 text-[#9baac0] mt-[2px]">·</span>
+                {note}
+              </li>
+            ))}
+          </ul>
+
+          {/* Divider */}
+          <div className="border-t border-[#e2e5ea] mx-8 md:mx-10" />
+
+          {/* Engagement agreement row */}
+          <div className="px-8 md:px-10 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <p className="text-[11px] text-[#9baac0] uppercase tracking-[0.14em] mb-2">Engagement agreement</p>
+              <p className="text-[14px] font-bold text-[#0b1733] leading-snug max-w-md">
+                Read the full terms before anything is paid — what the deposit covers, how sourcing is defined, and what happens if no match is found.
+              </p>
+            </div>
+            <button className="flex-shrink-0 bg-[#111827] text-white text-[13px] font-semibold px-5 py-3 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
+              Download Agreement (PDF)
+            </button>
+          </div>
+
         </div>
       </div>
     </section>
