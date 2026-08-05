@@ -11,6 +11,27 @@ env = { "CI" = "true" }
 [workflows]
 runButton = "Project"
 
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/aldric-dashboard: web"
+
+[[workflows.workflow]]
+name = "artifacts/aldric-dashboard: web"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=23038 BASE_PATH=/aldric-dashboard/ pnpm --filter @workspace/aldric-dashboard run dev"
+waitForPort = 23038
+
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true
