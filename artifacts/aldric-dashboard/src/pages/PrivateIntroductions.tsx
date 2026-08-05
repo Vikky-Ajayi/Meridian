@@ -348,7 +348,6 @@ const FEE_NOTES = [
 function Pricing() {
   return (
     <section className="bg-white py-16 md:py-20 px-6 lg:px-[150px]">
-      <div>
 
         {/* Header */}
         <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-4">Facilitation Fee</p>
@@ -410,7 +409,6 @@ function Pricing() {
           </div>
 
         </div>
-      </div>
     </section>
   );
 }
@@ -428,7 +426,6 @@ const STANDING_CHECKS = [
 function Verification() {
   return (
     <section id="verification" className="bg-[#08122a] py-16 md:py-20 px-6 lg:px-[150px]">
-      <div>
 
         {/* Header */}
         <p className="text-[11px] font-bold text-white tracking-[0.18em] uppercase mb-4">Verification</p>
@@ -500,7 +497,6 @@ function Verification() {
 function CTASection() {
   return (
     <section className="bg-white py-10 px-6 lg:px-[150px]">
-      <div>
         <div className="bg-[#1a56db] rounded-2xl px-8 md:px-16 py-14 flex flex-col items-center text-center">
           <p className="text-[11px] font-bold text-white/80 tracking-[0.18em] uppercase mb-5">
             Begin, In Confidence
@@ -524,7 +520,6 @@ function CTASection() {
             </Link>
           </div>
         </div>
-      </div>
     </section>
   );
 }
