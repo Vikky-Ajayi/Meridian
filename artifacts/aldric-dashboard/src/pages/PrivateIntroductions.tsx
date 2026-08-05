@@ -348,7 +348,7 @@ const FEE_NOTES = [
 function Pricing() {
   return (
     <section className="bg-white py-16 md:py-20 px-6 lg:px-[150px]">
-      <div className="max-w-4xl mx-auto">
+      <div>
 
         {/* Header */}
         <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-4">Facilitation Fee</p>
