@@ -9,16 +9,16 @@ import { useAuth } from '@/lib/auth-context';
 function Navbar() {
   const { openModal } = useAuth();
   return (
-    <header className="bg-[#080f1f] px-6 md:px-10 h-14 flex items-center justify-between sticky top-0 z-30">
+    <header className="bg-white border-b border-gray-100 px-6 md:px-10 h-[60px] flex items-center justify-between sticky top-0 z-30">
       <AldricLogo />
-      <nav className="hidden md:flex items-center gap-7 text-[13px] text-[#8892a4]">
-        {['Moving Capital', 'Global Payments', 'Contact'].map(l => (
-          <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
+      <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
+        {['Moving Capital', 'Global Network', 'Contact'].map(l => (
+          <a key={l} href="#" className="hover:text-[#0E61E8] transition-colors">{l}</a>
         ))}
       </nav>
       <button
         onClick={() => openModal('register')}
-        className="bg-black text-white text-[13px] font-medium px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
+        className="bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap"
       >
         Request an Introduction
       </button>
