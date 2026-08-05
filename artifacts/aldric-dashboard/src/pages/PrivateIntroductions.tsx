@@ -418,36 +418,77 @@ function Pricing() {
 /* ─────────────────────────────────────────────────────────
    VERIFICATION
 ───────────────────────────────────────────────────────── */
+const STANDING_CHECKS = [
+  'Evidence or references for prior deals of a similar type, where available',
+  "Consistency between the claimed capability and the facilitator's stated background and professional standing",
+  'Independent corroboration of the access or relationship claimed, where this can reasonably be obtained',
+  'Ongoing review — a capability can be removed from the record if it no longer holds up on re-check',
+];
+
 function Verification() {
   return (
     <section id="verification" className="bg-[#08122a] py-16 md:py-20 px-6 md:px-12 lg:px-20">
-      <div className="max-w-6xl mx-auto">
-        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.16em] uppercase mb-5">Verification</p>
-        <h2 className="text-[28px] md:text-[34px] font-extrabold text-white tracking-tight leading-[1.1] mb-12">
-          What "Verified"<br />Actually Means
-        </h2>
+      <div className="max-w-4xl mx-auto">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
-          <div>
-            <p className="text-[10px] font-bold text-[#6b7a99] tracking-[0.14em] uppercase mb-5">About</p>
-            <h3 className="text-[17px] font-bold text-white mb-4">Who You Are</h3>
+        {/* Header */}
+        <p className="text-[11px] font-bold text-white tracking-[0.18em] uppercase mb-4">Verification</p>
+        <h2 className="text-[28px] md:text-[38px] font-extrabold text-white tracking-tight leading-[1.05] mb-4">
+          What "Verified" Actually Means
+        </h2>
+        <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-10 max-w-lg">
+          Before any names are exchanged, both the facilitator and the party seeking the introduction go through the same standard of checks.
+        </p>
+
+        {/* Top two cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 border border-white/10 rounded-xl overflow-hidden mb-6">
+          <div className="border-b md:border-b-0 md:border-r border-white/10 p-8">
+            <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-6">Identity</p>
+            <h3 className="text-[22px] md:text-[26px] font-extrabold text-white tracking-tight leading-tight mb-4">
+              Who You Are
+            </h3>
             <p className="text-[#6b7a99] text-[13px] leading-relaxed">
-              Government-issued identity, confirmed source of the relationship or access, and a background
-              review sufficient to engage at the level of transaction you are facilitating. We do not accept
-              anonymous registrations, unverifiable introductions, or claims of access that cannot be
-              substantiated.
+              Government-issued ID, checked against the name used to register or submit. No introduction is made until this is confirmed on both sides.
             </p>
           </div>
-          <div>
-            <p className="text-[10px] font-bold text-[#6b7a99] tracking-[0.14em] uppercase mb-5">Standard</p>
-            <h3 className="text-[17px] font-bold text-white mb-4">What You're Bringing</h3>
+          <div className="p-8">
+            <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-6">Standing</p>
+            <h3 className="text-[22px] md:text-[26px] font-extrabold text-white tracking-tight leading-tight mb-4">
+              What You're Bringing
+            </h3>
             <p className="text-[#6b7a99] text-[13px] leading-relaxed">
-              The capability or requirement is subject to plausibility and proportionality review. A capability
-              must be commercially realistic. A requirement must be within the scope of what private facilitation
-              can address. Neither side is visible to the other until both are confirmed as verified.
+              A facilitator's claimed capability is reviewed before it's added to the record — not published on trust alone, and not matched against a requirement until it has been.
             </p>
           </div>
         </div>
+
+        {/* Additional checks card */}
+        <div className="border border-white/10 rounded-xl p-8">
+          <p className="text-[10px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-6">
+            Person Registering A Capability — Additional Checks
+          </p>
+          <h3 className="text-[22px] md:text-[26px] font-extrabold text-white tracking-tight leading-tight mb-3">
+            Standing Behind The Claim
+          </h3>
+          <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-8 max-w-2xl">
+            A claimed capability is not added to the record on trust alone. Before it's matched against any requirement, we look beyond identity to whether the claim itself holds up:
+          </p>
+          <ul className="space-y-4 mb-8">
+            {STANDING_CHECKS.map(item => (
+              <li key={item} className="flex gap-3 items-start">
+                <svg className="flex-shrink-0 mt-[3px]" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8.5L6.5 12L13 5" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="text-[#8fa3c0] text-[13px] leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="border-t border-white/10 pt-6">
+            <p className="text-[#6b7a99] text-[13px] leading-relaxed max-w-2xl">
+              This is why registering a capability isn't instant: the review takes time, and a claim that can't be reasonably substantiated isn't added to the record.
+            </p>
+          </div>
+        </div>
+
       </div>
     </section>
   );
