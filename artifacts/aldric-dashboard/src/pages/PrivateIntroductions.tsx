@@ -485,8 +485,6 @@ function Verification() {
             </p>
           </div>
         </div>
-
-      </div>
     </section>
   );
 }
