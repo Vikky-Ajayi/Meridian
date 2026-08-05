@@ -532,57 +532,65 @@ function CTASection() {
 /* ─────────────────────────────────────────────────────────
    FOOTER
 ───────────────────────────────────────────────────────── */
-const FOOTER_LINKS = [
-  'About', 'Solutions', 'Global Payments', 'Contact',
-  'Advisory', 'Privacy', 'Regulatory information',
+const footerLinks = [
+  ['Solutions', '#'],
+  ['Global Payments', '#'],
+  ['Contact', '#'],
+  ['Advisory', '#'],
+  ['Privacy', '#'],
+  ['Security', '#'],
+  ['Regulatory information', '#'],
 ];
 
 function Footer() {
   return (
-    <footer className="bg-white relative overflow-hidden pt-10 pb-6">
-      {/* Nav + legal */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 relative z-10">
-        <nav className="flex flex-wrap gap-x-5 gap-y-3 mb-8">
-          {FOOTER_LINKS.map(l => (
-            <a key={l} href="#" className="text-[12px] text-[#8892a4] hover:text-[#0b1733] transition-colors">
-              {l}
-            </a>
-          ))}
-        </nav>
-        <div className="border-t border-[#edf0f5] pt-5">
-          <p className="text-[11px] text-[#a0aab8] leading-relaxed max-w-3xl">
-            ALDRIC Private is operated as a private facilitation service. All introductions are subject to
-            internal review and identity verification. Facilitation fees are outlined in the engagement terms
-            and payable before sourcing commences. Nothing on this platform constitutes financial advice,
-            investment guidance, or a guarantee of introduction.
+    <footer className="meridian-footer">
+      <div className="footer-inner">
+        <div className="footer-top">
+          <AldricLogo />
+          <nav>
+            {footerLinks.map(([label, href]) => (
+              <a key={label} href={href}>{label}</a>
+            ))}
+          </nav>
+        </div>
+
+        <div className="footer-legal">
+          <p>
+            Aldric Private acts as a business banking and foreign exchange introducer, connecting
+            eligible individuals and businesses with suitable regulated financial service
+            providers and banking partners.
           </p>
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-[11px] text-[#a0aab8]">© ALDRIC Private</p>
-            <p className="text-[11px] text-[#a0aab8]">Consulting and financial services</p>
-          </div>
+          <p>
+            We assist clients seeking banking solutions, including private clients,
+            high-net-worth individuals (HNWIs), politically exposed persons (PEPs), and
+            businesses operating in industries that may require specialist banking support,
+            including Money Service Businesses (MSBs), FX companies, cryptocurrency
+            businesses, gaming and gambling operators, adult entertainment businesses, and
+            CBD-related businesses.
+          </p>
+          <p>
+            Account openings, banking relationships, and financial services are subject to
+            the independent approval processes, compliance requirements, and risk
+            assessments of the relevant financial institutions and service providers.
+            Aldric Private does not guarantee acceptance or approval by any banking partner.
+          </p>
+          <p>
+            Aldric Private provides its services in partnership with licensed financial
+            institutions and payment providers within their respective jurisdictions.
+            <br />
+            All trademarks, logos, and brand names referenced belong to their respective
+            owners. The use of these trademarks and brand names does not imply endorsement
+            by, affiliation with, or association with Aldric Private.
+          </p>
+        </div>
+
+        <div className="footer-copy">
+          <span>© 2025 by Aldric Private</span>
+          <span>Designed for Discerning Clients</span>
         </div>
       </div>
-
-      {/* MERIDIAN watermark */}
-      <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none select-none w-full text-center leading-none"
-        aria-hidden="true"
-      >
-        <span
-          style={{
-            fontSize: '22vw',
-            fontWeight: 900,
-            color: 'transparent',
-            WebkitTextStroke: '1px #e5e9f0',
-            letterSpacing: '-0.04em',
-            whiteSpace: 'nowrap',
-            display: 'block',
-            lineHeight: 0.8,
-          }}
-        >
-          MERIDIAN
-        </span>
-      </div>
+      <img className="footer-watermark" src="/aldric-dashboard/assets/footer-watermark.png" alt="" aria-hidden="true" />
     </footer>
   );
 }
