@@ -108,7 +108,7 @@ export default function RegisterCapabilityPublic() {
       <Navbar />
 
       {/* Hero header */}
-      <div className="bg-[#0F61E9] px-6 pt-8 pb-10 md:pt-14 md:pb-16">
+      <div className="bg-[#0F61E9] px-6 pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Register A Capability</h1>
         <p className="text-blue-200 text-sm md:text-base leading-relaxed max-w-lg">
           Tell us what you're able to facilitate. Reviewed internally<br className="hidden md:block" /> before it's ever considered for matching.
