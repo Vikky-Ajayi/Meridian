@@ -4,23 +4,72 @@ import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
 import { DEAL_CATEGORIES, GEOGRAPHIES } from '@/lib/mock-data';
 
+const NAV_LINKS = ['Moving Capital', 'Global Network', 'Contact'];
+
 function Navbar() {
   const { openModal } = useAuth();
+  const [open, setOpen] = useState(false);
+
   return (
-    <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between sticky top-0 z-30">
-      <AldricLogo />
-      <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
-        {['Moving Capital', 'Global Network', 'Contact'].map(l => (
-          <a key={l} href="#" className="hover:text-[#0E61E8] transition-colors">{l}</a>
-        ))}
-      </nav>
-      <button
-        onClick={() => openModal('register')}
-        className="bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap"
-      >
-        Request an Introduction
-      </button>
-    </header>
+    <div className="sticky top-0 z-30">
+      <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between">
+        <AldricLogo />
+
+        {/* Desktop nav links */}
+        <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
+          {NAV_LINKS.map(l => (
+            <a key={l} href="#" className="hover:text-[#0E61E8] transition-colors">{l}</a>
+          ))}
+        </nav>
+
+        {/* Desktop CTA */}
+        <button
+          onClick={() => openModal('register')}
+          className="hidden md:block bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap"
+        >
+          Request an Introduction
+        </button>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="md:hidden p-2 text-[#0b1733] rounded-md hover:bg-gray-100 transition-colors"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+        >
+          {open ? (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </button>
+      </header>
+
+      {/* Mobile dropdown */}
+      {open && (
+        <div className="md:hidden bg-white border-b border-gray-100 px-6 py-4 flex flex-col gap-4">
+          {NAV_LINKS.map(l => (
+            <a
+              key={l}
+              href="#"
+              onClick={() => setOpen(false)}
+              className="text-[14px] text-[#1a1a2e] font-medium hover:text-[#0E61E8] transition-colors"
+            >
+              {l}
+            </a>
+          ))}
+          <button
+            onClick={() => { setOpen(false); openModal('register'); }}
+            className="mt-1 w-full bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors"
+          >
+            Request an Introduction
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
