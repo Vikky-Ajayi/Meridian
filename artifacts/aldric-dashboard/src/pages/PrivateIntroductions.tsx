@@ -124,18 +124,6 @@ function DiagramCard({
       <div className="w-[140px] md:w-[160px] aspect-[200/270]">
         <img src={imgSrc} alt={label ?? 'ALDRIC Private'} className="w-full h-full object-contain" />
       </div>
-      {/* Label */}
-      <div className={`${textAlign}`}>
-        {isCenter ? (
-          <p className="text-[14px] font-extrabold text-[#0b1733]">
-            <span className="text-[#1a56db] font-black">ALDRIC</span>
-            <span className="text-[11px] font-semibold text-[#6b7a99] ml-1">Private</span>
-          </p>
-        ) : (
-          <p className="text-[15px] font-bold text-[#0b1733]">{label}</p>
-        )}
-        <p className="text-[12px] text-[#9baac0] mt-0.5">{sub}</p>
-      </div>
     </div>
   );
 }
