@@ -209,7 +209,7 @@ function TheModel() {
 
         {/* Header */}
         <p className="text-[18px] font-semibold text-white leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>The Model</p>
-        <h2 className="text-[28px] md:text-[38px] lg:text-[42px] font-extrabold text-white tracking-tight leading-[1.05] mb-4">
+        <h2 className="text-[40px] font-semibold text-white leading-[1.15] tracking-[-0.04em] capitalize mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           Not A Marketplace. A Private Ledger.
         </h2>
         <p className="text-[#6b7a99] text-[14px] leading-relaxed mb-12 max-w-2xl">
@@ -296,7 +296,7 @@ function Process() {
 
         {/* Header */}
         <p className="text-[18px] font-semibold text-[#3b82f6] leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Process</p>
-        <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0b1733] tracking-tight leading-[1.05] mb-10">
+        <h2 className="text-[40px] font-semibold text-[#0b1733] leading-[1.15] tracking-[-0.04em] capitalize mb-10" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           How An Introduction Is Made
         </h2>
 
@@ -339,7 +339,7 @@ function Pricing() {
 
         {/* Header */}
         <p className="text-[18px] font-semibold text-[#3b82f6] leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Facilitation Fee</p>
-        <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0b1733] tracking-tight leading-[1.1] mb-4 max-w-sm">
+        <h2 className="text-[40px] font-semibold text-[#0b1733] leading-[1.15] tracking-[-0.04em] capitalize mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           Priced To The Size Of The Requirement
         </h2>
         <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-10 max-w-xs">
@@ -417,7 +417,7 @@ function Verification() {
 
         {/* Header */}
         <p className="text-[18px] font-semibold text-white leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Verification</p>
-        <h2 className="text-[28px] md:text-[38px] font-extrabold text-white tracking-tight leading-[1.05] mb-4">
+        <h2 className="text-[40px] font-semibold text-white leading-[1.15] tracking-[-0.04em] capitalize mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           What "Verified" Actually Means
         </h2>
         <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-10 max-w-lg">
@@ -487,7 +487,7 @@ function CTASection() {
           <p className="text-[18px] font-semibold text-white/80 leading-[1.4] tracking-[-0.02em] uppercase mb-5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Begin, In Confidence
           </p>
-          <h2 className="text-[28px] md:text-[38px] lg:text-[42px] font-extrabold text-white leading-[1.05] tracking-tight mb-5 max-w-2xl">
+          <h2 className="text-[40px] font-semibold text-white leading-[1.15] tracking-[-0.04em] capitalize mb-5 max-w-2xl" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Tell Us What You Can Facilitate,<br />Or What You Need Facilitated.
           </h2>
           <p className="text-white/75 text-[14px] leading-relaxed max-w-md mb-9">
