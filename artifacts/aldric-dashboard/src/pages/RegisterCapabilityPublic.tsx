@@ -99,8 +99,9 @@ export default function RegisterCapabilityPublic() {
   const selectCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-[#0F61E9] transition-colors appearance-none';
   const labelCls = 'block text-[14px] font-medium text-gray-800 mb-1 leading-[1.4] tracking-[-0.02em]';
   const sectionHdr = (t: string) => (
-    <div className="border-b border-gray-200 pb-2 mb-4">
-      <p className="text-sm font-semibold text-gray-500 tracking-wide">{t}</p>
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-gray-500 whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{t}</span>
+      <div className="flex-1 h-px bg-gray-200" />
     </div>
   );
 
