@@ -4,40 +4,19 @@ import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
 import { DEAL_CATEGORIES, GEOGRAPHIES } from '@/lib/mock-data';
 
-function MobileNavbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  return (
-    <header className="bg-black px-5 h-14 flex items-center justify-between relative z-10">
-      <AldricLogo />
-      <button onClick={() => setMenuOpen(!menuOpen)} className="text-white p-1">
-        {menuOpen ? (
-          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2}>
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2}>
-            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        )}
-      </button>
-    </header>
-  );
-}
-
-/* Desktop horizontal navbar */
-function DesktopNavbar() {
+function Navbar() {
   const { openModal } = useAuth();
   return (
-    <header className="hidden md:flex bg-[#0D1B3E]/90 backdrop-blur-sm px-8 h-14 items-center justify-between relative z-10">
+    <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between sticky top-0 z-30">
       <AldricLogo />
-      <nav className="flex items-center gap-8 text-sm text-gray-300">
-        {['Moving Capital', 'Solutions', 'Global Payments', 'Advisory', 'Contact'].map(l => (
-          <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
+      <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
+        {['Moving Capital', 'Global Network', 'Contact'].map(l => (
+          <a key={l} href="#" className="hover:text-[#0E61E8] transition-colors">{l}</a>
         ))}
       </nav>
       <button
         onClick={() => openModal('register')}
-        className="bg-black text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-black/80 transition-colors"
+        className="bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap"
       >
         Request an Introduction
       </button>
@@ -77,14 +56,7 @@ export default function RegisterCapabilityPublic() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Mobile nav */}
-      <div className="md:hidden">
-        <MobileNavbar />
-      </div>
-      {/* Desktop nav */}
-      <div className="hidden md:block">
-        <DesktopNavbar />
-      </div>
+      <Navbar />
 
       {/* Hero header */}
       <div className="bg-[#0F61E9] px-6 pt-8 pb-10 md:pt-14 md:pb-16">
