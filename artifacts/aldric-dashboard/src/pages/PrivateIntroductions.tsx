@@ -31,7 +31,7 @@ function Navbar() {
 ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="bg-white px-6 lg:px-[150px] pt-14 pb-6 md:pb-16">
+    <section className="bg-white px-6 lg:px-[150px] pt-14 pb-0 md:pb-16">
       <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
 
         {/* Heading */}
