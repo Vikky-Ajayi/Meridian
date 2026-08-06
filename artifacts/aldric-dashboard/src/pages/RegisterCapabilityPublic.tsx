@@ -95,8 +95,9 @@ export default function RegisterCapabilityPublic() {
     openModal('register');
   };
 
-  const inputCls = 'w-full h-11 px-4 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-[#0F61E9] transition-colors';
-  const selectCls = 'w-full h-11 px-4 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-[#0F61E9] transition-colors appearance-none';
+  const inputCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-[#0F61E9] transition-colors';
+  const selectCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-[#0F61E9] transition-colors appearance-none';
+  const labelCls = 'block text-[14px] font-medium text-gray-800 mb-1 leading-[1.4] tracking-[-0.02em]';
   const sectionHdr = (t: string) => (
     <div className="border-b border-gray-200 pb-2 mb-4">
       <p className="text-sm font-semibold text-gray-500 tracking-wide">{t}</p>
@@ -109,9 +110,9 @@ export default function RegisterCapabilityPublic() {
 
       {/* Hero header */}
       <div className="bg-[#0F61E9] px-6 pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Register A Capability</h1>
-        <p className="text-blue-200 text-sm md:text-base leading-relaxed max-w-lg">
-          Tell us what you're able to facilitate. Reviewed internally<br className="hidden md:block" /> before it's ever considered for matching.
+        <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Register A Capability</h1>
+        <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+          Tell us what you're able to facilitate. Reviewed internally before it's ever considered for matching.
         </p>
       </div>
 
@@ -123,16 +124,16 @@ export default function RegisterCapabilityPublic() {
               {/* Personal Information */}
               {sectionHdr('Personal Information')}
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">Full Name</label>
+                <label className={labelCls}>Full Name</label>
                 <input placeholder="e.g John Doe" value={form.fullName} onChange={set('fullName')} className={inputCls} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">Contact Email</label>
+                <label className={labelCls}>Contact Email</label>
                 <input type="email" placeholder="name@email.com" value={form.contactEmail} onChange={set('contactEmail')} className={inputCls} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-1">Phone Number</label>
+                  <label className={labelCls}>Phone Number</label>
                   <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA]">
                     <span className="px-3 flex-shrink-0">
                       <svg viewBox="0 0 20 15" className="w-5 h-4" fill="none">
@@ -143,11 +144,11 @@ export default function RegisterCapabilityPublic() {
                     </span>
                     <input placeholder="0000 000 0000 .000" value={form.phoneNumber}
                       onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}
-                      className="flex-1 px-2 text-sm outline-none h-full bg-transparent placeholder:text-gray-400" />
+                      className="flex-1 px-2 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] outline-none h-full bg-transparent placeholder:text-gray-400" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-1">WhatsApp Number</label>
+                  <label className={labelCls}>WhatsApp Number</label>
                   <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA]">
                     <span className="px-3 flex-shrink-0">
                       <svg viewBox="0 0 20 15" className="w-5 h-4" fill="none">
@@ -158,7 +159,7 @@ export default function RegisterCapabilityPublic() {
                     </span>
                     <input placeholder="0000 000 0000 .000" value={form.whatsappNumber}
                       onChange={e => setForm(f => ({ ...f, whatsappNumber: e.target.value }))}
-                      className="flex-1 px-2 text-sm outline-none h-full bg-transparent placeholder:text-gray-400" />
+                      className="flex-1 px-2 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] outline-none h-full bg-transparent placeholder:text-gray-400" />
                   </div>
                 </div>
               </div>
@@ -166,7 +167,7 @@ export default function RegisterCapabilityPublic() {
               {/* Capability Details */}
               {sectionHdr('Capability Details')}
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">Deal Category</label>
+                <label className={labelCls}>Deal Category</label>
                 <div className="relative">
                   <select value={form.dealCategory} onChange={set('dealCategory')} className={selectCls}>
                     <option value="" disabled>Select a Category</option>
@@ -178,7 +179,7 @@ export default function RegisterCapabilityPublic() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">Geography / Market Covered</label>
+                <label className={labelCls}>Geography / Market Covered</label>
                 <div className="relative">
                   <select value={form.geography} onChange={set('geography')} className={selectCls}>
                     <option value="" disabled>Select a Geography</option>
@@ -190,11 +191,11 @@ export default function RegisterCapabilityPublic() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">Typical Deal Size Range</label>
+                <label className={labelCls}>Typical Deal Size Range</label>
                 <input placeholder="£1M - £10M" value={form.dealSizeRange} onChange={set('dealSizeRange')} className={inputCls} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">Describe Your Capability</label>
+                <label className={labelCls}>Describe Your Capability</label>
                 <textarea
                   rows={4}
                   placeholder="I have an established relationship with an agricultural trading group operating in West Africa. I can facilitate introductions between verified buyers and suppliers within this sector and have previously supported similar commercial introductions."
@@ -207,7 +208,7 @@ export default function RegisterCapabilityPublic() {
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-800 mb-1">
+                <label className={labelCls}>
                   Prior Experience Facilitating Similar Introductions <span className="text-gray-400 font-normal">(optional)</span>
                 </label>
                 <textarea

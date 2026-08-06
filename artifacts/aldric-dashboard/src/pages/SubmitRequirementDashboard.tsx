@@ -20,8 +20,9 @@ export default function SubmitRequirementDashboard() {
   const set = (k: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: (e.target as HTMLInputElement).type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
 
-  const inputCls = 'w-full h-11 px-4 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 transition-colors';
-  const selectCls = 'w-full h-11 px-4 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-gray-300 transition-colors appearance-none';
+  const inputCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 transition-colors';
+  const selectCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-gray-300 transition-colors appearance-none';
+  const labelCls = 'block text-[14px] font-medium text-gray-800 mb-1 leading-[1.4] tracking-[-0.02em]';
 
   const sectionHdr = (t: string) => (
     <div className="border-b border-gray-200 pb-2 mb-4">
@@ -31,7 +32,7 @@ export default function SubmitRequirementDashboard() {
 
   const dropdownField = (label: string, val: string, k: keyof FormData, placeholder: string, items: string[]) => (
     <div>
-      <label className="block text-sm font-medium text-gray-800 mb-1">{label}</label>
+      <label className={labelCls}>{label}</label>
       <div className="relative">
         <select value={val} onChange={set(k)} className={selectCls}>
           <option value="" disabled>{placeholder}</option>
@@ -76,31 +77,31 @@ export default function SubmitRequirementDashboard() {
   return (
     <DashboardLayout title="Submit Requirement">
       <div className="bg-[#0D1B3E] rounded-2xl p-8 md:p-10 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-white mb-2">Submit A Requirement</h2>
-        <p className="text-gray-400 text-sm mb-8">
-          Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match<br className="hidden md:block"/> is confirmed.
+        <h2 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h2>
+        <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+          Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match is confirmed.
         </p>
 
         <div className="bg-white rounded-xl p-6 md:p-8">
           <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} className="space-y-5">
             {sectionHdr('Personal Information')}
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-1">Full Name</label>
+              <label className={labelCls}>Full Name</label>
               <input placeholder="e.g John Doe" value={form.fullName} onChange={set('fullName')} className={inputCls} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-1">Contact Email</label>
+              <label className={labelCls}>Contact Email</label>
               <input type="email" placeholder="name@email.com" value={form.contactEmail} onChange={set('contactEmail')} className={inputCls} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(['phoneNumber', 'whatsappNumber'] as const).map((k, i) => (
                 <div key={k}>
-                  <label className="block text-sm font-medium text-gray-800 mb-1">{i === 0 ? 'Phone Number' : 'WhatsApp Number'}</label>
+                  <label className={labelCls}>{i === 0 ? 'Phone Number' : 'WhatsApp Number'}</label>
                   <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA]">
                     <span className="px-3 flex-shrink-0">{flagIcon}</span>
                     <input placeholder="0000 000 0000 .000" value={form[k]}
                       onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))}
-                      className="flex-1 px-2 text-sm outline-none h-full bg-transparent placeholder:text-gray-400" />
+                      className="flex-1 px-2 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] outline-none h-full bg-transparent placeholder:text-gray-400" />
                   </div>
                 </div>
               ))}
@@ -110,14 +111,14 @@ export default function SubmitRequirementDashboard() {
             {dropdownField('Deal Category', form.dealCategory, 'dealCategory', 'Select a Category', DEAL_CATEGORIES)}
             {dropdownField('Geography / Market Covered', form.geography, 'geography', 'Select a Geography', GEOGRAPHIES)}
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-1">Declared Deal Size</label>
+              <label className={labelCls}>Declared Deal Size</label>
               <input placeholder="£1M - £10M" value={form.dealSize} onChange={set('dealSize')} className={inputCls} />
               <p className="text-xs text-gray-400 mt-1 leading-snug">
                 This helps determine the appropriate engagement structure and applicable facilitation terms. See the engagement agreement for full details
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-1">Describe What You Need Facilitated</label>
+              <label className={labelCls}>Describe What You Need Facilitated</label>
               <textarea rows={4}
                 placeholder="I have an established relationship with an agricultural trading group operating in West Africa. I can facilitate introductions between verified buyers and suppliers within this sector and have previously supported similar commercial introductions."
                 value={form.description} onChange={set('description')}
@@ -128,7 +129,7 @@ export default function SubmitRequirementDashboard() {
             </div>
             {dropdownField('Timeline / Urgency', form.timeline, 'timeline', 'Select Timeline', TIMELINES)}
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-1">
+              <label className={labelCls}>
                 Prior Experience Facilitating Similar Introductions <span className="font-normal text-gray-400">(optional)</span>
               </label>
               <textarea rows={3} placeholder="Describe previous introductions, industries involved, or relevant experience."
