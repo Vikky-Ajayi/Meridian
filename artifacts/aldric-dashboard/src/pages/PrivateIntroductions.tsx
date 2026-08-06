@@ -61,7 +61,7 @@ function Hero() {
         </div>
 
         {/* Diagram */}
-        <div className="w-full max-w-2xl flex items-start justify-center gap-0">
+        <div className="hidden md:flex w-full max-w-2xl items-start justify-center gap-0">
 
           {/* Capability */}
           <DiagramCard
