@@ -47,14 +47,14 @@ function Hero() {
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
-          <Link href="/register-capability">
-            <button className="bg-[#111827] text-white text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
+        <div className="w-full max-w-[520px] flex flex-col sm:flex-row items-center gap-4 mb-16">
+          <Link href="/register-capability" className="flex-1 w-full">
+            <button className="w-full bg-[#111827] text-white text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
               Register a Capability
             </button>
           </Link>
-          <Link href="/submit-requirement">
-            <button className="text-[#0b1733] text-[13px] font-semibold px-2 py-2.5 hover:text-[#1a56db] transition-colors whitespace-nowrap">
+          <Link href="/submit-requirement" className="flex-1 w-full">
+            <button className="w-full text-[#0b1733] text-[13px] font-semibold px-6 py-2.5 hover:text-[#1a56db] transition-colors whitespace-nowrap">
               Submit a Requirement
             </button>
           </Link>
