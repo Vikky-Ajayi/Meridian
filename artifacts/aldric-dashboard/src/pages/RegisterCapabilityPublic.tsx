@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AldricLogo } from '@/components/AldricLogo';
+import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
 import { DEAL_CATEGORIES, GEOGRAPHIES } from '@/lib/mock-data';
@@ -135,33 +136,17 @@ export default function RegisterCapabilityPublic() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>Phone Number</label>
-                  <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA]">
-                    <span className="px-3 flex-shrink-0">
-                      <svg viewBox="0 0 20 15" className="w-5 h-4" fill="none">
-                        <rect width="20" height="15" fill="#22C55E"/>
-                        <circle cx="10" cy="7.5" r="3" fill="#fff" stroke="#22C55E" strokeWidth="0.5"/>
-                        <circle cx="10" cy="7.5" r="2" fill="#22C55E"/>
-                      </svg>
-                    </span>
-                    <input placeholder="0000 000 0000 .000" value={form.phoneNumber}
-                      onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}
-                      className="flex-1 px-2 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] outline-none h-full bg-transparent placeholder:text-gray-400" />
-                  </div>
+                  <CountryPhoneInput
+                    value={form.phoneNumber}
+                    onChange={v => setForm(f => ({ ...f, phoneNumber: v }))}
+                  />
                 </div>
                 <div>
                   <label className={labelCls}>WhatsApp Number</label>
-                  <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA]">
-                    <span className="px-3 flex-shrink-0">
-                      <svg viewBox="0 0 20 15" className="w-5 h-4" fill="none">
-                        <rect width="20" height="15" fill="#22C55E"/>
-                        <circle cx="10" cy="7.5" r="3" fill="#fff" stroke="#22C55E" strokeWidth="0.5"/>
-                        <circle cx="10" cy="7.5" r="2" fill="#22C55E"/>
-                      </svg>
-                    </span>
-                    <input placeholder="0000 000 0000 .000" value={form.whatsappNumber}
-                      onChange={e => setForm(f => ({ ...f, whatsappNumber: e.target.value }))}
-                      className="flex-1 px-2 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] outline-none h-full bg-transparent placeholder:text-gray-400" />
-                  </div>
+                  <CountryPhoneInput
+                    value={form.whatsappNumber}
+                    onChange={v => setForm(f => ({ ...f, whatsappNumber: v }))}
+                  />
                 </div>
               </div>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { NeedAssistance } from '@/components/NeedAssistance';
 import { DEAL_CATEGORIES, GEOGRAPHIES, TIMELINES } from '@/lib/mock-data';
 
@@ -98,12 +99,10 @@ export default function SubmitRequirementDashboard() {
               {(['phoneNumber', 'whatsappNumber'] as const).map((k, i) => (
                 <div key={k}>
                   <label className={labelCls}>{i === 0 ? 'Phone Number' : 'WhatsApp Number'}</label>
-                  <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA]">
-                    <span className="px-3 flex-shrink-0">{flagIcon}</span>
-                    <input placeholder="0000 000 0000 .000" value={form[k]}
-                      onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))}
-                      className="flex-1 px-2 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] outline-none h-full bg-transparent placeholder:text-gray-400" />
-                  </div>
+                  <CountryPhoneInput
+                    value={form[k]}
+                    onChange={v => setForm(f => ({ ...f, [k]: v }))}
+                  />
                 </div>
               ))}
             </div>
