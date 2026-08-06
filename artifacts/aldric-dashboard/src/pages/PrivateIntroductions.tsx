@@ -301,17 +301,17 @@ function Process() {
         </h2>
 
         {/* Steps */}
-        <div className="border-t border-[#e8ecf2]">
+        <div className="flex flex-row overflow-x-auto gap-4 pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:flex-col md:gap-0 md:overflow-x-visible md:border-t md:border-[#e8ecf2]">
           {STEPS.map((step, i) => (
-            <div key={i} className="flex items-start gap-8 md:gap-14 py-10 border-b border-[#e8ecf2]">
+            <div key={i} className="flex-shrink-0 w-[240px] flex flex-col gap-3 bg-[#f8fafc] border border-[#e8ecf2] rounded-xl p-5 md:w-auto md:flex-row md:items-start md:gap-14 md:py-10 md:bg-transparent md:border-0 md:border-b md:border-[#e8ecf2] md:rounded-none md:p-0 md:pb-10">
               {/* Step number */}
-              <span className="flex-shrink-0 text-[32px] md:text-[38px] font-black text-[#d0d7e3] leading-none tracking-tight w-12 text-right">
+              <span className="flex-shrink-0 text-[28px] md:text-[38px] font-black text-[#d0d7e3] leading-none tracking-tight md:w-12 md:text-right">
                 {String(i + 1).padStart(2, '0')}
               </span>
               {/* Content */}
-              <div className="flex-1 pt-1">
+              <div className="md:flex-1 md:pt-1">
                 <h3 className="text-[15px] font-bold text-[#0b1733] mb-2">{step.title}</h3>
-                <p className="text-[#6b7a99] text-[13px] leading-relaxed max-w-2xl">{step.body}</p>
+                <p className="text-[#6b7a99] text-[13px] leading-relaxed md:max-w-2xl">{step.body}</p>
               </div>
             </div>
           ))}
