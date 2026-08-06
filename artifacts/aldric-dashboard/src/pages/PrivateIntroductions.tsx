@@ -35,7 +35,7 @@ function Hero() {
       <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
 
         {/* Heading */}
-        <h1 className="text-[38px] md:text-[50px] lg:text-[56px] font-extrabold text-[#0b1733] leading-[1.08] tracking-[-0.03em] mb-5">
+        <h1 className="text-[38px] md:text-[50px] lg:text-[56px] font-semibold text-[#0b1733] leading-[1.15] tracking-[-0.04em] capitalize mb-5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           Access, Plotted<br />And Matched Privately.
         </h1>
 
