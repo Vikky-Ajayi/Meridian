@@ -482,8 +482,8 @@ function Verification() {
 ───────────────────────────────────────────────────────── */
 function CTASection() {
   return (
-    <section className="bg-white py-10 px-6 lg:px-[150px]">
-        <div className="bg-[#1a56db] rounded-2xl px-8 md:px-16 py-14 flex flex-col items-center text-center">
+    <section className="bg-white py-10 px-0 md:px-6 lg:px-[150px]">
+        <div className="bg-[#1a56db] rounded-none md:rounded-2xl px-8 md:px-16 py-14 flex flex-col items-center text-center">
           <p className="text-[18px] font-semibold text-white/80 leading-[1.4] tracking-[-0.02em] uppercase mb-5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Begin, In Confidence
           </p>
@@ -493,14 +493,14 @@ function CTASection() {
           <p className="text-white/75 text-[14px] leading-relaxed max-w-md mb-9">
             Every submission is reviewed privately. Nothing is published, and nothing is shared until both sides are verified.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <Link href="/register-capability">
-              <button className="bg-[#111827] text-white text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
+          <div className="w-full max-w-sm flex flex-col items-stretch gap-3 md:flex-row md:w-auto md:max-w-none md:items-center">
+            <Link href="/register-capability" className="w-full md:w-auto">
+              <button className="w-full bg-[#111827] text-white text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
                 Register a Capability
               </button>
             </Link>
-            <Link href="/submit-requirement">
-              <button className="bg-white text-[#111827] text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-gray-100 transition-colors whitespace-nowrap">
+            <Link href="/submit-requirement" className="w-full md:w-auto">
+              <button className="w-full bg-white text-[#111827] text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-gray-100 transition-colors whitespace-nowrap">
                 Submit a Requirement
               </button>
             </Link>
