@@ -40,7 +40,7 @@ function Hero() {
         </h1>
 
         {/* Subtext */}
-        <p className="text-[#6b7a99] text-[15px] leading-relaxed mb-8 max-w-[520px]">
+        <p className="text-[#6b7a99] text-[18px] font-medium leading-[1.4] tracking-[-0.02em] mb-8 max-w-[520px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           Aldric Private holds a private record of who can facilitate what, and who needs it.
           When a requirement matches a capability already on file, we make the introduction
           ourselves — quietly, and only once both sides are verified.
