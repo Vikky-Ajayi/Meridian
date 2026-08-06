@@ -111,8 +111,8 @@ export default function RegisterCapabilityPublic() {
 
       {/* Hero header */}
       <div className="bg-[#0F61E9] px-6 pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
-        <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Register A Capability</h1>
-        <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+        <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-left capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Register A Capability</h1>
+        <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           Tell us what you're able to facilitate. Reviewed internally before it's ever considered for matching.
         </p>
       </div>
