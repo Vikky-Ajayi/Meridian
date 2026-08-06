@@ -161,11 +161,11 @@ function Stats() {
         <div className="bg-[#1a56db] rounded-2xl px-8 md:px-14 py-10 grid grid-cols-2 divide-x divide-white/20">
           <div className="pr-8 md:pr-14">
             <p className="text-[80px] font-semibold text-white leading-[1.15] tracking-[-0.04em] capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>[N]+</p>
-            <p className="text-white/70 text-sm mt-2.5 leading-snug">Introductions facilitated to date</p>
+            <p className="text-white/70 text-[18px] font-medium leading-[1] tracking-[-0.02em] mt-2.5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Introductions facilitated to date</p>
           </div>
           <div className="pl-8 md:pl-14">
             <p className="text-[80px] font-semibold text-white leading-[1.15] tracking-[-0.04em] capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>100%</p>
-            <p className="text-white/70 text-sm mt-2.5 leading-snug">Parties identity-verified before introduction</p>
+            <p className="text-white/70 text-[18px] font-medium leading-[1] tracking-[-0.02em] mt-2.5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Parties identity-verified before introduction</p>
           </div>
         </div>
       </div>
