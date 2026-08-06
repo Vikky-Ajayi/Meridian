@@ -340,7 +340,7 @@ function Pricing() {
         {/* Header */}
         <p className="text-[18px] font-semibold text-[#3b82f6] leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Facilitation Fee</p>
         <h2 className="text-[40px] font-semibold text-[#0b1733] leading-[1.15] tracking-[-0.04em] capitalize mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-          Priced To The Size Of The Requirement
+          Priced To The Size Of The<br />Requirement
         </h2>
         <p className="text-[#6b7a99] text-[13px] leading-relaxed mb-10 max-w-xs">
           The facilitation fee scales with the size of the deal you're seeking help with. A representative example is set out below.
