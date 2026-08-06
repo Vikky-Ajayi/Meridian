@@ -47,7 +47,7 @@ function Hero() {
         </p>
 
         {/* CTAs */}
-        <div className="w-full max-w-[520px] flex flex-col sm:flex-row items-center gap-4 mb-16">
+        <div className="w-full max-w-[520px] flex flex-col sm:flex-row items-center gap-4 mb-8 md:mb-16">
           <Link href="/register-capability" className="flex-1 w-full">
             <button className="w-full bg-[#111827] text-white text-[13px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap">
               Register a Capability
