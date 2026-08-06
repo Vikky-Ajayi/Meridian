@@ -26,7 +26,7 @@ export default function RegisterCapabilityDashboard() {
 
   const sectionHdr = (t: string) => (
     <div className="flex items-center gap-3 mb-4">
-      <span className="text-[14px] font-semibold leading-[1.4] tracking-[-0.02em] text-gray-500 whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{t}</span>
+      <span className="text-[14px] font-bold leading-[1.4] tracking-[-0.02em] text-gray-500 whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{t}</span>
       <div className="flex-1 h-px bg-gray-200" />
     </div>
   );
