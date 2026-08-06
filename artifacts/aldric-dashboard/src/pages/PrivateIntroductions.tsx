@@ -208,7 +208,7 @@ function TheModel() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <p className="text-[11px] font-bold text-white tracking-[0.18em] uppercase mb-4">The Model</p>
+        <p className="text-[18px] font-semibold text-white leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>The Model</p>
         <h2 className="text-[28px] md:text-[38px] lg:text-[42px] font-extrabold text-white tracking-tight leading-[1.05] mb-4">
           Not A Marketplace. A Private Ledger.
         </h2>
@@ -295,7 +295,7 @@ function Process() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-4">Process</p>
+        <p className="text-[18px] font-semibold text-[#3b82f6] leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Process</p>
         <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0b1733] tracking-tight leading-[1.05] mb-10">
           How An Introduction Is Made
         </h2>
@@ -338,7 +338,7 @@ function Pricing() {
     <section className="bg-white py-16 md:py-20 px-6 lg:px-[150px]">
 
         {/* Header */}
-        <p className="text-[11px] font-bold text-[#3b82f6] tracking-[0.18em] uppercase mb-4">Facilitation Fee</p>
+        <p className="text-[18px] font-semibold text-[#3b82f6] leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Facilitation Fee</p>
         <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0b1733] tracking-tight leading-[1.1] mb-4 max-w-sm">
           Priced To The Size Of The Requirement
         </h2>
@@ -416,7 +416,7 @@ function Verification() {
     <section id="verification" className="bg-[#08122a] py-16 md:py-20 px-6 lg:px-[150px]">
 
         {/* Header */}
-        <p className="text-[11px] font-bold text-white tracking-[0.18em] uppercase mb-4">Verification</p>
+        <p className="text-[18px] font-semibold text-white leading-[1.4] tracking-[-0.02em] uppercase mb-4" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Verification</p>
         <h2 className="text-[28px] md:text-[38px] font-extrabold text-white tracking-tight leading-[1.05] mb-4">
           What "Verified" Actually Means
         </h2>
@@ -484,7 +484,7 @@ function CTASection() {
   return (
     <section className="bg-white py-10 px-6 lg:px-[150px]">
         <div className="bg-[#1a56db] rounded-2xl px-8 md:px-16 py-14 flex flex-col items-center text-center">
-          <p className="text-[11px] font-bold text-white/80 tracking-[0.18em] uppercase mb-5">
+          <p className="text-[18px] font-semibold text-white/80 leading-[1.4] tracking-[-0.02em] uppercase mb-5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Begin, In Confidence
           </p>
           <h2 className="text-[28px] md:text-[38px] lg:text-[42px] font-extrabold text-white leading-[1.05] tracking-tight mb-5 max-w-2xl">
