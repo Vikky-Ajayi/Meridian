@@ -46,6 +46,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
       const t = setInterval(() => setCountdown(c => (c > 0 ? c - 1 : 0)), 1000);
       return () => clearInterval(t);
     }
+    return undefined;
   }, [modal]);
 
   const handleOtpChange = (idx: number, val: string) => {

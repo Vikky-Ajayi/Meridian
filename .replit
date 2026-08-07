@@ -46,3 +46,6 @@ timeoutMs = 20000
 GOOGLE_SHEETS_ID = "1boeUUyhKIKHxCtKCLQsyw1DqNJw5DhnNQeA77fbWAPI"
 WHATSAPP_LINK = ""
 WHATSAPP_NUMBER = ""
+
+[nix]
+channel = "stable-25_05"

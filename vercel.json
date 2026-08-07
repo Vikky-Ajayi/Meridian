@@ -1,7 +1,8 @@
 {
-  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/meridian run build",
+  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/meridian run build && BASE_PATH=/aldric-dashboard/ pnpm --filter @workspace/aldric-dashboard run build && rm -rf artifacts/meridian/dist/public/aldric-dashboard && mkdir -p artifacts/meridian/dist/public/aldric-dashboard && cp -R artifacts/aldric-dashboard/dist/public/. artifacts/meridian/dist/public/aldric-dashboard/",
   "outputDirectory": "artifacts/meridian/dist/public",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/aldric-dashboard/:path*", "destination": "/aldric-dashboard/index.html" },
+    { "source": "/((?!api/|aldric-dashboard/).*)", "destination": "/index.html" }
   ]
 }
