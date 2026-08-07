@@ -1,6 +1,22 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Process slider */
+.process-slider {
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.process-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.process-slide {
+  scroll-snap-align: start;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

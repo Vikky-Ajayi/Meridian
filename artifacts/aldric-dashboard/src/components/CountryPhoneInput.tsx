@@ -34,6 +34,9 @@ export function CountryPhoneInput({ value, onChange, placeholder = '0000 000 000
     c.dial.includes(search)
   );
 
+  const flagUrl = (country: Country) =>
+    `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`;
+
   return (
     <div className="relative" ref={containerRef}>
       <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA] focus-within:border-[#0F61E9] transition-colors">
@@ -43,7 +46,13 @@ export function CountryPhoneInput({ value, onChange, placeholder = '0000 000 000
           onClick={() => setOpen(o => !o)}
           className="flex items-center gap-1.5 px-3 h-full border-r border-gray-200 flex-shrink-0 hover:bg-gray-100 transition-colors"
         >
-          <span className="text-lg leading-none">{selected.flag}</span>
+          <img
+            src={flagUrl(selected)}
+            alt={`${selected.name} flag`}
+            width="20"
+            height="15"
+            className="w-5 h-[15px] object-cover rounded-[2px] flex-shrink-0"
+          />
           <span className="text-[13px] font-medium text-gray-600 tabular-nums">{selected.dial}</span>
           <svg viewBox="0 0 24 24" className="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2}>
             <polyline points="6 9 12 15 18 9"/>
@@ -86,7 +95,14 @@ export function CountryPhoneInput({ value, onChange, placeholder = '0000 000 000
                   onClick={() => { setSelected(c); setOpen(false); setSearch(''); }}
                   className={`w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 text-left transition-colors ${selected.code === c.code ? 'bg-blue-50' : ''}`}
                 >
-                  <span className="text-lg leading-none w-6 flex-shrink-0">{c.flag}</span>
+                  <img
+                    src={flagUrl(c)}
+                    alt={`${c.name} flag`}
+                    width="20"
+                    height="15"
+                    loading="lazy"
+                    className="w-5 h-[15px] object-cover rounded-[2px] flex-shrink-0"
+                  />
                   <span className="flex-1 text-[13px] text-gray-800 truncate">{c.name}</span>
                   <span className="text-[12px] text-gray-400 tabular-nums flex-shrink-0">{c.dial}</span>
                 </button>

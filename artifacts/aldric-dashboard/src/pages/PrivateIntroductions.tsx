@@ -300,18 +300,30 @@ function Process() {
           How An Introduction Is Made
         </h2>
 
-        {/* Steps */}
-        <div className="flex flex-row overflow-x-auto gap-4 pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:flex-col md:gap-0 md:overflow-x-visible md:border-t md:border-[#e8ecf2]">
+        {/* Steps — horizontal slider */}
+        <div
+          className="process-slider flex flex-row overflow-x-auto gap-12 md:gap-20 pb-4 -mx-6 px-6 md:mx-0 md:px-0"
+          role="list"
+          aria-label="How an introduction is made"
+        >
           {STEPS.map((step, i) => (
-            <div key={i} className="flex-shrink-0 w-[240px] flex flex-col gap-3 bg-[#f8fafc] border border-[#e8ecf2] rounded-xl p-5 md:w-auto md:flex-row md:items-start md:gap-14 md:py-10 md:bg-transparent md:border-0 md:border-b md:border-[#e8ecf2] md:rounded-none md:p-0 md:pb-10">
+            <div
+              key={i}
+              className="process-slide flex-shrink-0 w-[280px] md:w-[360px] flex flex-col gap-6"
+              role="listitem"
+            >
               {/* Step number */}
-              <span className="flex-shrink-0 text-[28px] md:text-[38px] font-black text-[#d0d7e3] leading-none tracking-tight md:w-12 md:text-right">
+              <span className="flex-shrink-0 text-[42px] md:text-[48px] font-semibold text-[#d0d2d5] leading-none tracking-tight">
                 {String(i + 1).padStart(2, '0')}
               </span>
               {/* Content */}
-              <div className="md:flex-1 md:pt-1">
-                <h3 className="text-[15px] font-bold text-[#0b1733] mb-2">{step.title}</h3>
-                <p className="text-[#6b7a99] text-[13px] leading-relaxed md:max-w-2xl">{step.body}</p>
+              <div>
+                <h3 className="text-[20px] md:text-[22px] font-bold text-[#0b1733] mb-4 tracking-[-0.03em]">
+                  {step.title}
+                </h3>
+                <p className="text-[#6b7a99] text-[15px] leading-[1.4] max-w-[330px]">
+                  {step.body}
+                </p>
               </div>
             </div>
           ))}
@@ -482,7 +494,7 @@ function Verification() {
 ───────────────────────────────────────────────────────── */
 function CTASection() {
   return (
-    <section className="bg-white py-10 px-0 md:px-6 lg:px-[150px]">
+    <section className="bg-white pt-0 pb-10 px-0 md:px-6 lg:px-[150px]">
         <div className="bg-[#1a56db] rounded-none md:rounded-2xl px-8 md:px-16 py-14 flex flex-col items-center text-center">
           <p className="text-[18px] font-semibold text-white/80 leading-[1.4] tracking-[-0.02em] uppercase mb-5" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
             Begin, In Confidence
