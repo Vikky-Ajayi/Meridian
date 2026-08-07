@@ -76,11 +76,15 @@ export default function SubmitRequirementPublic() {
       <div className="hidden md:block"><DesktopNavbar /></div>
 
       {/* Hero header */}
-      <div className="bg-[#0D1B3E] px-6 pt-8 pb-10 md:pt-14 md:pb-16">
-        <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h1>
-        <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-          Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match is confirmed.
-        </p>
+      <div className="bg-[#0D1B3E] pt-8 pb-10 md:pt-14 md:pb-16">
+        <div className="md:max-w-2xl md:mx-auto md:px-4">
+          <div className="px-6 md:px-8">
+            <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h1>
+            <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+              Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match is confirmed.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Form card */}
