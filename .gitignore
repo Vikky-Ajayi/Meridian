@@ -57,3 +57,7 @@ Thumbs.db
 
 # Canvas assets
 .canvas/
+
+# Codex local preview artifacts
+.codex-*.log
+.codex-*.pid
