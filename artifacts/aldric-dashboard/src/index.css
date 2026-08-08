@@ -1,0 +1,190 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Process slider */
+.process-slider {
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.process-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.process-slide {
+  scroll-snap-align: start;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --font-sans: var(--app-font-sans);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 0 0% 97%;
+  --foreground: 222 47% 9%;
+  --border: 220 13% 88%;
+  --input: 220 13% 88%;
+  --ring: 221 83% 50%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 9%;
+  --primary: 221 83% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 13% 94%;
+  --secondary-foreground: 222 47% 9%;
+  --muted: 220 13% 94%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 220 13% 94%;
+  --accent-foreground: 222 47% 9%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 222 47% 9%;
+  --app-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * { @apply border-border box-border; }
+  html, body { overflow-x: hidden; }
+  body { @apply font-sans antialiased bg-background text-foreground; }
+}
+
+/* ── Footer (matches Meridian home page) ───────────────────────────────── */
+.meridian-footer {
+  background: #fff;
+  min-height: 903px;
+  overflow: hidden;
+  padding: 31px 150px 0;
+  position: relative;
+}
+
+.footer-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.footer-top {
+  align-items: flex-start;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  gap: 0;
+  height: 65px;
+  justify-content: space-between;
+  padding: 0 0 32px;
+}
+
+.footer-top nav {
+  align-items: center;
+  display: flex;
+  font-size: 14px;
+  gap: 43px;
+  line-height: 1.4;
+  padding-top: 9px;
+}
+
+.footer-top nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-legal {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.55;
+  margin-top: 28px;
+}
+
+.footer-legal p {
+  margin: 0 0 28px;
+}
+
+.footer-copy {
+  color: #555;
+  display: flex;
+  font-size: 14px;
+  justify-content: space-between;
+  line-height: 1.4;
+  margin-top: 48px;
+}
+
+.footer-watermark {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+}
+
+@media (max-width: 1024px) {
+  .meridian-footer {
+    padding: 40px 40px 0;
+  }
+  .footer-top nav {
+    gap: 28px;
+  }
+}
+
+@media (max-width: 700px) {
+  .meridian-footer {
+    min-height: auto;
+    overflow: hidden;
+    padding: 36px 20px 120px;
+  }
+  .footer-top {
+    display: block;
+    height: auto;
+  }
+  .footer-top nav {
+    display: grid;
+    font-size: 13px;
+    gap: 14px 12px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 28px;
+  }
+  .footer-legal {
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 24px;
+  }
+  .footer-legal p {
+    margin: 0 0 14px;
+  }
+  .footer-copy {
+    flex-direction: column;
+    font-size: 11px;
+    gap: 2px;
+    margin-top: 20px;
+  }
+}

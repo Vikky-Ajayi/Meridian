@@ -1,6 +1,6 @@
-# Meridian
+# Aldric Private (Meridian)
 
-A financial services web app (private banking, international money transfers) with an Express API backend and a React/Vite frontend.
+Private banking and international capital transfer web app. Prospects complete a multi-step flow then submit an enquiry; submissions are saved to Postgres and synced to Google Sheets.
 
 ## Run & Operate
 
@@ -12,6 +12,24 @@ A financial services web app (private banking, international money transfers) wi
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - The Vite dev server proxies `/api` requests to the API server on port 8080
 - Required env: `DATABASE_URL` — Postgres connection string (provisioned automatically by Replit)
+
+## Production environment variables
+
+### Vercel (frontend — adricprivate.com)
+| Variable | Value |
+|---|---|
+| `VITE_API_BASE_URL` | `https://meridian-production-960e.up.railway.app` |
+
+**Must include `https://`.** Without it the browser treats the Railway hostname as a relative path on the Vercel domain, causing 405 errors.
+
+### Railway (backend — meridian-production-960e.up.railway.app)
+| Variable | Value |
+|---|---|
+| `ALLOW_ORIGIN` | `https://adricprivate.com` |
+| `DATABASE_URL` | (Postgres connection string) |
+| `GOOGLE_SHEETS_ID` | (Sheet ID) |
+| `WHATSAPP_NUMBER` | (optional) |
+| `WHATSAPP_LINK` | (optional) |
 
 ## Stack
 
