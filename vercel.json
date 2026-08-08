@@ -4,7 +4,7 @@
   "rewrites": [
     { "source": "/aldric-dashboard", "destination": "/aldric-dashboard/index.html" },
     { "source": "/aldric-dashboard/", "destination": "/aldric-dashboard/index.html" },
-    { "source": "/aldric-dashboard/(?!assets/|favicon\\.svg|robots\\.txt)(.*)", "destination": "/aldric-dashboard/index.html" },
-    { "source": "/((?!api/|aldric-dashboard/).*)", "destination": "/index.html" }
+    { "source": "/aldric-dashboard/:path*", "destination": "/aldric-dashboard/index.html" },
+    { "source": "/:path*", "destination": "/index.html" }
   ]
 }
