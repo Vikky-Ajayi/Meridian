@@ -184,6 +184,7 @@ export function DashboardLayout({ children, title }: Props) {
 
           <div className="flex items-center gap-4">
             <WhatsAppButton className="hidden sm:inline-flex" size="sm" />
+            <WhatsAppButton className="sm:hidden" iconOnly />
             {user && (
               <div className="hidden md:flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">

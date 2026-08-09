@@ -39,7 +39,7 @@ export function CountryPhoneInput({ value, onChange, placeholder = '0000 000 000
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA] focus-within:border-[#0F61E9] transition-colors">
+      <div className="flex items-center border border-gray-200 rounded-xl md:rounded-lg overflow-hidden h-12 md:h-11 bg-[#F5F6FA] focus-within:border-[#0F61E9] transition-colors">
         {/* Country selector trigger */}
         <button
           type="button"

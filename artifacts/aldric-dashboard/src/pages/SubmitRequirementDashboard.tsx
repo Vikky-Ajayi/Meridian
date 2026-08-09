@@ -25,12 +25,12 @@ export default function SubmitRequirementDashboard() {
   const set = (k: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: (e.target as HTMLInputElement).type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
 
-  const inputCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 transition-colors';
-  const labelCls = 'block text-[14px] font-semibold text-gray-800 mb-1 leading-[1.4] tracking-[-0.02em]';
+  const inputCls = 'w-full h-12 md:h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-xl md:rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 transition-colors';
+  const labelCls = 'block text-[13px] md:text-[14px] font-semibold text-gray-900 md:text-gray-800 mb-2 md:mb-1 leading-[1.4] tracking-[-0.02em]';
 
   const sectionHdr = (t: string) => (
     <div className="flex items-center gap-3 mb-4">
-      <span className="text-[14px] font-bold leading-[1.4] tracking-[-0.02em] text-gray-500 whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{t}</span>
+      <span className="text-[14px] font-semibold md:font-bold leading-[1.4] tracking-[-0.02em] text-gray-900 md:text-gray-500 whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>{t}</span>
       <div className="flex-1 h-px bg-gray-200" />
     </div>
   );
@@ -70,13 +70,13 @@ export default function SubmitRequirementDashboard() {
 
   return (
     <DashboardLayout title="Submit Requirement">
-      <div className="bg-[#0D1B3E] rounded-2xl p-8 md:p-10 max-w-4xl mx-auto">
-        <h2 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h2>
-        <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+      <div className="bg-[#050E2E] rounded-2xl p-3 pt-9 md:p-10 max-w-4xl mx-auto">
+        <h2 className="text-[30px] md:text-[40px] font-semibold text-white mb-3 md:mb-2 leading-[1.05] md:leading-[1.15] tracking-[-0.04em] text-left md:text-center capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h2>
+        <p className="text-white md:text-gray-400 text-[14px] font-medium leading-[1.45] md:leading-[1.4] tracking-[-0.02em] text-left md:text-center mb-7 md:mb-8 max-w-[360px] md:max-w-none" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
           Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match is confirmed.
         </p>
 
-        <div className="bg-white rounded-xl p-6 md:p-8">
+        <div className="bg-white rounded-xl p-3 md:p-8">
           <form
             onSubmit={async e => {
               e.preventDefault();
@@ -129,7 +129,7 @@ export default function SubmitRequirementDashboard() {
               <textarea rows={4}
                 placeholder="I have an established relationship with an agricultural trading group operating in West Africa. I can facilitate introductions between verified buyers and suppliers within this sector and have previously supported similar commercial introductions."
                 value={form.description} onChange={set('description')}
-                className="w-full px-4 py-3 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 resize-none" />
+                className="w-full px-4 py-3 text-sm bg-[#F5F6FA] border border-gray-200 rounded-xl md:rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 resize-none" />
               <p className="text-xs text-gray-400 mt-1 leading-snug">
                 Describe the business objective, type of introduction required, relevant industry, geography, and any specific criteria. Information remains private and is only reviewed by our team before any potential introduction
               </p>
@@ -141,10 +141,10 @@ export default function SubmitRequirementDashboard() {
               </label>
               <textarea rows={3} placeholder="Describe previous introductions, industries involved, or relevant experience."
                 value={form.priorExperience} onChange={set('priorExperience')}
-                className="w-full px-4 py-3 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 resize-none" />
+                className="w-full px-4 py-3 text-sm bg-[#F5F6FA] border border-gray-200 rounded-xl md:rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 resize-none" />
             </div>
 
-            <label className="flex gap-3 items-start cursor-pointer">
+            <label className="flex gap-3 items-start cursor-pointer border border-gray-200 rounded-lg p-4">
               <input type="checkbox" checked={form.agreed} onChange={e => setForm(f => ({ ...f, agreed: e.target.checked }))}
                 className="mt-0.5 w-4 h-4 accent-[#0F61E9] flex-shrink-0" />
               <span className="text-xs text-gray-500 leading-relaxed">
@@ -154,7 +154,7 @@ export default function SubmitRequirementDashboard() {
             </label>
 
             <div className="flex justify-end">
-              <button type="submit" className="bg-black text-white text-sm font-semibold px-8 py-3 rounded-lg hover:bg-black/85 transition-colors">
+              <button type="submit" className="w-full md:w-auto bg-black text-white text-sm font-semibold px-8 py-3 rounded-lg hover:bg-black/85 transition-colors">
                 {submitting ? 'Submitting...' : 'Submit Requirement'}
               </button>
             </div>
@@ -162,7 +162,7 @@ export default function SubmitRequirementDashboard() {
           </form>
         </div>
       </div>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-8 md:mt-0">
         <NeedAssistance />
       </div>
     </DashboardLayout>
