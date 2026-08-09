@@ -8,6 +8,7 @@ export type AuthModal =
   | 'otp'
   | 'forgot'
   | 'setnew'
+  | 'resetSuccess'
   | 'success';
 
 interface AuthContextType {
