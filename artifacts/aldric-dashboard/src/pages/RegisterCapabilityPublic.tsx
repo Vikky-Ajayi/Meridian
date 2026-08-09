@@ -83,7 +83,7 @@ interface FormData {
 }
 
 export default function RegisterCapabilityPublic() {
-  const { openModal } = useAuth();
+  const { openModal, setPendingEmail } = useAuth();
   const [form, setForm] = useState<FormData>({
     fullName: '', contactEmail: '', phoneNumber: '', whatsappNumber: '',
     dealCategory: '', geography: '', dealSizeRange: '', description: '',
@@ -101,6 +101,7 @@ export default function RegisterCapabilityPublic() {
     setSubmitting(true);
     try {
       await submitCapability({ ...form, source: 'public' });
+      setPendingEmail(form.contactEmail);
       openModal('register');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Submission failed. Please try again.');

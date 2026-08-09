@@ -149,7 +149,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
       {error && <p className="mb-3 text-center text-xs font-medium text-red-500">{error}</p>}
       {blackBtn('Create Account & Continue', () => {
         if (!requirePasswords()) return;
-        setPendingEmail(email || 'free*****@gmail.com');
+        setPendingEmail(pendingEmail || email || 'your email address');
         setOtp(['', '', '', '', '', '']);
         openModal('otp');
       })}
@@ -202,7 +202,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
     <div>
       {header('Enter OTP')}
       <p className="mb-7 text-base text-gray-600">
-        A 6-Digit code was sent to <strong className="text-gray-900">{pendingEmail || 'free*****@gmail.com'}</strong>
+        A 6-Digit code was sent to <strong className="text-gray-900">{pendingEmail}</strong>
       </p>
       <div className="mb-12 flex justify-between gap-3">
         {otp.map((d, i) => (

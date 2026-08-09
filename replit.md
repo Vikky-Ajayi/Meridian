@@ -27,8 +27,13 @@ Private banking and international capital transfer web app. Prospects complete a
 | `DATABASE_URL` | (Postgres connection string) |
 | `GOOGLE_SHEETS_ID` | (Sheet ID) |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | (Google service account JSON, stringified) |
+| `RESEND_API_KEY` | (Resend API key for OTP email delivery) |
+| `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Aldric Private <no-reply@yourdomain.com>) |
 | `WHATSAPP_NUMBER` | (optional) |
 | `WHATSAPP_LINK` | (optional) |
+
+OTP email templates live in `artifacts/api-server/src/lib/otpEmailTemplate.ts`.
+Use `renderOtpEmail(...)` for Resend's `html` field and `renderOtpEmailText(...)` for the plain-text fallback.
 
 ## Stack
 
