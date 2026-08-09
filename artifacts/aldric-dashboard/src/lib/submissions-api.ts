@@ -2,6 +2,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export interface DashboardCapability {
   id: string;
+  fullName?: string;
+  contactEmail?: string;
   category: string;
   title: string;
   status: string;
@@ -15,6 +17,8 @@ export interface DashboardCapability {
 
 export interface DashboardRequirement {
   id: string;
+  fullName?: string;
+  contactEmail?: string;
   category: string;
   title: string;
   status: string;

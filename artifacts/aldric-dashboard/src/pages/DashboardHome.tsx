@@ -92,7 +92,7 @@ function RequirementCard({ req }: { req: DashboardRequirement }) {
 }
 
 export default function DashboardHome() {
-  const { user } = useAuth();
+  const { user, setPendingUser } = useAuth();
   const firstName = user?.name.split(' ')[0] ?? '';
   const [capabilities, setCapabilities] = useState<DashboardCapability[]>([]);
   const [requirements, setRequirements] = useState<DashboardRequirement[]>([]);
@@ -104,6 +104,12 @@ export default function DashboardHome() {
       .then(data => {
         setCapabilities(data.capabilities);
         setRequirements(data.requirements);
+        const submittedUser =
+          data.capabilities.find(c => c.fullName)?.fullName ||
+          data.requirements.find(r => r.fullName)?.fullName;
+        if (submittedUser && user?.email) {
+          setPendingUser({ name: submittedUser, email: user.email });
+        }
       })
       .catch(err => setLoadError(err instanceof Error ? err.message : 'Failed to load submissions.'))
       .finally(() => setLoading(false));

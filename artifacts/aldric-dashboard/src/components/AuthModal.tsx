@@ -35,7 +35,7 @@ function PasswordField({ placeholder, value, onChange }: { placeholder: string; 
 }
 
 export function AuthModal({ onClose }: { onClose?: () => void }) {
-  const { modal, openModal, closeModal, login, setPendingEmail, pendingEmail, setPendingUser } = useAuth();
+  const { modal, openModal, closeModal, login, setPendingEmail, pendingEmail, setPendingUser, user } = useAuth();
   const [, setLocation] = useLocation();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -206,7 +206,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
           return;
         }
         setPendingUser({
-          name: email.split('@')[0] || 'Aldric Client',
+          name: user?.name || email.split('@')[0] || 'Aldric Client',
           email,
         });
         goDashboard();
