@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/lib/auth-context';
+import { sendOtp, verifyOtp } from '@/lib/auth-api';
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -42,6 +43,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(59);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -55,6 +57,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
 
   useEffect(() => {
     setError('');
+    setLoading(false);
   }, [modal]);
 
   const handleOtpChange = (idx: number, val: string) => {
@@ -147,12 +150,25 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
         </div>
       </div>
       {error && <p className="mb-3 text-center text-xs font-medium text-red-500">{error}</p>}
-      {blackBtn('Create Account & Continue', () => {
+      {blackBtn('Create Account & Continue', async () => {
         if (!requirePasswords()) return;
-        setPendingEmail(pendingEmail || email || 'your email address');
-        setOtp(['', '', '', '', '', '']);
-        openModal('otp');
-      })}
+        const otpEmail = pendingEmail || email;
+        if (!otpEmail) {
+          setError('Enter your email address.');
+          return;
+        }
+        setLoading(true);
+        try {
+          await sendOtp(otpEmail);
+          setPendingEmail(otpEmail);
+          setOtp(['', '', '', '', '', '']);
+          openModal('otp');
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to send OTP email.');
+        } finally {
+          setLoading(false);
+        }
+      }, loading)}
       <p className="mt-8 text-center text-sm text-black">
         Already have an account?{' '}
         <button className="text-[#0066FF] font-medium" onClick={() => openModal('login')}>Sign in instead.</button>
@@ -224,22 +240,40 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
         Didn't get Code?{' '}
         <button
           className="text-[#0066FF] font-medium"
-          onClick={() => {
-            setCountdown(59);
-            setOtp(['', '', '', '', '', '']);
-            inputRefs.current[0]?.focus();
+          disabled={loading}
+          onClick={async () => {
+            setLoading(true);
+            setError('');
+            try {
+              await sendOtp(pendingEmail);
+              setCountdown(59);
+              setOtp(['', '', '', '', '', '']);
+              inputRefs.current[0]?.focus();
+            } catch (err) {
+              setError(err instanceof Error ? err.message : 'Failed to resend OTP email.');
+            } finally {
+              setLoading(false);
+            }
           }}
         >
           {countdown > 0 ? `Resend Code in 00:${countdown.toString().padStart(2, '0')}` : 'Resend Code'}
         </button>
       </p>
-      {blackBtn('Confirm', () => {
+      {blackBtn('Confirm', async () => {
         if (otp.some(d => !d)) {
           setError('Enter the 6-digit code.');
           return;
         }
-        openModal('success');
-      })}
+        setLoading(true);
+        try {
+          await verifyOtp(pendingEmail, otp.join(''));
+          openModal('success');
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Invalid or expired OTP.');
+        } finally {
+          setLoading(false);
+        }
+      }, loading)}
       {error && <p className="mt-3 text-center text-xs font-medium text-red-500">{error}</p>}
       <div className="mt-8 text-center">
         <button className="text-sm text-black" onClick={() => openModal('register')}>← Back</button>

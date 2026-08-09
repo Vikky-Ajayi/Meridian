@@ -29,6 +29,7 @@ Private banking and international capital transfer web app. Prospects complete a
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | (Google service account JSON, stringified) |
 | `RESEND_API_KEY` | (Resend API key for OTP email delivery) |
 | `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Aldric Private <no-reply@yourdomain.com>) |
+| `OTP_SECRET` | (Random secret used to hash OTP codes server-side) |
 | `WHATSAPP_NUMBER` | (optional) |
 | `WHATSAPP_LINK` | (optional) |
 
