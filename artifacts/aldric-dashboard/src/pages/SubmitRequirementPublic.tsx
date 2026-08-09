@@ -2,39 +2,72 @@ import { useState } from 'react';
 import { AldricLogo } from '@/components/AldricLogo';
 import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { AuthModal } from '@/components/AuthModal';
+import { PublicFormSelect } from '@/components/PublicFormSelect';
 import { useAuth } from '@/lib/auth-context';
 import { DEAL_CATEGORIES, GEOGRAPHIES, TIMELINES } from '@/lib/mock-data';
 
-function MobileNavbar() {
-  return (
-    <header className="bg-black px-5 h-14 flex items-center justify-between relative z-10">
-      <AldricLogo />
-      <button className="text-white p-1">
-        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2}>
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
-    </header>
-  );
-}
+const NAV_LINKS = ['Moving Capital', 'Global Network', 'Contact'];
 
-function DesktopNavbar() {
+function Navbar() {
   const { openModal } = useAuth();
+  const [open, setOpen] = useState(false);
+
   return (
-    <header className="hidden md:flex bg-[#0D1B3E]/90 backdrop-blur-sm px-8 h-14 items-center justify-between relative z-10">
-      <AldricLogo />
-      <nav className="flex items-center gap-8 text-sm text-gray-300">
-        {['Moving Capital', 'Solutions', 'Global Payments', 'Advisory', 'Contact'].map(l => (
-          <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
-        ))}
-      </nav>
-      <button
-        onClick={() => openModal('register')}
-        className="bg-black text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-black/80 transition-colors"
-      >
-        Request an Introduction
-      </button>
-    </header>
+    <div className="sticky top-0 z-30">
+      <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between">
+        <AldricLogo />
+
+        <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
+          {NAV_LINKS.map(l => (
+            <a key={l} href="#" className="hover:text-[#0E61E8] transition-colors">{l}</a>
+          ))}
+        </nav>
+
+        <button
+          onClick={() => openModal('register')}
+          className="hidden md:block bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap"
+        >
+          Request an Introduction
+        </button>
+
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="md:hidden p-2 text-[#0b1733] rounded-md hover:bg-gray-100 transition-colors"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+        >
+          {open ? (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </button>
+      </header>
+
+      {open && (
+        <div className="md:hidden bg-white border-b border-gray-100 px-6 py-4 flex flex-col gap-4">
+          {NAV_LINKS.map(l => (
+            <a
+              key={l}
+              href="#"
+              onClick={() => setOpen(false)}
+              className="text-[14px] text-[#1a1a2e] font-medium hover:text-[#0E61E8] transition-colors"
+            >
+              {l}
+            </a>
+          ))}
+          <button
+            onClick={() => { setOpen(false); openModal('register'); }}
+            className="mt-1 w-full bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors"
+          >
+            Request an Introduction
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -72,13 +105,12 @@ export default function SubmitRequirementPublic() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="md:hidden"><MobileNavbar /></div>
-      <div className="hidden md:block"><DesktopNavbar /></div>
+      <Navbar />
 
       {/* Hero header */}
-      <div className="bg-[#0D1B3E] pt-8 pb-10 md:pt-14 md:pb-16">
+      <div className="bg-[#0D1B3E] pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
         <div className="md:max-w-2xl md:mx-auto md:px-4">
-          <div className="px-6 md:px-8">
+          <div className="px-6 md:px-0">
             <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-left capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h1>
             <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match is confirmed.
@@ -116,27 +148,21 @@ export default function SubmitRequirementPublic() {
               {sectionHdr('Requirement Details')}
               <div>
                 <label className={labelCls}>Deal Category</label>
-                <div className="relative">
-                  <select value={form.dealCategory} onChange={set('dealCategory')} className={selectCls}>
-                    <option value="" disabled>Select a Category</option>
-                    {DEAL_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="6 9 12 15 18 9"/></svg>
-                  </span>
-                </div>
+                <PublicFormSelect
+                  options={DEAL_CATEGORIES}
+                  placeholder="Select a Category"
+                  value={form.dealCategory}
+                  onChange={v => setForm(f => ({ ...f, dealCategory: v }))}
+                />
               </div>
               <div>
                 <label className={labelCls}>Geography / Market Covered</label>
-                <div className="relative">
-                  <select value={form.geography} onChange={set('geography')} className={selectCls}>
-                    <option value="" disabled>Select a Geography</option>
-                    {GEOGRAPHIES.map(g => <option key={g} value={g}>{g}</option>)}
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="6 9 12 15 18 9"/></svg>
-                  </span>
-                </div>
+                <PublicFormSelect
+                  options={GEOGRAPHIES}
+                  placeholder="Select a Geography"
+                  value={form.geography}
+                  onChange={v => setForm(f => ({ ...f, geography: v }))}
+                />
               </div>
               <div>
                 <label className={labelCls}>Declared Deal Size</label>

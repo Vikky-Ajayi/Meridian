@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AldricLogo } from '@/components/AldricLogo';
 import { CountryPhoneInput } from '@/components/CountryPhoneInput';
+import { PublicFormSelect } from '@/components/PublicFormSelect';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
 import { DEAL_CATEGORIES, GEOGRAPHIES } from '@/lib/mock-data';
@@ -97,7 +98,6 @@ export default function RegisterCapabilityPublic() {
   };
 
   const inputCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-[#0F61E9] transition-colors';
-  const selectCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-[#0F61E9] transition-colors appearance-none';
   const labelCls = 'block text-[14px] font-semibold text-gray-800 mb-1 leading-[1.4] tracking-[-0.02em]';
   const sectionHdr = (t: string) => (
     <div className="flex items-center gap-3 mb-4">
@@ -113,7 +113,7 @@ export default function RegisterCapabilityPublic() {
       {/* Hero header */}
       <div className="bg-[#0F61E9] pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
         <div className="md:max-w-2xl md:mx-auto md:px-4">
-          <div className="px-6 md:px-8">
+          <div className="px-6 md:px-0">
             <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-left capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Register A Capability</h1>
             <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Tell us what you're able to facilitate. Reviewed internally before it's ever considered for matching.
@@ -158,27 +158,21 @@ export default function RegisterCapabilityPublic() {
               {sectionHdr('Capability Details')}
               <div>
                 <label className={labelCls}>Deal Category</label>
-                <div className="relative">
-                  <select value={form.dealCategory} onChange={set('dealCategory')} className={selectCls}>
-                    <option value="" disabled>Select a Category</option>
-                    {DEAL_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="6 9 12 15 18 9"/></svg>
-                  </span>
-                </div>
+                <PublicFormSelect
+                  options={DEAL_CATEGORIES}
+                  placeholder="Select a Category"
+                  value={form.dealCategory}
+                  onChange={v => setForm(f => ({ ...f, dealCategory: v }))}
+                />
               </div>
               <div>
                 <label className={labelCls}>Geography / Market Covered</label>
-                <div className="relative">
-                  <select value={form.geography} onChange={set('geography')} className={selectCls}>
-                    <option value="" disabled>Select a Geography</option>
-                    {GEOGRAPHIES.map(g => <option key={g} value={g}>{g}</option>)}
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="6 9 12 15 18 9"/></svg>
-                  </span>
-                </div>
+                <PublicFormSelect
+                  options={GEOGRAPHIES}
+                  placeholder="Select a Geography"
+                  value={form.geography}
+                  onChange={v => setForm(f => ({ ...f, geography: v }))}
+                />
               </div>
               <div>
                 <label className={labelCls}>Typical Deal Size Range</label>

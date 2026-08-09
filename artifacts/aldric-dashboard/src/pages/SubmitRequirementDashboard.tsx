@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { NeedAssistance } from '@/components/NeedAssistance';
+import { PublicFormSelect } from '@/components/PublicFormSelect';
 import { DEAL_CATEGORIES, GEOGRAPHIES, TIMELINES } from '@/lib/mock-data';
 
 interface FormData {
@@ -22,7 +23,6 @@ export default function SubmitRequirementDashboard() {
     setForm(f => ({ ...f, [k]: (e.target as HTMLInputElement).type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
 
   const inputCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 transition-colors';
-  const selectCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none text-gray-400 focus:border-gray-300 transition-colors appearance-none';
   const labelCls = 'block text-[14px] font-semibold text-gray-800 mb-1 leading-[1.4] tracking-[-0.02em]';
 
   const sectionHdr = (t: string) => (
@@ -32,27 +32,16 @@ export default function SubmitRequirementDashboard() {
     </div>
   );
 
-  const dropdownField = (label: string, val: string, k: keyof FormData, placeholder: string, items: string[]) => (
+  const dropdownField = (label: string, val: string, k: 'dealCategory' | 'geography' | 'timeline', placeholder: string, items: string[]) => (
     <div>
       <label className={labelCls}>{label}</label>
-      <div className="relative">
-        <select value={val} onChange={set(k)} className={selectCls}>
-          <option value="" disabled>{placeholder}</option>
-          {items.map(i => <option key={i} value={i}>{i}</option>)}
-        </select>
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}><polyline points="6 9 12 15 18 9"/></svg>
-        </span>
-      </div>
+      <PublicFormSelect
+        options={items}
+        placeholder={placeholder}
+        value={val}
+        onChange={v => setForm(f => ({ ...f, [k]: v }))}
+      />
     </div>
-  );
-
-  const flagIcon = (
-    <svg viewBox="0 0 20 15" className="w-5 h-4" fill="none">
-      <rect width="20" height="15" fill="#22C55E"/>
-      <circle cx="10" cy="7.5" r="3" fill="#fff" stroke="#22C55E" strokeWidth="0.5"/>
-      <circle cx="10" cy="7.5" r="2" fill="#22C55E"/>
-    </svg>
   );
 
   if (submitted) {
