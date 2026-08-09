@@ -4,6 +4,7 @@ import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { NeedAssistance } from '@/components/NeedAssistance';
 import { PublicFormSelect } from '@/components/PublicFormSelect';
 import { DEAL_CATEGORIES, GEOGRAPHIES } from '@/lib/mock-data';
+import { submitCapability } from '@/lib/submissions-api';
 
 interface FormData {
   fullName: string; contactEmail: string; phoneNumber: string; whatsappNumber: string;
@@ -18,6 +19,8 @@ export default function RegisterCapabilityDashboard() {
     priorExperience: '', agreed: false,
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const set = (k: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: (e.target as HTMLInputElement).type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
@@ -72,7 +75,22 @@ export default function RegisterCapabilityDashboard() {
         <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-center mb-8" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Tell us what you're able to facilitate. Reviewed internally before it's ever considered for matching.</p>
 
         <div className="bg-white rounded-xl p-6 md:p-8">
-          <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} className="space-y-5">
+          <form
+            onSubmit={async e => {
+              e.preventDefault();
+              setSubmitError('');
+              setSubmitting(true);
+              try {
+                await submitCapability({ ...form, source: 'dashboard' });
+                setSubmitted(true);
+              } catch (err) {
+                setSubmitError(err instanceof Error ? err.message : 'Submission failed. Please try again.');
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+            className="space-y-5"
+          >
             {sectionHdr('Personal Information')}
             <div>
               <label className={labelCls}>Full Name</label>
@@ -129,9 +147,10 @@ export default function RegisterCapabilityDashboard() {
 
             <div className="flex justify-end">
               <button type="submit" className="bg-black text-white text-sm font-semibold px-8 py-3 rounded-lg hover:bg-black/85 transition-colors">
-                Submit Capability
+                {submitting ? 'Submitting...' : 'Submit Capability'}
               </button>
             </div>
+            {submitError && <p className="text-center text-xs font-medium text-red-500">{submitError}</p>}
           </form>
         </div>
       </div>

@@ -3,26 +3,40 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeedAssistance } from '@/components/NeedAssistance';
 import { MOCK_REQUIREMENTS } from '@/lib/mock-data';
 
-const REQUIREMENT_STAGES = ['Submitted', 'Under Review', 'Verification', 'Searching for Match', 'Introduction Available', 'Completed', 'Closed'];
+const REQUIREMENT_STAGES = [
+  'Submitted',
+  'Under Review',
+  'Verification',
+  'Searching for Match',
+  'Introduction Available',
+  'Completed',
+  'Closed',
+];
 
 function Timeline({ status }: { status: string }) {
   const currentIdx = REQUIREMENT_STAGES.indexOf(status);
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-5">
       {REQUIREMENT_STAGES.map((stage, i) => {
         const done = i < currentIdx;
         const current = i === currentIdx;
+
         return (
-          <div key={stage} className="flex items-start gap-3">
-            <div className="flex flex-col items-center mt-1">
-              <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                done ? 'bg-green-500' : current ? 'bg-[#0F61E9]' : 'bg-gray-200'
-              }`} />
-              {i < REQUIREMENT_STAGES.length - 1 && <div className="w-0.5 h-6 bg-gray-200 mt-1" />}
+          <div key={stage} className="flex items-start gap-4">
+            <div className="mt-1 flex flex-col items-center">
+              <div className="flex h-4 w-4 items-center justify-center rounded-full bg-white">
+                <div
+                  className={`h-3 w-3 rounded-full ${
+                    done ? 'bg-green-600' : current ? 'bg-[#0F61E9]' : 'bg-gray-400'
+                  }`}
+                />
+              </div>
+              {i < REQUIREMENT_STAGES.length - 1 && <div className="h-7 w-px bg-gray-200" />}
             </div>
             <div>
-              <p className={`text-sm font-medium ${current ? 'text-gray-900' : done ? 'text-gray-700' : 'text-gray-400'}`}>{stage}</p>
-              {current && <p className="text-xs text-gray-400">Current stage</p>}
+              <p className="text-sm font-medium text-black">{stage}</p>
+              {current && <p className="text-xs text-gray-500">Current stage</p>}
             </div>
           </div>
         );
@@ -37,54 +51,54 @@ export default function RequirementDetail() {
 
   return (
     <DashboardLayout title="Dashboard">
-      <div className="max-w-5xl">
+      <div className="max-w-[1080px]">
         <Link href="/dashboard">
-          <div className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6 cursor-pointer">
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
-              <polyline points="15 18 9 12 15 6"/>
+          <div className="mb-8 inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-gray-800">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
+              <polyline points="15 18 9 12 15 6" />
             </svg>
             Back to Dashboard
           </div>
         </Link>
 
-        <div className="mb-6">
-          <p className="text-xs font-semibold tracking-widest text-gray-400 mb-1">{req.category}</p>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{req.title}</h2>
-          <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-            <span>Submitted <strong className="text-gray-900">{req.dateSubmitted}</strong></span>
-            <span className="text-gray-300">·</span>
-            <span>Reference <strong className="text-gray-900">{req.reference}</strong></span>
-            <span className="text-gray-300">·</span>
-            <span>Status <strong className="text-gray-900">{req.status}</strong></span>
+        <div className="mb-8">
+          <p className="mb-4 text-sm font-medium uppercase text-gray-500">{req.category}</p>
+          <h2 className="mb-4 text-xl font-bold text-black">{req.title}</h2>
+          <div className="flex flex-wrap items-center gap-5 text-sm text-gray-600">
+            <span>Submitted&nbsp; <strong className="text-black">{req.dateSubmitted}</strong></span>
+            <span className="text-black">·</span>
+            <span>Reference <strong className="text-black">{req.reference}</strong></span>
+            <span className="text-black">·</span>
+            <span>Status <strong className="text-black">{req.status}</strong></span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-xl p-6 space-y-6">
+        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-11 rounded-2xl bg-[#FAFAFA] p-8">
             <div>
-              <p className="text-xs text-gray-400 mb-1">Geography / Market</p>
-              <p className="font-medium text-gray-900">{req.geography}</p>
+              <p className="mb-4 text-sm font-semibold text-gray-500">Geography / Market</p>
+              <p className="text-[22px] font-medium leading-tight text-black">{req.geography}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-1">Deal Size</p>
-              <p className="font-medium text-gray-900">{req.dealSize}</p>
+              <p className="mb-4 text-sm font-semibold text-gray-500">Deal Size</p>
+              <p className="text-[22px] font-medium leading-tight text-black">{req.dealSize}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-1">Description</p>
-              <p className="font-semibold text-gray-900 leading-relaxed">{req.description}</p>
+              <p className="mb-4 text-sm font-semibold text-gray-500">Description</p>
+              <p className="text-[22px] font-medium leading-snug text-black">{req.description}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-1">Timeline / Urgency</p>
-              <p className="font-semibold text-gray-900">{req.timeline}</p>
+              <p className="mb-4 text-sm font-semibold text-gray-500">Timeline / Urgency</p>
+              <p className="text-[22px] font-medium leading-tight text-black">{req.timeline}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6">
-            <h3 className="font-bold text-gray-900 mb-6">Timeline of Updates</h3>
+          <div className="rounded-2xl bg-[#FAFAFA] p-8">
+            <h3 className="mb-12 font-bold text-black">Timeline of Updates</h3>
             <Timeline status={req.status} />
-            <div className="mt-6 space-y-4 border-t border-gray-100 pt-6">
-              <div className="border-l-2 border-gray-200 pl-3">
-                <p className="text-xs font-semibold text-gray-400 mb-1 tracking-wide">28 JUL 2026</p>
+            <div className="mt-12 space-y-6">
+              <div className="border-l-2 border-black bg-white px-5 py-4">
+                <p className="mb-4 text-sm font-medium tracking-wide text-gray-500">28 JUL 2026</p>
                 <p className="text-sm text-gray-600">Submission received. Awaiting internal review.</p>
               </div>
             </div>

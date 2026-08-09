@@ -45,3 +45,25 @@ export async function appendToSheet(sheetName: string, values: string[][]): Prom
     // Don't throw — Google Sheets failure should not block the form submission
   }
 }
+
+export async function appendToSheetStrict(sheetName: string, values: string[][]): Promise<void> {
+  if (!SPREADSHEET_ID) {
+    throw new Error("GOOGLE_SHEETS_ID is not set");
+  }
+
+  const auth = getAuth();
+  if (!auth) {
+    throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY is not set or invalid");
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${sheetName}!A1`,
+    valueInputOption: "USER_ENTERED",
+    insertDataOption: "INSERT_ROWS",
+    requestBody: { values },
+  });
+
+  logger.info({ sheetName, rows: values.length }, "Appended rows to Google Sheets");
+}

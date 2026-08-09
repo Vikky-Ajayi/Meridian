@@ -5,6 +5,7 @@ import { PublicFormSelect } from '@/components/PublicFormSelect';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
 import { DEAL_CATEGORIES, GEOGRAPHIES } from '@/lib/mock-data';
+import { submitCapability } from '@/lib/submissions-api';
 
 const NAV_LINKS = ['Moving Capital', 'Global Network', 'Contact'];
 
@@ -88,13 +89,24 @@ export default function RegisterCapabilityPublic() {
     dealCategory: '', geography: '', dealSizeRange: '', description: '',
     priorExperience: '', agreed: false,
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const set = (k: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: (e.target as HTMLInputElement).type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    openModal('register');
+    setSubmitError('');
+    setSubmitting(true);
+    try {
+      await submitCapability({ ...form, source: 'public' });
+      openModal('register');
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Submission failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputCls = 'w-full h-11 px-4 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-[#0F61E9] transition-colors';
@@ -219,10 +231,12 @@ export default function RegisterCapabilityPublic() {
 
               <button
                 type="submit"
+                disabled={submitting}
                 className="w-full bg-black text-white text-sm font-semibold py-3.5 rounded-lg hover:bg-black/85 transition-colors"
               >
-                Submit Capability
+                {submitting ? 'Submitting...' : 'Submit Capability'}
               </button>
+              {submitError && <p className="text-center text-xs font-medium text-red-500">{submitError}</p>}
             </form>
 
             <p className="text-center text-sm text-gray-500 mt-4">

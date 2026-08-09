@@ -26,6 +26,7 @@ Private banking and international capital transfer web app. Prospects complete a
 | `ALLOW_ORIGIN` | `https://adricprivate.com` |
 | `DATABASE_URL` | (Postgres connection string) |
 | `GOOGLE_SHEETS_ID` | (Sheet ID) |
+| `GOOGLE_SERVICE_ACCOUNT_KEY` | (Google service account JSON, stringified) |
 | `WHATSAPP_NUMBER` | (optional) |
 | `WHATSAPP_LINK` | (optional) |
 
