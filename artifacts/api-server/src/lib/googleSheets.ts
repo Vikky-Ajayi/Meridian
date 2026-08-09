@@ -4,6 +4,43 @@ import { logger } from "./logger";
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
 
+function formatSheetRange(sheetName: string) {
+  const escapedSheetName = sheetName.replaceAll("'", "''");
+  return `'${escapedSheetName}'!A1`;
+}
+
+async function ensureSheetExists(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string,
+  sheetName: string,
+) {
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId,
+    fields: "sheets.properties.title",
+  });
+
+  const exists = spreadsheet.data.sheets?.some(
+    (sheet) => sheet.properties?.title === sheetName,
+  );
+
+  if (exists) return;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          addSheet: {
+            properties: {
+              title: sheetName,
+            },
+          },
+        },
+      ],
+    },
+  });
+}
+
 function getAuth() {
   if (!SERVICE_ACCOUNT_KEY) {
     logger.warn("GOOGLE_SERVICE_ACCOUNT_KEY not set — Google Sheets sync disabled");
@@ -32,9 +69,10 @@ export async function appendToSheet(sheetName: string, values: string[][]): Prom
 
   try {
     const sheets = google.sheets({ version: "v4", auth });
+    await ensureSheetExists(sheets, SPREADSHEET_ID, sheetName);
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${sheetName}!A1`,
+      range: formatSheetRange(sheetName),
       valueInputOption: "USER_ENTERED",
       insertDataOption: "INSERT_ROWS",
       requestBody: { values },
@@ -57,9 +95,10 @@ export async function appendToSheetStrict(sheetName: string, values: string[][])
   }
 
   const sheets = google.sheets({ version: "v4", auth });
+  await ensureSheetExists(sheets, SPREADSHEET_ID, sheetName);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${sheetName}!A1`,
+    range: formatSheetRange(sheetName),
     valueInputOption: "USER_ENTERED",
     insertDataOption: "INSERT_ROWS",
     requestBody: { values },
