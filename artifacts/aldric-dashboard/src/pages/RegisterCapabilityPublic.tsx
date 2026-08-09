@@ -111,11 +111,11 @@ export default function RegisterCapabilityPublic() {
       <Navbar />
 
       {/* Hero header */}
-      <div className="bg-[#0F61E9] pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
+      <div className="bg-[#0F61E9] pt-8 pb-10 md:pt-14 md:pb-8 rounded-t-2xl">
         <div className="md:max-w-2xl md:mx-auto md:px-4">
           <div className="px-6 md:px-0">
             <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-left capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Register A Capability</h1>
-            <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+            <p className="text-blue-200 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg md:max-w-none md:whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Tell us what you're able to facilitate. Reviewed internally before it's ever considered for matching.
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function RegisterCapabilityPublic() {
 
       {/* Form card */}
       <div className="flex-1 bg-white md:bg-[#0F61E9]">
-        <div className="md:max-w-2xl md:mx-auto md:px-4 md:pb-16 md:-mt-4">
+        <div className="md:max-w-2xl md:mx-auto md:px-4 md:pb-16 md:-mt-2">
           <div className="bg-white md:rounded-2xl md:shadow-lg p-6 md:p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Personal Information */}

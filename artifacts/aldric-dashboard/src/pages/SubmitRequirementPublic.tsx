@@ -108,11 +108,11 @@ export default function SubmitRequirementPublic() {
       <Navbar />
 
       {/* Hero header */}
-      <div className="bg-[#0D1B3E] pt-8 pb-10 md:pt-14 md:pb-16 rounded-t-2xl">
+      <div className="bg-[#0D1B3E] pt-8 pb-10 md:pt-14 md:pb-8 rounded-t-2xl">
         <div className="md:max-w-2xl md:mx-auto md:px-4">
           <div className="px-6 md:px-0">
             <h1 className="text-[40px] font-semibold text-white mb-2 leading-[1.15] tracking-[-0.04em] text-left capitalize" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>Submit A Requirement</h1>
-            <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+            <p className="text-gray-400 text-[14px] font-medium leading-[1.4] tracking-[-0.02em] text-left max-w-lg md:max-w-none md:whitespace-nowrap" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               Tell us what you're trying to get done. Reviewed internally, and only shared once a verified match is confirmed.
             </p>
           </div>
@@ -121,7 +121,7 @@ export default function SubmitRequirementPublic() {
 
       {/* Form card */}
       <div className="flex-1 bg-white md:bg-[#0D1B3E]">
-        <div className="md:max-w-2xl md:mx-auto md:px-4 md:pb-16 md:-mt-4">
+        <div className="md:max-w-2xl md:mx-auto md:px-4 md:pb-16 md:-mt-2">
           <div className="bg-white md:rounded-2xl md:shadow-lg p-6 md:p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               {sectionHdr('Personal Information')}
