@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeedAssistance } from '@/components/NeedAssistance';
-import { MOCK_REQUIREMENTS } from '@/lib/mock-data';
+import { getDashboardSubmissions, type DashboardRequirement } from '@/lib/submissions-api';
+import { useAuth } from '@/lib/auth-context';
 
 const REQUIREMENT_STAGES = [
   'Submitted',
@@ -47,7 +49,22 @@ function Timeline({ status }: { status: string }) {
 
 export default function RequirementDetail() {
   const params = useParams<{ id: string }>();
-  const req = MOCK_REQUIREMENTS.find(r => r.id === params.id) ?? MOCK_REQUIREMENTS[0];
+  const { user } = useAuth();
+  const [req, setReq] = useState<DashboardRequirement | null>(null);
+
+  useEffect(() => {
+    getDashboardSubmissions(user?.email).then(data => {
+      setReq(data.requirements.find(r => r.id === params.id) ?? data.requirements[0] ?? null);
+    });
+  }, [params.id, user?.email]);
+
+  if (!req) {
+    return (
+      <DashboardLayout title="Dashboard">
+        <p className="text-sm text-gray-500">Loading requirement...</p>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Dashboard">

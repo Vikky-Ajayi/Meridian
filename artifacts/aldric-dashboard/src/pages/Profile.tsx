@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeedAssistance } from '@/components/NeedAssistance';
+import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { useAuth } from '@/lib/auth-context';
-import { MOCK_USER } from '@/lib/mock-data';
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -39,10 +39,10 @@ function PasswordField({ label, placeholder, value, onChange }: { label: string;
 }
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, setPendingUser } = useAuth();
   const [info, setInfo] = useState({
-    fullName: user?.name ?? MOCK_USER.name,
-    contactEmail: user?.email ?? MOCK_USER.email,
+    fullName: user?.name ?? '',
+    contactEmail: user?.email ?? '',
     phoneNumber: '',
     whatsappNumber: '',
   });
@@ -51,14 +51,6 @@ export default function Profile() {
   const [pwSaved, setPwSaved] = useState(false);
 
   const inputCls = 'w-full h-11 px-4 text-sm bg-[#F5F6FA] border border-gray-200 rounded-lg outline-none placeholder:text-gray-400 focus:border-gray-300 transition-colors';
-
-  const flagIcon = (
-    <svg viewBox="0 0 20 15" className="w-5 h-4 flex-shrink-0" fill="none">
-      <rect width="20" height="15" fill="#22C55E"/>
-      <circle cx="10" cy="7.5" r="3" fill="#fff" stroke="#22C55E" strokeWidth="0.5"/>
-      <circle cx="10" cy="7.5" r="2" fill="#22C55E"/>
-    </svg>
-  );
 
   return (
     <DashboardLayout title="Profile">
@@ -89,33 +81,29 @@ export default function Profile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
-                <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA] gap-2 px-3">
-                  {flagIcon}
-                  <input
-                    placeholder="0000 000 0000 .000"
-                    value={info.phoneNumber}
-                    onChange={e => setInfo(i => ({ ...i, phoneNumber: e.target.value }))}
-                    className="flex-1 text-sm outline-none bg-transparent placeholder:text-gray-400 h-full"
-                  />
-                </div>
+                <CountryPhoneInput
+                  value={info.phoneNumber}
+                  onChange={v => setInfo(i => ({ ...i, phoneNumber: v }))}
+                  placeholder="0000 000 0000 .000"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">WhatsApp Number</label>
-                <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-11 bg-[#F5F6FA] gap-2 px-3">
-                  {flagIcon}
-                  <input
-                    placeholder="0000 000 0000 .000"
-                    value={info.whatsappNumber}
-                    onChange={e => setInfo(i => ({ ...i, whatsappNumber: e.target.value }))}
-                    className="flex-1 text-sm outline-none bg-transparent placeholder:text-gray-400 h-full"
-                  />
-                </div>
+                <CountryPhoneInput
+                  value={info.whatsappNumber}
+                  onChange={v => setInfo(i => ({ ...i, whatsappNumber: v }))}
+                  placeholder="0000 000 0000 .000"
+                />
               </div>
             </div>
             <div className="flex justify-end">
               {infoSaved && <span className="text-green-600 text-sm mr-4 flex items-center">Saved!</span>}
               <button
-                onClick={() => { setInfoSaved(true); setTimeout(() => setInfoSaved(false), 2000); }}
+                onClick={() => {
+                  setPendingUser({ name: info.fullName, email: info.contactEmail });
+                  setInfoSaved(true);
+                  setTimeout(() => setInfoSaved(false), 2000);
+                }}
                 className="bg-black text-white text-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-black/85 transition-colors"
               >
                 Save Changes

@@ -35,7 +35,7 @@ function PasswordField({ placeholder, value, onChange }: { placeholder: string; 
 }
 
 export function AuthModal({ onClose }: { onClose?: () => void }) {
-  const { modal, openModal, closeModal, login, setPendingEmail, pendingEmail } = useAuth();
+  const { modal, openModal, closeModal, login, setPendingEmail, pendingEmail, setPendingUser } = useAuth();
   const [, setLocation] = useLocation();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -205,6 +205,10 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
           setError('Enter your email and password.');
           return;
         }
+        setPendingUser({
+          name: email.split('@')[0] || 'Aldric Client',
+          email,
+        });
         goDashboard();
       })}
       <p className="mt-8 text-center text-sm text-black">

@@ -1,9 +1,60 @@
 import { Router } from "express";
-import { appendToSheetStrict } from "../lib/googleSheets";
+import { appendToSheetStrict, readSheetStrict } from "../lib/googleSheets";
 import { generateReferenceNumber } from "../lib/referenceNumber";
 import { logger } from "../lib/logger";
 
 const router = Router();
+
+function formatDisplayDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function mapCapabilityRow(row: string[], index: number) {
+  return {
+    id: `cap-${index + 1}`,
+    reference: row[0] ?? "",
+    dateSubmitted: formatDisplayDate(row[1] ?? ""),
+    source: row[2] ?? "",
+    fullName: row[3] ?? "",
+    contactEmail: row[4] ?? "",
+    phoneNumber: row[5] ?? "",
+    whatsappNumber: row[6] ?? "",
+    category: row[7] ?? "",
+    geography: row[8] ?? "",
+    title: row[8] || row[7] || "Capability",
+    dealSize: row[9] ?? "",
+    description: row[10] ?? "",
+    priorExperience: row[11] ?? "",
+    status: "Under Review",
+  };
+}
+
+function mapRequirementRow(row: string[], index: number) {
+  return {
+    id: `req-${index + 1}`,
+    reference: row[0] ?? "",
+    dateSubmitted: formatDisplayDate(row[1] ?? ""),
+    source: row[2] ?? "",
+    fullName: row[3] ?? "",
+    contactEmail: row[4] ?? "",
+    phoneNumber: row[5] ?? "",
+    whatsappNumber: row[6] ?? "",
+    category: row[7] ?? "",
+    geography: row[8] ?? "",
+    title: row[8] || row[7] || "Requirement",
+    dealSize: row[9] ?? "",
+    description: row[10] ?? "",
+    timeline: row[11] ?? "",
+    priorExperience: row[12] ?? "",
+    status: "Under Review",
+  };
+}
 
 type BaseSubmission = {
   source: "public" | "dashboard";
@@ -91,6 +142,30 @@ function validateRequirement(body: unknown): { data?: RequirementSubmission; err
     },
   };
 }
+
+router.get("/", async (req, res) => {
+  try {
+    const email = typeof req.query["email"] === "string" ? req.query["email"].toLowerCase() : "";
+    const [capabilityRows, requirementRows] = await Promise.all([
+      readSheetStrict("Aldric Capabilities"),
+      readSheetStrict("Aldric Requirements"),
+    ]);
+    const capabilities = capabilityRows.map(mapCapabilityRow).filter((row) => {
+      return !email || row.contactEmail.toLowerCase() === email;
+    });
+    const requirements = requirementRows.map(mapRequirementRow).filter((row) => {
+      return !email || row.contactEmail.toLowerCase() === email;
+    });
+
+    return res.status(200).json({
+      capabilities: capabilities.reverse(),
+      requirements: requirements.reverse(),
+    });
+  } catch (err) {
+    logger.error({ err }, "Failed to load Aldric submissions from Google Sheets");
+    return res.status(500).json({ error: "Failed to load submissions." });
+  }
+});
 
 router.post("/capabilities", async (req, res) => {
   const parsed = validateCapability(req.body);

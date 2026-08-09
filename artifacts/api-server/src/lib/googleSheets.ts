@@ -106,3 +106,23 @@ export async function appendToSheetStrict(sheetName: string, values: string[][])
 
   logger.info({ sheetName, rows: values.length }, "Appended rows to Google Sheets");
 }
+
+export async function readSheetStrict(sheetName: string): Promise<string[][]> {
+  if (!SPREADSHEET_ID) {
+    throw new Error("GOOGLE_SHEETS_ID is not set");
+  }
+
+  const auth = getAuth();
+  if (!auth) {
+    throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY is not set or invalid");
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+  await ensureSheetExists(sheets, SPREADSHEET_ID, sheetName);
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: formatSheetRange(sheetName),
+  });
+
+  return (result.data.values ?? []) as string[][];
+}

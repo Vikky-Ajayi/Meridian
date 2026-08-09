@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { NeedAssistance } from '@/components/NeedAssistance';
 import { useAuth } from '@/lib/auth-context';
-import { MOCK_CAPABILITIES, MOCK_REQUIREMENTS } from '@/lib/mock-data';
+import { getDashboardSubmissions, type DashboardCapability, type DashboardRequirement } from '@/lib/submissions-api';
 
 /* Share/external-link arrow — matches the design's curved arrow */
 function ShareArrow() {
@@ -28,7 +29,7 @@ function ActionCard({ href, iconBg, icon, title, desc }: { href: string; iconBg:
   );
 }
 
-function CapabilityCard({ cap }: { cap: typeof MOCK_CAPABILITIES[0] }) {
+function CapabilityCard({ cap }: { cap: DashboardCapability }) {
   return (
     <Link href={`/dashboard/capability/${cap.id}`}>
       <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:shadow-sm transition-shadow">
@@ -57,7 +58,7 @@ function CapabilityCard({ cap }: { cap: typeof MOCK_CAPABILITIES[0] }) {
   );
 }
 
-function RequirementCard({ req }: { req: typeof MOCK_REQUIREMENTS[0] }) {
+function RequirementCard({ req }: { req: DashboardRequirement }) {
   return (
     <Link href={`/dashboard/requirement/${req.id}`}>
       <div className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:shadow-sm transition-shadow">
@@ -93,6 +94,20 @@ function RequirementCard({ req }: { req: typeof MOCK_REQUIREMENTS[0] }) {
 export default function DashboardHome() {
   const { user } = useAuth();
   const firstName = user?.name.split(' ')[0] ?? '';
+  const [capabilities, setCapabilities] = useState<DashboardCapability[]>([]);
+  const [requirements, setRequirements] = useState<DashboardRequirement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    getDashboardSubmissions(user?.email)
+      .then(data => {
+        setCapabilities(data.capabilities);
+        setRequirements(data.requirements);
+      })
+      .catch(err => setLoadError(err instanceof Error ? err.message : 'Failed to load submissions.'))
+      .finally(() => setLoading(false));
+  }, [user?.email]);
 
   return (
     <DashboardLayout title="Dashboard">
@@ -133,10 +148,13 @@ export default function DashboardHome() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-gray-900">My Capabilities</h3>
-            <span className="text-sm text-gray-400">{MOCK_CAPABILITIES.length} total</span>
+            <span className="text-sm text-gray-400">{capabilities.length} total</span>
           </div>
+          {loading && <p className="text-sm text-gray-500">Loading submissions...</p>}
+          {loadError && <p className="text-sm text-red-500">{loadError}</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {MOCK_CAPABILITIES.map(c => <CapabilityCard key={c.id} cap={c} />)}
+            {!loading && capabilities.length === 0 && <p className="text-sm text-gray-500">No capabilities submitted yet.</p>}
+            {capabilities.map(c => <CapabilityCard key={c.id} cap={c} />)}
           </div>
         </div>
 
@@ -144,10 +162,11 @@ export default function DashboardHome() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-gray-900">My Requirements</h3>
-            <span className="text-sm text-gray-400">{MOCK_REQUIREMENTS.length} total</span>
+            <span className="text-sm text-gray-400">{requirements.length} total</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {MOCK_REQUIREMENTS.map(r => <RequirementCard key={r.id} req={r} />)}
+            {!loading && requirements.length === 0 && <p className="text-sm text-gray-500">No requirements submitted yet.</p>}
+            {requirements.map(r => <RequirementCard key={r.id} req={r} />)}
           </div>
         </div>
 

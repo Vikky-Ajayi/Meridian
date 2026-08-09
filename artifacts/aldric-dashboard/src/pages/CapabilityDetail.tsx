@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeedAssistance } from '@/components/NeedAssistance';
-import { MOCK_CAPABILITIES } from '@/lib/mock-data';
+import { getDashboardSubmissions, type DashboardCapability } from '@/lib/submissions-api';
+import { useAuth } from '@/lib/auth-context';
 
 const CAPABILITY_STAGES = [
   'Submitted',
@@ -45,7 +47,22 @@ function Timeline({ status }: { status: string }) {
 
 export default function CapabilityDetail() {
   const params = useParams<{ id: string }>();
-  const cap = MOCK_CAPABILITIES.find(c => c.id === params.id) ?? MOCK_CAPABILITIES[0];
+  const { user } = useAuth();
+  const [cap, setCap] = useState<DashboardCapability | null>(null);
+
+  useEffect(() => {
+    getDashboardSubmissions(user?.email).then(data => {
+      setCap(data.capabilities.find(c => c.id === params.id) ?? data.capabilities[0] ?? null);
+    });
+  }, [params.id, user?.email]);
+
+  if (!cap) {
+    return (
+      <DashboardLayout title="Dashboard">
+        <p className="text-sm text-gray-500">Loading capability...</p>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Dashboard">
