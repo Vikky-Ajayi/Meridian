@@ -2,9 +2,11 @@ interface Props {
   className?: string;
   size?: 'sm' | 'md';
   iconOnly?: boolean;
+  /** Black text/icon instead of white — for the mobile drawer pill. */
+  dark?: boolean;
 }
 
-export function WhatsAppButton({ className = '', size = 'md', iconOnly = false }: Props) {
+export function WhatsAppButton({ className = '', size = 'md', iconOnly = false, dark = false }: Props) {
   const whatsappIcon = `${import.meta.env.BASE_URL}assets/whatsapp-icon.svg`;
 
   return (
@@ -14,7 +16,7 @@ export function WhatsAppButton({ className = '', size = 'md', iconOnly = false }
       className={`items-center gap-2 font-semibold rounded-full transition-colors ${
         iconOnly
           ? 'w-10 h-10 justify-center p-0'
-          : `bg-[#22C55E] hover:bg-[#16A34A] text-white ${size === 'sm' ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'}`
+          : `bg-[#22C55E] hover:bg-[#16A34A] ${dark ? 'text-black' : 'text-white'} ${size === 'sm' ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'}`
       } ${className}`}
     >
       {iconOnly ? (

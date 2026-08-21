@@ -134,7 +134,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
         </button>
       </nav>
       <div className="mt-4 space-y-4">
-        <WhatsAppButton className="inline-flex mx-auto" iconOnly />
+        <WhatsAppButton className="flex w-full justify-center" dark />
         {user && (
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 flex-shrink-0">
