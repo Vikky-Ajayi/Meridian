@@ -134,7 +134,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
         </button>
       </nav>
       <div className="mt-4 space-y-4">
-        <WhatsAppButton className="mx-auto" iconOnly />
+        <WhatsAppButton className="inline-flex mx-auto" iconOnly />
         {user && (
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 flex-shrink-0">
@@ -184,6 +184,7 @@ export function DashboardLayout({ children, title }: Props) {
 
           <div className="flex items-center gap-4">
             <WhatsAppButton className="hidden md:inline-flex" size="sm" />
+            <WhatsAppButton className="inline-flex md:hidden" iconOnly />
             {user && (
               <div className="hidden md:flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">

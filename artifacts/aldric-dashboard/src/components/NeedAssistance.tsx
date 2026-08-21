@@ -9,7 +9,7 @@ export function NeedAssistance() {
           Questions about your submission? Our team responds directly<br className="hidden sm:block" /> on WhatsApp.
         </p>
       </div>
-      <WhatsAppButton className="w-full justify-center md:w-auto md:flex-shrink-0" />
+      <WhatsAppButton className="flex w-full justify-center md:inline-flex md:w-auto md:flex-shrink-0" />
     </div>
   );
 }

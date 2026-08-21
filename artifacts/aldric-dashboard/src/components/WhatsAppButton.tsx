@@ -11,7 +11,7 @@ export function WhatsAppButton({ className = '', size = 'md', iconOnly = false }
     <a
       href="#"
       aria-label={iconOnly ? 'Message the Desk on WhatsApp' : undefined}
-      className={`inline-flex items-center gap-2 font-semibold rounded-full transition-colors ${
+      className={`items-center gap-2 font-semibold rounded-full transition-colors ${
         iconOnly
           ? 'w-10 h-10 justify-center p-0'
           : `bg-[#22C55E] hover:bg-[#16A34A] text-white ${size === 'sm' ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'}`
