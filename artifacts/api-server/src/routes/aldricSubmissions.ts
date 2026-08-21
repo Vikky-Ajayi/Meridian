@@ -120,7 +120,7 @@ function validateBase(body: unknown): { data?: BaseSubmission; errors?: string[]
 
 function validateCapability(body: unknown): { data?: CapabilitySubmission; errors?: string[] } {
   const base = validateBase(body);
-  if (!base.data) return base;
+  if (!base.data) return { errors: base.errors };
   const record = body as Record<string, unknown>;
   return {
     data: {
@@ -132,7 +132,7 @@ function validateCapability(body: unknown): { data?: CapabilitySubmission; error
 
 function validateRequirement(body: unknown): { data?: RequirementSubmission; errors?: string[] } {
   const base = validateBase(body);
-  if (!base.data) return base;
+  if (!base.data) return { errors: base.errors };
   const record = body as Record<string, unknown>;
   return {
     data: {

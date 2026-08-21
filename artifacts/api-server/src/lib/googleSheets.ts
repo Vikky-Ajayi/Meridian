@@ -9,6 +9,15 @@ function formatSheetRange(sheetName: string) {
   return `'${escapedSheetName}'!A1`;
 }
 
+// Reading needs the whole sheet, not the single A1 cell — formatSheetRange's
+// anchor is correct for append (which locates the table and inserts after
+// it), but used as a `get` range it returns only cell A1's value, so
+// submitted rows never came back to the dashboard.
+function formatFullSheetRange(sheetName: string) {
+  const escapedSheetName = sheetName.replaceAll("'", "''");
+  return `'${escapedSheetName}'!A1:Z10000`;
+}
+
 async function ensureSheetExists(
   sheets: ReturnType<typeof google.sheets>,
   spreadsheetId: string,
@@ -121,7 +130,7 @@ export async function readSheetStrict(sheetName: string): Promise<string[][]> {
   await ensureSheetExists(sheets, SPREADSHEET_ID, sheetName);
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: SPREADSHEET_ID,
-    range: formatSheetRange(sheetName),
+    range: formatFullSheetRange(sheetName),
   });
 
   return (result.data.values ?? []) as string[][];
