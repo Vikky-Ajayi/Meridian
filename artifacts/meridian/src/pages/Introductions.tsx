@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { AldricLogo } from '@/components/AldricLogo';
-import { AuthModal } from '@/components/AuthModal';
-import { useAuth } from '@/lib/auth-context';
+import { Logo } from '@/components/ui/Logo';
+import { Footer } from '@/components/layout/Footer';
 
 const INSTRUMENT_SANS = { fontFamily: "'Instrument Sans', sans-serif" };
+const REGISTER_URL = '/aldric-dashboard/register-capability';
 
 /* ─────────────────────────────────────────────────────────
    NAVBAR
@@ -12,13 +12,12 @@ const INSTRUMENT_SANS = { fontFamily: "'Instrument Sans', sans-serif" };
 const NAV_LINKS = ['Moving Capital', 'Global Network', 'Contact'];
 
 function Navbar() {
-  const { openModal } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
     <div className="sticky top-0 z-30">
       <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between">
-        <AldricLogo />
+        <Logo theme="light" />
 
         {/* Desktop nav links */}
         <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
@@ -28,12 +27,12 @@ function Navbar() {
         </nav>
 
         {/* Desktop CTA */}
-        <button
-          onClick={() => openModal('register')}
+        <a
+          href={REGISTER_URL}
           className="hidden md:block bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors whitespace-nowrap"
         >
           Request an Introduction
-        </button>
+        </a>
 
         {/* Mobile hamburger */}
         <button
@@ -66,12 +65,13 @@ function Navbar() {
               {l}
             </a>
           ))}
-          <button
-            onClick={() => { setOpen(false); openModal('register'); }}
-            className="mt-1 w-full bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors"
+          <a
+            href={REGISTER_URL}
+            onClick={() => setOpen(false)}
+            className="mt-1 w-full text-center bg-[#111827] text-white text-[13px] font-medium px-5 py-2.5 rounded-lg hover:bg-[#1f2937] transition-colors"
           >
             Request an Introduction
-          </button>
+          </a>
         </div>
       )}
     </div>
@@ -183,11 +183,11 @@ function Services() {
             <ServiceCard
               data={DEAL_FACILITATION}
               button={
-                <Link href="/">
-                  <button className="w-full md:w-auto bg-[#0F61E9] text-white text-[13.5px] font-semibold px-6 py-3 rounded-lg hover:bg-[#0d52c9] transition-colors whitespace-nowrap">
+                <a href={REGISTER_URL}>
+                  <button className="w-full md:w-auto bg-[#0F61E9] text-white text-[13.5px] font-semibold px-6 py-3 rounded-lg hover:bg-[#0d52c9] transition-colors md:whitespace-nowrap">
                     {DEAL_FACILITATION.buttonText} →
                   </button>
-                </Link>
+                </a>
               }
             />
           </div>
@@ -195,83 +195,17 @@ function Services() {
             <ServiceCard
               data={FINANCIAL_INTRODUCTION}
               button={
-                <a href="/move-money-abroad">
-                  <button className="w-full md:w-auto bg-[#0F61E9] text-white text-[13.5px] font-semibold px-6 py-3 rounded-lg hover:bg-[#0d52c9] transition-colors whitespace-nowrap">
+                <Link href="/move-money-abroad">
+                  <button className="w-full md:w-auto bg-[#0F61E9] text-white text-[13.5px] font-semibold px-6 py-3 rounded-lg hover:bg-[#0d52c9] transition-colors md:whitespace-nowrap">
                     {FINANCIAL_INTRODUCTION.buttonText} →
                   </button>
-                </a>
+                </Link>
               }
             />
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────
-   FOOTER (matches the rest of the public pages)
-───────────────────────────────────────────────────────── */
-const footerLinks = [
-  ['Solutions', '#'],
-  ['Global Payments', '#'],
-  ['Contact', '#'],
-  ['Advisory', '#'],
-  ['Privacy', '#'],
-  ['Security', '#'],
-  ['Regulatory information', '#'],
-];
-
-function Footer() {
-  return (
-    <footer className="meridian-footer">
-      <div className="footer-inner">
-        <div className="footer-top">
-          <AldricLogo />
-          <nav>
-            {footerLinks.map(([label, href]) => (
-              <a key={label} href={href}>{label}</a>
-            ))}
-          </nav>
-        </div>
-
-        <div className="footer-legal">
-          <p>
-            Aldric Private acts as a business banking and foreign exchange introducer, connecting
-            eligible individuals and businesses with suitable regulated financial service
-            providers and banking partners.
-          </p>
-          <p>
-            We assist clients seeking banking solutions, including private clients,
-            high-net-worth individuals (HNWIs), politically exposed persons (PEPs), and
-            businesses operating in industries that may require specialist banking support,
-            including Money Service Businesses (MSBs), FX companies, cryptocurrency
-            businesses, gaming and gambling operators, adult entertainment businesses, and
-            CBD-related businesses.
-          </p>
-          <p>
-            Account openings, banking relationships, and financial services are subject to
-            the independent approval processes, compliance requirements, and risk
-            assessments of the relevant financial institutions and service providers.
-            Aldric Private does not guarantee acceptance or approval by any banking partner.
-          </p>
-          <p>
-            Aldric Private provides its services in partnership with licensed financial
-            institutions and payment providers within their respective jurisdictions.
-            <br />
-            All trademarks, logos, and brand names referenced belong to their respective
-            owners. The use of these trademarks and brand names does not imply endorsement
-            by, affiliation with, or association with Aldric Private.
-          </p>
-        </div>
-
-        <div className="footer-copy">
-          <span>© 2025 by Aldric Private</span>
-          <span>Designed for Discerning Clients</span>
-        </div>
-      </div>
-      <img className="footer-watermark" src="/aldric-dashboard/assets/footer-watermark.png" alt="" aria-hidden="true" />
-    </footer>
   );
 }
 
@@ -287,7 +221,6 @@ export default function Introductions() {
         <Services />
       </main>
       <Footer />
-      <AuthModal />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 
 import PrivateIntroductions from '@/pages/PrivateIntroductions';
-import Introductions from '@/pages/Introductions';
 import RegisterCapabilityPublic from '@/pages/RegisterCapabilityPublic';
 import SubmitRequirementPublic from '@/pages/SubmitRequirementPublic';
 import DashboardHome from '@/pages/DashboardHome';
@@ -25,7 +24,6 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={PrivateIntroductions} />
-      <Route path="/introductions" component={Introductions} />
       <Route path="/register-capability" component={RegisterCapabilityPublic} />
       <Route path="/submit-requirement" component={SubmitRequirementPublic} />
       <Route path="/dashboard" component={() => <ProtectedRoute component={DashboardHome} />} />

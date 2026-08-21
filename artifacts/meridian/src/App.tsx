@@ -18,6 +18,7 @@ import MoveMoneyAbroad from '@/pages/MoveMoneyAbroad';
 import MoveMoneySuccess from '@/pages/MoveMoneySuccess';
 import PrivateBankingIntroduction from '@/pages/PrivateBankingIntroduction';
 import PrivateBankingSuccess from '@/pages/PrivateBankingSuccess';
+import Introductions from '@/pages/Introductions';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/move-money-success" component={MoveMoneySuccess} />
       <Route path="/private-banking-introduction" component={PrivateBankingIntroduction} />
       <Route path="/private-banking-success" component={PrivateBankingSuccess} />
+      <Route path="/introductions" component={Introductions} />
       <Route path="/">
         <Layout><Home /></Layout>
       </Route>
