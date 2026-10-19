@@ -206,7 +206,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
           return;
         }
         setPendingUser({
-          name: user?.name || email.split('@')[0] || 'Aldric Client',
+          name: user?.name || email.split('@')[0] || 'Envoi & Co Client',
           email,
         });
         goDashboard();

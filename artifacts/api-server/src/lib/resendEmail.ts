@@ -22,7 +22,7 @@ export async function sendOtpEmail(email: string, otp: string) {
     body: JSON.stringify({
       from,
       to: email,
-      subject: "Your Aldric Private verification code",
+      subject: "Your Envoi & Co verification code",
       html: renderOtpEmail({ otp, recipientEmail: email }),
       text: renderOtpEmailText({ otp, recipientEmail: email }),
     }),

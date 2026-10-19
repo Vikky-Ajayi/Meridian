@@ -4,7 +4,7 @@ import { Logo } from '@/components/ui/Logo';
 import { Footer } from '@/components/layout/Footer';
 
 const INSTRUMENT_SANS = { fontFamily: "'Instrument Sans', sans-serif" };
-const REGISTER_URL = '/aldric-dashboard/register-capability';
+const REGISTER_URL = '/envoi-dashboard/register-capability';
 
 /* ─────────────────────────────────────────────────────────
    NAVBAR
@@ -96,7 +96,7 @@ function Hero() {
           <span className="font-bold">They're introduced</span>
         </p>
         <p className="text-[#272626] text-[14px] md:text-[15px] leading-relaxed max-w-lg">
-          Aldric Private is where consequential capital and consequential contacts move —
+          Envoi & Co is where consequential capital and consequential contacts move —
           privately, verified, and never listed for anyone to browse. Two services. Choose
           the one you need.
         </p>

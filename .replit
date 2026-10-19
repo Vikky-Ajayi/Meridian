@@ -29,7 +29,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=23038 BASE_PATH=/aldric-dashboard/ pnpm --filter @workspace/aldric-dashboard run dev"
+args = "PORT=23038 BASE_PATH=/envoi-dashboard/ pnpm --filter @workspace/aldric-dashboard run dev"
 waitForPort = 23038
 
 [agent]

@@ -23,13 +23,13 @@ run('pnpm', ['--filter', '@workspace/meridian', 'run', 'build'], {
 });
 
 run('pnpm', ['--filter', '@workspace/aldric-dashboard', 'run', 'build'], {
-  BASE_PATH: '/aldric-dashboard/',
+  BASE_PATH: '/envoi-dashboard/',
 });
 
 const dashboardOut = path.join(root, 'artifacts/aldric-dashboard/dist/public');
 const meridianDashboardOut = path.join(
   root,
-  'artifacts/meridian/dist/public/aldric-dashboard',
+  'artifacts/meridian/dist/public/envoi-dashboard',
 );
 
 rmSync(meridianDashboardOut, { recursive: true, force: true });
