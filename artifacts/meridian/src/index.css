@@ -1325,12 +1325,6 @@
     gap: 2px;
     margin-top: 20px;
   }
-  .footer-watermark {
-    bottom: -8px;
-    font-size: 88px;
-    left: -4px;
-    letter-spacing: -4px;
-  }
 }
 
 .flow-page {

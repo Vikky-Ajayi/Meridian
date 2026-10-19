@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AldricLogo } from '@/components/AldricLogo';
+import { EnvoiLogo } from '@/components/EnvoiLogo';
 import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
@@ -8,7 +8,7 @@ import { DEAL_CATEGORIES, GEOGRAPHIES, TIMELINES } from '@/lib/mock-data';
 function MobileNavbar() {
   return (
     <header className="bg-black px-5 h-14 flex items-center justify-between relative z-10">
-      <AldricLogo />
+      <EnvoiLogo />
       <button className="text-white p-1">
         <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2}>
           <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -22,7 +22,7 @@ function DesktopNavbar() {
   const { openModal } = useAuth();
   return (
     <header className="hidden md:flex bg-[#0D1B3E]/90 backdrop-blur-sm px-8 h-14 items-center justify-between relative z-10">
-      <AldricLogo />
+      <EnvoiLogo />
       <nav className="flex items-center gap-8 text-sm text-gray-300">
         {['Moving Capital', 'Solutions', 'Global Payments', 'Advisory', 'Contact'].map(l => (
           <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>

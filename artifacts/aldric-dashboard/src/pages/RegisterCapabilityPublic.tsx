@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AldricLogo } from '@/components/AldricLogo';
+import { EnvoiLogo } from '@/components/EnvoiLogo';
 import { CountryPhoneInput } from '@/components/CountryPhoneInput';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
@@ -14,7 +14,7 @@ function Navbar() {
   return (
     <div className="sticky top-0 z-30">
       <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between">
-        <AldricLogo />
+        <EnvoiLogo />
 
         {/* Desktop nav links */}
         <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
