@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { AldricLogo } from '@/components/AldricLogo';
+import { EnvoiLogo } from '@/components/EnvoiLogo';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/lib/auth-context';
 
@@ -10,7 +10,7 @@ function Navbar() {
   const { openModal } = useAuth();
   return (
     <header className="bg-white border-b border-gray-100 px-6 lg:px-[150px] h-[60px] flex items-center justify-between sticky top-0 z-30">
-      <AldricLogo />
+      <EnvoiLogo />
       <nav className="hidden md:flex items-center gap-8 text-[13.5px] text-[#1a1a2e] font-normal">
         {['Moving Capital', 'Global Network', 'Contact'].map(l => (
           <a key={l} href="#" className="hover:text-[#0E61E8] transition-colors">{l}</a>
@@ -41,7 +41,7 @@ function Hero() {
 
         {/* Subtext */}
         <p className="text-[#6b7a99] text-[18px] font-medium leading-[1.4] tracking-[-0.02em] mb-8 max-w-[520px]" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
-          Aldric Private holds a private record of who can facilitate what, and who needs it.
+          Envoi & Co holds a private record of who can facilitate what, and who needs it.
           When a requirement matches a capability already on file, we make the introduction
           ourselves — quietly, and only once both sides are verified.
         </p>
@@ -76,7 +76,7 @@ function Hero() {
             <CurvedArrow />
           </div>
 
-          {/* Centre: ALDRIC */}
+          {/* Centre: Envoi & Co */}
           <DiagramCard
             imgSrc="/aldric-dashboard/assets/hero-aldric-center.svg"
             label={null}
@@ -122,7 +122,7 @@ function DiagramCard({
     <div className={`flex flex-col ${align === 'center' ? 'items-center' : align === 'left' ? 'items-start' : 'items-end'} gap-3 flex-1`}>
       {/* Illustration */}
       <div className="w-[140px] md:w-[160px] aspect-[200/270]">
-        <img src={imgSrc} alt={label ?? 'ALDRIC Private'} className="w-full h-full object-contain" />
+        <img src={imgSrc} alt={label ?? 'Envoi & Co'} className="w-full h-full object-contain" />
       </div>
     </div>
   );
@@ -178,7 +178,7 @@ function Stats() {
 ───────────────────────────────────────────────────────── */
 const CAPABILITY_POINTS = [
   'No cost to register — there is nothing to pay to be on the record',
-  'Nothing about you is shared, published, or searchable by anyone outside Aldric Private',
+  'Nothing about you is shared, published, or searchable by anyone outside Envoi & Co',
   "You're only ever approached for a genuine, reviewed match to your stated capability",
   'You decide, deal by deal, whether you want to proceed once we reach out',
   "The requirement's identity and details are verified before you're ever introduced",
@@ -214,7 +214,7 @@ function TheModel() {
         </h2>
         <p className="text-[#6b7a99] text-[14px] leading-relaxed mb-12 max-w-2xl">
           Nothing is listed publicly, and nothing is browsable. Capabilities and requirements sit privately in
-          the same system, and Aldric Private is the only party that ever sees both sides at once.
+          the same system, and Envoi & Co is the only party that ever sees both sides at once.
         </p>
 
         {/* Two-column cards */}
@@ -277,7 +277,7 @@ const STEPS = [
   },
   {
     title: 'Private search',
-    body: 'Aldric Private searches the existing record of registered capabilities for a genuine match — not a keyword match, a judged one.',
+    body: 'Envoi & Co searches the existing record of registered capabilities for a genuine match — not a keyword match, a judged one.',
   },
   {
     title: 'Identity verification',
@@ -285,7 +285,7 @@ const STEPS = [
   },
   {
     title: 'Introduction',
-    body: 'Once verified, Aldric Private makes the introduction directly. What happens between the two parties afterward is between them.',
+    body: 'Once verified, Envoi & Co makes the introduction directly. What happens between the two parties afterward is between them.',
   },
 ];
 
@@ -341,7 +341,7 @@ const FEE_NOTES = [
   'The £5,000 deposit is non-refundable once sourcing begins, whether or not a match is found.',
   'If no match is sourced, you are not charged the deposit again on a future request — it\'s only payable once more once a contact is successfully sourced.',
   'The facilitation fee itself is only payable once a verified introduction has actually been made.',
-  'The facilitator you\'re introduced to may set their own separate fee for the work of making the deal happen — this is agreed directly between you and them, and is not set, capped, or collected by Aldric Private.',
+  'The facilitator you\'re introduced to may set their own separate fee for the work of making the deal happen — this is agreed directly between you and them, and is not set, capped, or collected by Envoi & Co.',
   'Exact terms are set out in the engagement agreement provided before any payment is taken.',
 ];
 
@@ -540,7 +540,7 @@ function Footer() {
     <footer className="meridian-footer">
       <div className="footer-inner">
         <div className="footer-top">
-          <AldricLogo />
+          <EnvoiLogo />
           <nav>
             {footerLinks.map(([label, href]) => (
               <a key={label} href={href}>{label}</a>
@@ -550,7 +550,7 @@ function Footer() {
 
         <div className="footer-legal">
           <p>
-            Aldric Private acts as a business banking and foreign exchange introducer, connecting
+            Envoi & Co acts as a business banking and foreign exchange introducer, connecting
             eligible individuals and businesses with suitable regulated financial service
             providers and banking partners.
           </p>
@@ -566,24 +566,27 @@ function Footer() {
             Account openings, banking relationships, and financial services are subject to
             the independent approval processes, compliance requirements, and risk
             assessments of the relevant financial institutions and service providers.
-            Aldric Private does not guarantee acceptance or approval by any banking partner.
+            Envoi & Co does not guarantee acceptance or approval by any banking partner.
           </p>
           <p>
-            Aldric Private provides its services in partnership with licensed financial
+            Envoi & Co provides its services in partnership with licensed financial
             institutions and payment providers within their respective jurisdictions.
             <br />
             All trademarks, logos, and brand names referenced belong to their respective
             owners. The use of these trademarks and brand names does not imply endorsement
-            by, affiliation with, or association with Aldric Private.
+            by, affiliation with, or association with Envoi & Co.
           </p>
         </div>
 
         <div className="footer-copy">
-          <span>© 2025 by Aldric Private</span>
+          <span>© 2025 by Envoi & Co</span>
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
-      <img className="footer-watermark" src="/aldric-dashboard/assets/footer-watermark.png" alt="" aria-hidden="true" />
+      <picture>
+        <source media="(max-width: 700px)" srcSet="/aldric-dashboard/assets/envoi-watermark-mobile.svg" />
+        <img className="footer-watermark" src="/aldric-dashboard/assets/envoi-watermark.svg" alt="" aria-hidden="true" />
+      </picture>
     </footer>
   );
 }

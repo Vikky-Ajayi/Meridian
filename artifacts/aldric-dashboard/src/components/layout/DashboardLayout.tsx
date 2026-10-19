@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
-import { AldricLogo } from '@/components/AldricLogo';
+import { EnvoiLogo } from '@/components/EnvoiLogo';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { useAuth } from '@/lib/auth-context';
 
@@ -52,7 +52,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex flex-col h-full py-6 px-4">
       <div className="mb-16 px-2">
-        <AldricLogo />
+        <EnvoiLogo />
       </div>
       <nav className="flex-1 space-y-5">
         {NAV.map(n => {
@@ -97,7 +97,7 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col px-6 py-6">
       <div className="flex items-center justify-between mb-10">
-        <AldricLogo />
+        <EnvoiLogo />
         <button onClick={onClose} className="w-8 h-8 flex items-center justify-center">
           <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2}>
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -177,7 +177,7 @@ export function DashboardLayout({ children, title }: Props) {
         <header className="bg-white px-4 md:px-10 h-[72px] flex items-center justify-between flex-shrink-0">
           {/* Mobile: logo + hamburger */}
           <div className="flex items-center gap-4 md:hidden">
-            <AldricLogo />
+            <EnvoiLogo />
           </div>
           {/* Desktop: page title */}
           <h1 className="hidden md:block text-[30px] font-bold tracking-[-0.04em] text-black">{title}</h1>

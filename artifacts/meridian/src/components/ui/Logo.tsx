@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import logoSrc from '@/assets/aldric-logo.svg';
+import logoSrc from '@/assets/envoi-logo.svg';
 
 interface LogoProps {
   theme?: 'light' | 'dark';
@@ -15,7 +15,7 @@ export function Logo({ theme = 'light', className = '' }: LogoProps) {
     >
       <img
         src={logoSrc}
-        alt="ALDRIC Private"
+        alt="Envoi & Co"
         style={{
           height: '22px',
           width: 'auto',

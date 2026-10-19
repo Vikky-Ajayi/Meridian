@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Logo } from '@/components/ui/Logo';
-import footerWatermark from '@/assets/footer-watermark.png';
+import footerWatermark from '@/assets/envoi-watermark.svg';
+import footerWatermarkMobile from '@/assets/envoi-watermark-mobile.svg';
 
 const footerLinks = [
   ['Solutions', '/'],
@@ -27,7 +28,7 @@ export function Footer() {
 
         <div className="footer-legal">
           <p>
-            Aldric Private acts as a business banking and foreign exchange introducer, connecting
+            Envoi & Co acts as a business banking and foreign exchange introducer, connecting
             eligible individuals and businesses with suitable regulated financial service
             providers and banking partners.
           </p>
@@ -43,24 +44,27 @@ export function Footer() {
             Account openings, banking relationships, and financial services are subject to
             the independent approval processes, compliance requirements, and risk
             assessments of the relevant financial institutions and service providers.
-            Aldric Private does not guarantee acceptance or approval by any banking partner.
+            Envoi & Co does not guarantee acceptance or approval by any banking partner.
           </p>
           <p>
-            Aldric Private provides its services in partnership with licensed financial
+            Envoi & Co provides its services in partnership with licensed financial
             institutions and payment providers within their respective jurisdictions.
             <br />
             All trademarks, logos, and brand names referenced belong to their respective
             owners. The use of these trademarks and brand names does not imply endorsement
-            by, affiliation with, or association with Aldric Private.
+            by, affiliation with, or association with Envoi & Co.
           </p>
         </div>
 
         <div className="footer-copy">
-          <span>© 2025 by Aldric Private</span>
+          <span>© 2025 by Envoi & Co</span>
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
-      <img className="footer-watermark" src={footerWatermark} alt="" aria-hidden="true" />
+      <picture>
+        <source media="(max-width: 700px)" srcSet={footerWatermarkMobile} />
+        <img className="footer-watermark" src={footerWatermark} alt="" aria-hidden="true" />
+      </picture>
     </footer>
   );
 }
