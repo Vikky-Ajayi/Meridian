@@ -613,17 +613,6 @@
   position: relative;
 }
 
-.solution-section::before {
-  background: url('./assets/solution-vector.svg') left bottom / contain no-repeat;
-  bottom: 0;
-  content: '';
-  height: 390px;
-  left: 0;
-  opacity: 0.18;
-  position: absolute;
-  width: 448px;
-}
-
 .solution-section h2 {
   font-size: 40px;
   font-weight: 600;
@@ -1165,9 +1154,6 @@
     gap: 0;
     padding: 34px 16px 40px;
   }
-  .solution-section::before {
-    display: none;
-  }
   .solution-section > div:first-child {
     margin-bottom: 28px;
   }
@@ -1333,30 +1319,6 @@
   background: #fff;
   color: #000;
   font-family: 'Instrument Sans', sans-serif;
-}
-
-/* Road vector decoration — bottom-left on desktop */
-.flow-page::after {
-  background-image: url('/road-vector.png');
-  background-position: bottom left;
-  background-repeat: no-repeat;
-  background-size: contain;
-  bottom: 0;
-  content: '';
-  left: 0;
-  pointer-events: none;
-  position: fixed;
-  height: 80vh;
-  width: 65vw;
-  mix-blend-mode: luminosity;
-  opacity: 0.45;
-  z-index: 0;
-}
-
-@media (max-width: 700px) {
-  .flow-page::after {
-    display: none;
-  }
 }
 
 .content-page {
