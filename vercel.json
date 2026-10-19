@@ -1,10 +1,14 @@
 {
   "buildCommand": "bash scripts/build-vercel.sh",
   "outputDirectory": "artifacts/meridian/dist/public",
+  "redirects": [
+    { "source": "/aldric-dashboard", "destination": "/envoi-dashboard", "permanent": false },
+    { "source": "/aldric-dashboard/:path*", "destination": "/envoi-dashboard/:path*", "permanent": false }
+  ],
   "rewrites": [
-    { "source": "/aldric-dashboard", "destination": "/aldric-dashboard/index.html" },
-    { "source": "/aldric-dashboard/", "destination": "/aldric-dashboard/index.html" },
-    { "source": "/aldric-dashboard/(?!assets/|favicon\\.svg|robots\\.txt)(.*)", "destination": "/aldric-dashboard/index.html" },
-    { "source": "/((?!api/|aldric-dashboard/).*)", "destination": "/index.html" }
+    { "source": "/envoi-dashboard", "destination": "/envoi-dashboard/index.html" },
+    { "source": "/envoi-dashboard/", "destination": "/envoi-dashboard/index.html" },
+    { "source": "/envoi-dashboard/(?!assets/|favicon\\.svg|robots\\.txt)(.*)", "destination": "/envoi-dashboard/index.html" },
+    { "source": "/((?!api/|envoi-dashboard/).*)", "destination": "/index.html" }
   ]
 }

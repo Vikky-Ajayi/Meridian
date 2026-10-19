@@ -20,7 +20,7 @@ if (!isBuild && (Number.isNaN(port) || port <= 0)) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH ?? '/aldric-dashboard/';
+const basePath = process.env.BASE_PATH ?? '/envoi-dashboard/';
 
 export default defineConfig({
   base: basePath,

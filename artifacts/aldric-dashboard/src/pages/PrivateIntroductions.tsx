@@ -65,7 +65,7 @@ function Hero() {
 
           {/* Capability */}
           <DiagramCard
-            imgSrc="/aldric-dashboard/assets/hero-capability.svg"
+            imgSrc="/envoi-dashboard/assets/hero-capability.svg"
             label="Capability"
             sub="On file, Private"
             align="left"
@@ -78,7 +78,7 @@ function Hero() {
 
           {/* Centre: Envoi & Co */}
           <DiagramCard
-            imgSrc="/aldric-dashboard/assets/hero-aldric-center.svg"
+            imgSrc="/envoi-dashboard/assets/hero-center.svg"
             label={null}
             sub="Verifies and Connects"
             align="center"
@@ -92,7 +92,7 @@ function Hero() {
 
           {/* Requirement */}
           <DiagramCard
-            imgSrc="/aldric-dashboard/assets/hero-requirement.svg"
+            imgSrc="/envoi-dashboard/assets/hero-requirement.svg"
             label="Requirement"
             sub="submitted, confidential"
             align="right"
@@ -584,8 +584,8 @@ function Footer() {
         </div>
       </div>
       <picture>
-        <source media="(max-width: 700px)" srcSet="/aldric-dashboard/assets/envoi-watermark-mobile.svg" />
-        <img className="footer-watermark" src="/aldric-dashboard/assets/envoi-watermark.svg" alt="" aria-hidden="true" />
+        <source media="(max-width: 700px)" srcSet="/envoi-dashboard/assets/envoi-watermark-mobile.svg" />
+        <img className="footer-watermark" src="/envoi-dashboard/assets/envoi-watermark.svg" alt="" aria-hidden="true" />
       </picture>
     </footer>
   );
