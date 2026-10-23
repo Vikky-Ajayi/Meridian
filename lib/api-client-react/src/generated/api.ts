@@ -20,9 +20,13 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  BelowMinimumInput,
+  BelowMinimumResult,
+  ContactInput,
   EnquiryResult,
   ErrorResponse,
   HealthStatus,
+  IntroductionRequestInput,
   MoveMoneyInput,
   PrivateBankingInput
 } from './api.schemas';
@@ -275,4 +279,221 @@ export const useSubmitPrivateBankingEnquiry = <TError = ErrorType<ErrorResponse>
       > => {
       return useMutation(getSubmitPrivateBankingEnquiryMutationOptions(options));
     }
+
+export const getLogBelowMinimumEnquiryUrl = () => {
+
+
+
+
+  return `/api/enquiries/below-minimum`
+}
+
+/**
+ * Records that a visitor selected an amount below the minimum threshold (amount only, no contact details)
+ * @summary Log a below-minimum Move Money Abroad enquiry
+ */
+export const logBelowMinimumEnquiry = async (belowMinimumInput: BelowMinimumInput, options?: RequestInit): Promise<BelowMinimumResult> => {
+
+  return customFetch<BelowMinimumResult>(getLogBelowMinimumEnquiryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(belowMinimumInput)
+  }
+);}
+
+
+
+
+
+export const getLogBelowMinimumEnquiryMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logBelowMinimumEnquiry>>, TError,{data: BodyType<BelowMinimumInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof logBelowMinimumEnquiry>>, TError,{data: BodyType<BelowMinimumInput>}, TContext> => {
+
+const mutationKey = ['logBelowMinimumEnquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logBelowMinimumEnquiry>>, {data: BodyType<BelowMinimumInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  logBelowMinimumEnquiry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LogBelowMinimumEnquiryMutationResult = NonNullable<Awaited<ReturnType<typeof logBelowMinimumEnquiry>>>
+    export type LogBelowMinimumEnquiryMutationBody = BodyType<BelowMinimumInput>
+    export type LogBelowMinimumEnquiryMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Log a below-minimum Move Money Abroad enquiry
+ */
+export const useLogBelowMinimumEnquiry = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logBelowMinimumEnquiry>>, TError,{data: BodyType<BelowMinimumInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof logBelowMinimumEnquiry>>,
+        TError,
+        {data: BodyType<BelowMinimumInput>},
+        TContext
+      > => {
+      return useMutation(getLogBelowMinimumEnquiryMutationOptions(options));
+    }
+
+export const getSubmitContactEnquiryUrl = () => {
+
+
+
+
+  return `/api/enquiries/contact`
+}
+
+/**
+ * Submits the Contact Us form, saves to DB and Google Sheets
+ * @summary Submit Contact Us enquiry
+ */
+export const submitContactEnquiry = async (contactInput: ContactInput, options?: RequestInit): Promise<EnquiryResult> => {
+
+  return customFetch<EnquiryResult>(getSubmitContactEnquiryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(contactInput)
+  }
+);}
+
+
+
+
+
+export const getSubmitContactEnquiryMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContactEnquiry>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitContactEnquiry>>, TError,{data: BodyType<ContactInput>}, TContext> => {
+
+const mutationKey = ['submitContactEnquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitContactEnquiry>>, {data: BodyType<ContactInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitContactEnquiry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitContactEnquiryMutationResult = NonNullable<Awaited<ReturnType<typeof submitContactEnquiry>>>
+    export type SubmitContactEnquiryMutationBody = BodyType<ContactInput>
+    export type SubmitContactEnquiryMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Submit Contact Us enquiry
+ */
+export const useSubmitContactEnquiry = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContactEnquiry>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitContactEnquiry>>,
+        TError,
+        {data: BodyType<ContactInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitContactEnquiryMutationOptions(options));
+    }
+
+export const getSubmitIntroductionRequestUrl = () => {
+
+
+
+
+  return `/api/enquiries/introduction-request`
+}
+
+/**
+ * Submits the homepage introduction request form, saves to DB and Google Sheets
+ * @summary Submit homepage Request an Introduction form
+ */
+export const submitIntroductionRequest = async (introductionRequestInput: IntroductionRequestInput, options?: RequestInit): Promise<EnquiryResult> => {
+
+  return customFetch<EnquiryResult>(getSubmitIntroductionRequestUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(introductionRequestInput)
+  }
+);}
+
+
+
+
+
+export const getSubmitIntroductionRequestMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitIntroductionRequest>>, TError,{data: BodyType<IntroductionRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitIntroductionRequest>>, TError,{data: BodyType<IntroductionRequestInput>}, TContext> => {
+
+const mutationKey = ['submitIntroductionRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitIntroductionRequest>>, {data: BodyType<IntroductionRequestInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitIntroductionRequest(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitIntroductionRequestMutationResult = NonNullable<Awaited<ReturnType<typeof submitIntroductionRequest>>>
+    export type SubmitIntroductionRequestMutationBody = BodyType<IntroductionRequestInput>
+    export type SubmitIntroductionRequestMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Submit homepage Request an Introduction form
+ */
+export const useSubmitIntroductionRequest = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitIntroductionRequest>>, TError,{data: BodyType<IntroductionRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitIntroductionRequest>>,
+        TError,
+        {data: BodyType<IntroductionRequestInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitIntroductionRequestMutationOptions(options));
+    }
+
 

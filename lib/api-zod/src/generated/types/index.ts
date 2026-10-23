@@ -6,8 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './belowMinimumInput';
+export * from './belowMinimumResult';
+export * from './contactInput';
 export * from './enquiryResult';
 export * from './errorResponse';
 export * from './healthStatus';
+export * from './introductionRequestInput';
 export * from './moveMoneyInput';
 export * from './privateBankingInput';

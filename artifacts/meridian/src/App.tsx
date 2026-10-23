@@ -14,6 +14,7 @@ function ScrollToTop() {
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import AMLPolicy from '@/pages/AMLPolicy';
+import Contact from '@/pages/Contact';
 import MoveMoneyAbroad from '@/pages/MoveMoneyAbroad';
 import MoveMoneySuccess from '@/pages/MoveMoneySuccess';
 import PrivateBankingIntroduction from '@/pages/PrivateBankingIntroduction';
@@ -36,6 +37,9 @@ function Router() {
       </Route>
       <Route path="/about">
         <Layout><About /></Layout>
+      </Route>
+      <Route path="/contact">
+        <Layout><Contact /></Layout>
       </Route>
       <Route path="/aml-policy">
         <Layout><AMLPolicy /></Layout>

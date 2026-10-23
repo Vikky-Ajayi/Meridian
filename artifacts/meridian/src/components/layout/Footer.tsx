@@ -6,7 +6,7 @@ import footerWatermarkMobile from '@/assets/envoi-watermark-mobile.svg';
 const footerLinks = [
   ['Solutions', '/'],
   ['Global Payments', '/'],
-  ['Contact', '/'],
+  ['Contact', '/contact'],
   ['Advisory', '/'],
   ['Privacy', '/'],
   ['Security', '/'],

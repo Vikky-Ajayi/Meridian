@@ -11,7 +11,7 @@ export interface EnquiryResult {
   referenceNumber: string;
   /** Client full name */
   fullName: string;
-  /** Enquiry type: move-money or private-banking */
+  /** Enquiry type: move-money, private-banking, contact or introduction-request */
   type: string;
   /**
      * WhatsApp number for the desk

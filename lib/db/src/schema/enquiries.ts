@@ -40,3 +40,32 @@ export const privateBankingSubmissionsTable = pgTable("private_banking_submissio
 export const insertPrivateBankingSchema = createInsertSchema(privateBankingSubmissionsTable).omit({ id: true, submittedAt: true });
 export type InsertPrivateBanking = z.infer<typeof insertPrivateBankingSchema>;
 export type PrivateBanking = typeof privateBankingSubmissionsTable.$inferSelect;
+
+export const contactSubmissionsTable = pgTable("contact_submissions", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  emailAddress: text("email_address").notNull(),
+  phoneNumber: text("phone_number").notNull(),
+  natureOfEnquiry: text("nature_of_enquiry").notNull(),
+  message: text("message").notNull(),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+});
+
+export const insertContactSchema = createInsertSchema(contactSubmissionsTable).omit({ id: true, submittedAt: true });
+export type InsertContact = z.infer<typeof insertContactSchema>;
+export type Contact = typeof contactSubmissionsTable.$inferSelect;
+
+export const introductionRequestsTable = pgTable("introduction_requests", {
+  id: serial("id").primaryKey(),
+  referenceNumber: text("reference_number").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  emailAddress: text("email_address").notNull(),
+  region: text("region").notNull(),
+  message: text("message"),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+});
+
+export const insertIntroductionRequestSchema = createInsertSchema(introductionRequestsTable).omit({ id: true, submittedAt: true });
+export type InsertIntroductionRequest = z.infer<typeof insertIntroductionRequestSchema>;
+export type IntroductionRequest = typeof introductionRequestsTable.$inferSelect;

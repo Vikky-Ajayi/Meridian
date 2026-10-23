@@ -91,6 +91,102 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /enquiries/below-minimum:
+    post:
+      operationId: logBelowMinimumEnquiry
+      tags: [enquiries]
+      summary: Log a below-minimum Move Money Abroad enquiry
+      description: Records that a visitor selected an amount below the minimum threshold (amount only, no contact details)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BelowMinimumInput"
+      responses:
+        "201":
+          description: Submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BelowMinimumResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /enquiries/contact:
+    post:
+      operationId: submitContactEnquiry
+      tags: [enquiries]
+      summary: Submit Contact Us enquiry
+      description: Submits the Contact Us form, saves to DB and Google Sheets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnquiryResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /enquiries/introduction-request:
+    post:
+      operationId: submitIntroductionRequest
+      tags: [enquiries]
+      summary: Submit homepage Request an Introduction form
+      description: Submits the homepage introduction request form, saves to DB and Google Sheets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IntroductionRequestInput"
+      responses:
+        "201":
+          description: Submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnquiryResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -183,6 +279,59 @@ components:
         emailAddress:
           type: string
 
+    BelowMinimumInput:
+      type: object
+      required:
+        - amountRange
+      properties:
+        amountRange:
+          type: string
+          description: "Amount range selected by the visitor"
+
+    BelowMinimumResult:
+      type: object
+      required:
+        - logged
+      properties:
+        logged:
+          type: boolean
+
+    ContactInput:
+      type: object
+      required:
+        - fullName
+        - emailAddress
+        - phoneNumber
+        - natureOfEnquiry
+        - message
+      properties:
+        fullName:
+          type: string
+        emailAddress:
+          type: string
+        phoneNumber:
+          type: string
+        natureOfEnquiry:
+          type: string
+        message:
+          type: string
+
+    IntroductionRequestInput:
+      type: object
+      required:
+        - fullName
+        - emailAddress
+        - region
+      properties:
+        fullName:
+          type: string
+        emailAddress:
+          type: string
+        region:
+          type: string
+        message:
+          type: string
+
     EnquiryResult:
       type: object
       required:
@@ -198,7 +347,7 @@ components:
           description: "Client full name"
         type:
           type: string
-          description: "Enquiry type: move-money or private-banking"
+          description: "Enquiry type: move-money, private-banking, contact or introduction-request"
         whatsappNumber:
           type: ["string", "null"]
           description: "WhatsApp number for the desk"

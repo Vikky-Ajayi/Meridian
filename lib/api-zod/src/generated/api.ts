@@ -37,7 +37,7 @@ export const SubmitMoveMoneyEnquiryBody = zod.object({
 export const SubmitMoveMoneyEnquiryResponse = zod.object({
   "referenceNumber": zod.string().describe('Generated reference number for the enquiry'),
   "fullName": zod.string().describe('Client full name'),
-  "type": zod.string().describe('Enquiry type: move-money or private-banking'),
+  "type": zod.string().describe('Enquiry type: move-money, private-banking, contact or introduction-request'),
   "whatsappNumber": zod.string().nullish().describe('WhatsApp number for the desk'),
   "whatsappLink": zod.string().nullish().describe('wa.me link for the desk')
 })
@@ -62,9 +62,62 @@ export const SubmitPrivateBankingEnquiryBody = zod.object({
 export const SubmitPrivateBankingEnquiryResponse = zod.object({
   "referenceNumber": zod.string().describe('Generated reference number for the enquiry'),
   "fullName": zod.string().describe('Client full name'),
-  "type": zod.string().describe('Enquiry type: move-money or private-banking'),
+  "type": zod.string().describe('Enquiry type: move-money, private-banking, contact or introduction-request'),
   "whatsappNumber": zod.string().nullish().describe('WhatsApp number for the desk'),
   "whatsappLink": zod.string().nullish().describe('wa.me link for the desk')
 })
 
+
+/**
+ * Records that a visitor selected an amount below the minimum threshold (amount only, no contact details)
+ * @summary Log a below-minimum Move Money Abroad enquiry
+ */
+export const LogBelowMinimumEnquiryBody = zod.object({
+  "amountRange": zod.string().describe('Amount range selected by the visitor')
+})
+
+export const LogBelowMinimumEnquiryResponse = zod.object({
+  "logged": zod.boolean()
+})
+
+
+/**
+ * Submits the Contact Us form, saves to DB and Google Sheets
+ * @summary Submit Contact Us enquiry
+ */
+export const SubmitContactEnquiryBody = zod.object({
+  "fullName": zod.string(),
+  "emailAddress": zod.string(),
+  "phoneNumber": zod.string(),
+  "natureOfEnquiry": zod.string(),
+  "message": zod.string()
+})
+
+export const SubmitContactEnquiryResponse = zod.object({
+  "referenceNumber": zod.string().describe('Generated reference number for the enquiry'),
+  "fullName": zod.string().describe('Client full name'),
+  "type": zod.string().describe('Enquiry type: move-money, private-banking, contact or introduction-request'),
+  "whatsappNumber": zod.string().nullish().describe('WhatsApp number for the desk'),
+  "whatsappLink": zod.string().nullish().describe('wa.me link for the desk')
+})
+
+
+/**
+ * Submits the homepage introduction request form, saves to DB and Google Sheets
+ * @summary Submit homepage Request an Introduction form
+ */
+export const SubmitIntroductionRequestBody = zod.object({
+  "fullName": zod.string(),
+  "emailAddress": zod.string(),
+  "region": zod.string(),
+  "message": zod.string().optional()
+})
+
+export const SubmitIntroductionRequestResponse = zod.object({
+  "referenceNumber": zod.string().describe('Generated reference number for the enquiry'),
+  "fullName": zod.string().describe('Client full name'),
+  "type": zod.string().describe('Enquiry type: move-money, private-banking, contact or introduction-request'),
+  "whatsappNumber": zod.string().nullish().describe('WhatsApp number for the desk'),
+  "whatsappLink": zod.string().nullish().describe('wa.me link for the desk')
+})
 

@@ -1,4 +1,5 @@
 import { Link } from 'wouter';
+import { IntroductionForm } from '@/components/IntroductionForm';
 import heroGlobe from '@/assets/Mask group-desktop.png';
 import worldMap from '@/assets/Frame 1410106951.png';
 import iconHandshake from '@/assets/Frame.png';
@@ -204,14 +205,7 @@ export default function Home() {
             options available.
           </p>
         </div>
-        <form className="intro-form">
-          <label>Full Name<input placeholder="e.g. John Doe" /></label>
-          <label>Email address<input placeholder="e.g. info@example.com" /></label>
-          <label>Region<select><option>Select region</option></select></label>
-          <label>Relationship<select><option>Select relationship</option></select></label>
-          <label className="full">Message optional<textarea placeholder="How can we help?" /></label>
-          <button className="full" type="button">Request an Introduction</button>
-        </form>
+        <IntroductionForm />
       </section>
     </div>
   );

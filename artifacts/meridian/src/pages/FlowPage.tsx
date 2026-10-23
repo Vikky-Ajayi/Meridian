@@ -3,27 +3,33 @@ import { useLocation } from 'wouter';
 import { Navbar } from '@/components/layout/Navbar';
 import { PhoneDialCodeSelect } from '@/components/PhoneDialCodeSelect';
 import {
+  useLogBelowMinimumEnquiry,
   useSubmitMoveMoneyEnquiry,
   useSubmitPrivateBankingEnquiry,
 } from '@workspace/api-client-react';
+import { COUNTRIES } from '@/lib/countries';
+
+const BELOW_MINIMUM_OPTION = 'Less than £50,000';
 
 type FlowType = 'move' | 'bank';
 
 const moveSteps = [
   {
     question: 'What Is The Approximate Amount You Are Looking To Move?',
-    options: ['£50,000 - £500,000', '£500,000 - £1million', '£1million - £10 million', '£10 million+', 'Prefer not to disclose'],
+    options: [BELOW_MINIMUM_OPTION, '£50,000 - £500,000', '£500,000 - £1million', '£1million - £10 million', '£10 million+', 'Prefer not to disclose'],
     multi: false,
   },
   {
     question: 'Where Are The Funds Currently Located?',
-    options: ['United Kingdom', 'Europe', 'Middle East', 'Africa', 'North America', 'Asia', 'Other'],
+    options: COUNTRIES,
     multi: false,
+    searchable: true,
   },
   {
     question: 'Where Do You Intend To Move The Funds?',
-    options: ['United Kingdom', 'Europe', 'Middle East', 'Africa', 'North America', 'Asia', 'Other'],
+    options: COUNTRIES,
     multi: false,
+    searchable: true,
   },
   {
     question: 'What Is The Purpose Of The Transfer?',
@@ -36,11 +42,18 @@ const moveSteps = [
     multi: false,
   },
   {
-    question: 'Are The Funds Currently Held With A Regulated Financial Institution?',
+    question: 'Are The Funds Currently Held In A Bank Or Another Regulated Financial Institution?',
     options: ['Yes', 'No', 'Currently being arranged'],
     multi: false,
   },
 ] as const;
+
+type Step = {
+  question: string;
+  options: readonly string[];
+  multi: boolean;
+  searchable?: boolean;
+};
 
 const bankSteps = [
   {
@@ -69,6 +82,70 @@ const bankSteps = [
     multi: false,
   },
 ] as const;
+
+function BelowMinimumNotice({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="flow-card below-minimum">
+      <h2>Thank You For Your Interest</h2>
+      <p>
+        Our service is designed for individuals and businesses looking to move significant
+        amounts of capital. Unfortunately, the amount you've selected falls below our current
+        minimum threshold.
+      </p>
+      <p>If you need to move larger funds in the future, we'd be delighted to assist you.</p>
+      <p>
+        You can also recommend our service to friends, family or business associates who may
+        benefit from our expertise.
+      </p>
+      <p>We look forward to assisting you in the future.</p>
+      <div className="flow-actions">
+        <button className="back" type="button" onClick={onBack}>
+          ← Back
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CountryOptions({
+  options,
+  selected,
+  onSelect,
+}: {
+  options: readonly string[];
+  selected: string;
+  onSelect: (option: string) => void;
+}) {
+  const [query, setQuery] = useState('');
+  const matches = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
+
+  return (
+    <>
+      <input
+        className="country-search"
+        type="search"
+        placeholder="Search countries"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        aria-label="Search countries"
+      />
+      <div className="option-list country-list">
+        {matches.map((option) => (
+          <button
+            className={`flow-option ${selected === option ? 'selected' : ''}`}
+            type="button"
+            key={option}
+            onClick={() => onSelect(option)}
+          >
+            <span className="radio" />
+            {option}
+          </button>
+        ))}
+        {matches.length === 0 && <p className="country-empty">No matching country</p>}
+      </div>
+    </>
+  );
+}
 
 function Progress({ step, total }: { step: number; total: number }) {
   return (
@@ -195,7 +272,7 @@ function ContactStep({
 
 export function FlowPage({ type }: { type: FlowType }) {
   const isBank = type === 'bank';
-  const steps = isBank ? bankSteps : moveSteps;
+  const steps: readonly Step[] = isBank ? bankSteps : moveSteps;
   const totalSteps = steps.length + 1; // +1 for contact step
   const [step, setStep] = useState(0);
   // selections[i] is a string (single) or string[] (multi) for step i
@@ -203,10 +280,12 @@ export function FlowPage({ type }: { type: FlowType }) {
     () => steps.map((s) => (s.multi ? [] : ''))
   );
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [belowMinimum, setBelowMinimum] = useState(false);
 
   const [, setLocation] = useLocation();
   const moveMoneyMutation = useSubmitMoveMoneyEnquiry();
   const privateBankingMutation = useSubmitPrivateBankingEnquiry();
+  const logBelowMinimum = useLogBelowMinimumEnquiry();
   const mutation = isBank ? privateBankingMutation : moveMoneyMutation;
   const isSubmitting = mutation.isPending;
 
@@ -241,6 +320,16 @@ export function FlowPage({ type }: { type: FlowType }) {
     const sel = selections[step];
     if (isMulti) return (sel as string[]).length > 0;
     return typeof sel === 'string' && sel !== '';
+  }
+
+  function handleContinue() {
+    if (!isBank && step === 0 && selections[0] === BELOW_MINIMUM_OPTION) {
+      // Amount only, no contact details; a logging failure must not block the message.
+      logBelowMinimum.mutate({ data: { amountRange: BELOW_MINIMUM_OPTION } });
+      setBelowMinimum(true);
+      return;
+    }
+    setStep(step + 1);
   }
 
   async function handleSubmit(contact: ContactState) {
@@ -303,7 +392,9 @@ export function FlowPage({ type }: { type: FlowType }) {
           <h1>{pageTitle}</h1>
         </div>
 
-        {isContactStep ? (
+        {belowMinimum ? (
+          <BelowMinimumNotice onBack={() => setBelowMinimum(false)} />
+        ) : isContactStep ? (
           <ContactStep
             type={type}
             step={step}
@@ -319,19 +410,28 @@ export function FlowPage({ type }: { type: FlowType }) {
             <Progress step={step} total={totalSteps} />
             <h2>{current.question}</h2>
             {isMulti && <p className="select-note">Select All That Apply</p>}
-            <div className="option-list">
-              {current.options.map((option) => (
-                <button
-                  className={`flow-option ${isSelected(option) ? 'selected' : ''}`}
-                  type="button"
-                  key={option}
-                  onClick={() => toggleOption(option)}
-                >
-                  <span className={isMulti ? 'check' : 'radio'} />
-                  {option}
-                </button>
-              ))}
-            </div>
+            {current.searchable ? (
+              <CountryOptions
+                key={step}
+                options={current.options}
+                selected={selections[step] as string}
+                onSelect={toggleOption}
+              />
+            ) : (
+              <div className="option-list">
+                {current.options.map((option) => (
+                  <button
+                    className={`flow-option ${isSelected(option) ? 'selected' : ''}`}
+                    type="button"
+                    key={option}
+                    onClick={() => toggleOption(option)}
+                  >
+                    <span className={isMulti ? 'check' : 'radio'} />
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flow-actions">
               {step > 0 && (
                 <button className="back" type="button" onClick={() => setStep(step - 1)}>
@@ -343,7 +443,7 @@ export function FlowPage({ type }: { type: FlowType }) {
                 type="button"
                 disabled={!canContinue()}
                 style={{ opacity: canContinue() ? 1 : 0.5 }}
-                onClick={() => setStep(step + 1)}
+                onClick={handleContinue}
               >
                 Continue
               </button>

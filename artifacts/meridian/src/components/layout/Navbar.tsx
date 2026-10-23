@@ -20,11 +20,8 @@ export function Navbar() {
 
             {/* Nav links – 44 px after logo */}
             <div className="hidden md:flex items-center ml-[44px] gap-[44px]">
-              <Link href="/about" className={navLinkClass}>Moving Capital</Link>
-              <Link href="/"     className={navLinkClass}>Solutions</Link>
-              <Link href="/"     className={navLinkClass}>Global Payments</Link>
-              <Link href="/"     className={navLinkClass}>Advisory</Link>
-              <Link href="/"     className={navLinkClass}>Contact</Link>
+              <Link href="/about"   className={navLinkClass}>About Us</Link>
+              <Link href="/contact" className={navLinkClass}>Contact Us</Link>
             </div>
 
             {/* Spacer – pushes button to far right */}
@@ -69,11 +66,8 @@ export function Navbar() {
 
         {/* Links */}
         <nav className="flex flex-col px-6 pt-6 gap-1 flex-1">
-          <Link href="/about" onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B] border-b border-gray-100">Moving Capital</Link>
-          <Link href="/"      onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B] border-b border-gray-100">Solutions</Link>
-          <Link href="/"      onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B] border-b border-gray-100">Global Payments</Link>
-          <Link href="/"      onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B] border-b border-gray-100">Advisory</Link>
-          <Link href="/"      onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B]">Contact</Link>
+          <Link href="/about"   onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B] border-b border-gray-100">About Us</Link>
+          <Link href="/contact" onClick={() => setIsOpen(false)} className="py-3 text-[15px] font-medium text-[#4B4B4B]">Contact Us</Link>
         </nav>
 
         {/* CTA */}

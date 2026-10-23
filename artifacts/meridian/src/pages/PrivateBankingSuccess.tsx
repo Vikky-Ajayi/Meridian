@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
+import { DESK_WHATSAPP_LINK } from '@/lib/contact';
 
 interface EnquiryResult {
   referenceNumber: string;
   fullName: string;
-  whatsappNumber?: string | null;
-  whatsappLink?: string | null;
 }
 
 export default function PrivateBankingSuccess() {
@@ -43,6 +43,16 @@ export default function PrivateBankingSuccess() {
             A private client associate has your details and will reach out directly to
             arrange your introduction. Quote your reference if asked.
           </p>
+          <p>You can also contact one of our advisors directly via WhatsApp.</p>
+          <a
+            href={DESK_WHATSAPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="whatsapp-icon-link"
+            aria-label="Chat with an advisor on WhatsApp"
+          >
+            <WhatsAppIcon size={28} />
+          </a>
           <div className="success-ref">
             <span>Reference: <b>{result?.referenceNumber ?? '—'}</b></span>
             <span>{result?.fullName ?? ''}</span>

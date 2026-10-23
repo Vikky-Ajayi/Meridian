@@ -45,12 +45,36 @@ export interface PrivateBankingInput {
   emailAddress: string;
 }
 
+export interface BelowMinimumInput {
+  /** Amount range selected by the visitor */
+  amountRange: string;
+}
+
+export interface BelowMinimumResult {
+  logged: boolean;
+}
+
+export interface ContactInput {
+  fullName: string;
+  emailAddress: string;
+  phoneNumber: string;
+  natureOfEnquiry: string;
+  message: string;
+}
+
+export interface IntroductionRequestInput {
+  fullName: string;
+  emailAddress: string;
+  region: string;
+  message?: string;
+}
+
 export interface EnquiryResult {
   /** Generated reference number for the enquiry */
   referenceNumber: string;
   /** Client full name */
   fullName: string;
-  /** Enquiry type: move-money or private-banking */
+  /** Enquiry type: move-money, private-banking, contact or introduction-request */
   type: string;
   /**
      * WhatsApp number for the desk
