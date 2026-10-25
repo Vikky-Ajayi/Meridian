@@ -263,7 +263,7 @@ function ContactStep({
             ? 'Submitting…'
             : type === 'bank'
             ? 'Submit Enquiry'
-            : 'Get My WhatsApp Line'}
+            : 'Continue'}
         </button>
       </div>
     </div>

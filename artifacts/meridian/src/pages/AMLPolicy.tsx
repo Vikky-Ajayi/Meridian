@@ -37,8 +37,7 @@ export default function AMLPolicy() {
           <h2>11. Contact And Reporting</h2>
           <p>
             Compliance Officer: Robert Tigi<br />
-            Email: <span className="blue-link">roberttigi@yourmeidian.com</span><br />
-            Phone: 07393908896
+            Email: <span className="blue-link">compliance@envoiandco.com</span>
           </p>
         </section>
       </main>

@@ -2204,3 +2204,25 @@
     grid-column: 1;
   }
 }
+
+.contact-direct {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+}
+
+.contact-email {
+  color: #000b2d;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.contact-email a {
+  color: var(--blue-strong);
+  text-decoration: none;
+}
+
+.contact-email a:hover {
+  text-decoration: underline;
+}

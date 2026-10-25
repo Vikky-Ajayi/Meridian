@@ -4,12 +4,7 @@ import footerWatermark from '@/assets/envoi-watermark.svg';
 import footerWatermarkMobile from '@/assets/envoi-watermark-mobile.svg';
 
 const footerLinks = [
-  ['Solutions', '/'],
-  ['Global Payments', '/'],
   ['Contact', '/contact'],
-  ['Advisory', '/'],
-  ['Privacy', '/'],
-  ['Security', '/'],
   ['Regulatory information', '/aml-policy'],
 ];
 

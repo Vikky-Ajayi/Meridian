@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSubmitContactEnquiry } from '@workspace/api-client-react';
 import { WhatsAppIcon } from '@/components/WhatsAppIcon';
-import { DESK_WHATSAPP_LINK } from '@/lib/contact';
+import { CLIENTS_EMAIL, DESK_WHATSAPP_LINK } from '@/lib/contact';
 
 const ENQUIRY_TYPES = [
   'Private Banking Introduction',
@@ -136,10 +136,15 @@ export default function Contact() {
           Connect with one of our advisors on WhatsApp for a confidential discussion about
           your requirements.
         </p>
-        <a className="contact-whatsapp" href={DESK_WHATSAPP_LINK} target="_blank" rel="noreferrer">
-          <WhatsAppIcon />
-          Chat With Us on WhatsApp
-        </a>
+        <div className="contact-direct">
+          <a className="contact-whatsapp" href={DESK_WHATSAPP_LINK} target="_blank" rel="noreferrer">
+            <WhatsAppIcon />
+            Chat With Us on WhatsApp
+          </a>
+          <span className="contact-email">
+            Email us: <a href={`mailto:${CLIENTS_EMAIL}`}>{CLIENTS_EMAIL}</a>
+          </span>
+        </div>
 
         <p className="contact-disclaimer">
           Envoi & Co. acts as a private banking introducer and capital movement facilitator.
