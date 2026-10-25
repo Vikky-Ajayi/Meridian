@@ -52,7 +52,7 @@ export function Footer() {
         </div>
 
         <div className="footer-copy">
-          <span>© 2025 by Envoi & Co</span>
+          <span>© 2026 by Envoi & Co</span>
           <span>Designed for Discerning Clients</span>
         </div>
       </div>
