@@ -2065,7 +2065,8 @@
 /* ── WhatsApp icon link (private banking success) ── */
 .whatsapp-icon-link {
   align-items: center;
-  background: #25d366;
+  background: #111;
+  border: 1px solid #111;
   border-radius: 50%;
   color: #fff;
   display: inline-flex;
@@ -2076,7 +2077,8 @@
 }
 
 .whatsapp-icon-link:hover {
-  background: #1ebe5b;
+  background: #fff;
+  color: #111;
 }
 
 /* ── Forms: shared error text ── */
