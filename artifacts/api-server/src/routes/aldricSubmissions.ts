@@ -147,8 +147,8 @@ router.get("/", async (req, res) => {
   try {
     const email = typeof req.query["email"] === "string" ? req.query["email"].toLowerCase() : "";
     const [capabilityRows, requirementRows] = await Promise.all([
-      readSheetStrict("Aldric Capabilities"),
-      readSheetStrict("Aldric Requirements"),
+      readSheetStrict("Envoi Capabilities"),
+      readSheetStrict("Envoi Requirements"),
     ]);
     const capabilities = capabilityRows.map(mapCapabilityRow).filter((row) => {
       return !email || row.contactEmail.toLowerCase() === email;
@@ -162,7 +162,7 @@ router.get("/", async (req, res) => {
       requirements: requirements.reverse(),
     });
   } catch (err) {
-    logger.error({ err }, "Failed to load Aldric submissions from Google Sheets");
+    logger.error({ err }, "Failed to load Envoi submissions from Google Sheets");
     return res.status(500).json({ error: "Failed to load submissions." });
   }
 });
@@ -177,7 +177,7 @@ router.post("/capabilities", async (req, res) => {
   const referenceNumber = generateReferenceNumber("CAP");
 
   try {
-    await appendToSheetStrict("Aldric Capabilities", [
+    await appendToSheetStrict("Envoi Capabilities", [
       [
         referenceNumber,
         new Date().toISOString(),
@@ -195,7 +195,7 @@ router.post("/capabilities", async (req, res) => {
       ],
     ]);
   } catch (err) {
-    logger.error({ err }, "Failed to save Aldric capability to Google Sheets");
+    logger.error({ err }, "Failed to save Envoi capability to Google Sheets");
     return res.status(500).json({ error: "Failed to save submission to Google Sheets." });
   }
 
@@ -212,7 +212,7 @@ router.post("/requirements", async (req, res) => {
   const referenceNumber = generateReferenceNumber("REQ");
 
   try {
-    await appendToSheetStrict("Aldric Requirements", [
+    await appendToSheetStrict("Envoi Requirements", [
       [
         referenceNumber,
         new Date().toISOString(),
@@ -231,7 +231,7 @@ router.post("/requirements", async (req, res) => {
       ],
     ]);
   } catch (err) {
-    logger.error({ err }, "Failed to save Aldric requirement to Google Sheets");
+    logger.error({ err }, "Failed to save Envoi requirement to Google Sheets");
     return res.status(500).json({ error: "Failed to save submission to Google Sheets." });
   }
 

@@ -1,4 +1,4 @@
-# Aldric Private (Meridian)
+# Envoi & Co (Meridian)
 
 Private banking and international capital transfer web app. Prospects complete a multi-step flow then submit an enquiry; submissions are saved to Postgres and synced to Google Sheets.
 
@@ -28,7 +28,7 @@ Private banking and international capital transfer web app. Prospects complete a
 | `GOOGLE_SHEETS_ID` | (Sheet ID) |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | (Google service account JSON, stringified) |
 | `RESEND_API_KEY` | (Resend API key for OTP email delivery) |
-| `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Aldric Private <no-reply@yourdomain.com>) |
+| `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Envoi & Co <no-reply@yourdomain.com>) |
 | `OTP_SECRET` | (Random secret used to hash OTP codes server-side) |
 
 OTP email templates live in `artifacts/api-server/src/lib/otpEmailTemplate.ts`.

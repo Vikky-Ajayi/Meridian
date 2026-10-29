@@ -2,7 +2,7 @@
  * Generates a reference number like MMA-20260717-1639 (Move Money Abroad),
  * PBI-20260717-1639 (Private Banking Introduction), CON-20260717-1639
  * (Contact Us), CAP-20260717-1639
- * (Aldric Capability), or REQ-20260717-1639 (Aldric Requirement).
+ * (Envoi Capability), or REQ-20260717-1639 (Envoi Requirement).
  */
 export function generateReferenceNumber(prefix: "MMA" | "PBI" | "CON" | "CAP" | "REQ"): string {
   const now = new Date();
