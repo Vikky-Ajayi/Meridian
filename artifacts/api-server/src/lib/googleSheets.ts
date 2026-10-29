@@ -82,7 +82,7 @@ export async function appendToSheet(sheetName: string, values: string[][]): Prom
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range: formatSheetRange(sheetName),
-      valueInputOption: "USER_ENTERED",
+      valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
       requestBody: { values },
     });
@@ -108,7 +108,7 @@ export async function appendToSheetStrict(sheetName: string, values: string[][])
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
     range: formatSheetRange(sheetName),
-    valueInputOption: "USER_ENTERED",
+    valueInputOption: "RAW",
     insertDataOption: "INSERT_ROWS",
     requestBody: { values },
   });
