@@ -61,3 +61,8 @@ Thumbs.db
 # Codex local preview artifacts
 .codex-*.log
 .codex-*.pid
+
+# Local secrets
+.env
+.env.*
+!.env.example
