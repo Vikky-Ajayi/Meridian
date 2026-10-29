@@ -15,7 +15,11 @@ async function buildAll() {
   await rm(distDir, { recursive: true, force: true });
 
   await esbuild({
-    entryPoints: [path.resolve(artifactDir, "src/index.ts")],
+    entryPoints: {
+      index: path.resolve(artifactDir, "src/index.ts"),
+      // One-off maintenance script, run with: node dist/backfillSheets.mjs [--dry-run]
+      backfillSheets: path.resolve(artifactDir, "src/scripts/backfillSheets.ts"),
+    },
     platform: "node",
     bundle: true,
     format: "esm",
