@@ -13,12 +13,20 @@ export interface MoveMoneyInput {
   fundsLocation: string;
   /** Intended destination for funds */
   destination: string;
-  /** Purpose of the transfer */
+  /** Free-text purpose of the transfer */
   purpose: string;
   /** When looking to proceed */
   timeline: string;
   /** Whether funds held with regulated institution */
   regulatedInstitution: string;
+  /** Free-text explanation of how the funds were obtained */
+  sourceOfFunds?: string;
+  /** Whether the funds are currently available for transfer */
+  fundsAvailability?: string;
+  /** The client's authority to arrange the transfer */
+  transferAuthority?: string;
+  /** Free-text description of current arrangements and the assistance required */
+  assistanceRequired?: string;
   fullName: string;
   countryOfResidence: string;
   whatsappNumber: string;

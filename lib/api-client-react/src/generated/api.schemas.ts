@@ -16,12 +16,20 @@ export interface MoveMoneyInput {
   fundsLocation: string;
   /** Intended destination for funds */
   destination: string;
-  /** Purpose of the transfer */
+  /** Free-text purpose of the transfer */
   purpose: string;
   /** When looking to proceed */
   timeline: string;
   /** Whether funds held with regulated institution */
   regulatedInstitution: string;
+  /** Free-text explanation of how the funds were obtained */
+  sourceOfFunds?: string;
+  /** Whether the funds are currently available for transfer */
+  fundsAvailability?: string;
+  /** The client's authority to arrange the transfer */
+  transferAuthority?: string;
+  /** Free-text description of current arrangements and the assistance required */
+  assistanceRequired?: string;
   fullName: string;
   countryOfResidence: string;
   whatsappNumber: string;
@@ -35,8 +43,16 @@ export interface PrivateBankingInput {
   investableWealth: string;
   /** Jurisdictions of interest (multiple) */
   jurisdictions: string[];
-  /** Main reasons for seeking private banking (multiple) */
-  reasons: string[];
+  /** Legacy multi-select reasons (superseded by purpose; optional) */
+  reasons?: string[];
+  /** Free-text description of what the client wants to achieve */
+  purpose?: string;
+  /** Free-text general source of wealth or funds */
+  sourceOfWealth?: string;
+  /** Approximate initial capital to place with a bank */
+  initialCapital?: string;
+  /** Free-text reason for seeking a new banking relationship now */
+  motivation?: string;
   /** How soon to establish relationship */
   timeline: string;
   fullName: string;

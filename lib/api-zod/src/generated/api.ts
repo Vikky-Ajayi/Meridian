@@ -25,9 +25,13 @@ export const SubmitMoveMoneyEnquiryBody = zod.object({
   "amountRange": zod.string().describe('Approximate amount to move'),
   "fundsLocation": zod.string().describe('Current location of funds'),
   "destination": zod.string().describe('Intended destination for funds'),
-  "purpose": zod.string().describe('Purpose of the transfer'),
+  "purpose": zod.string().describe('Free-text purpose of the transfer'),
   "timeline": zod.string().describe('When looking to proceed'),
   "regulatedInstitution": zod.string().describe('Whether funds held with regulated institution'),
+  "sourceOfFunds": zod.string().optional().describe('Free-text explanation of how the funds were obtained'),
+  "fundsAvailability": zod.string().optional().describe('Whether the funds are currently available for transfer'),
+  "transferAuthority": zod.string().optional().describe('The client\'s authority to arrange the transfer'),
+  "assistanceRequired": zod.string().optional().describe('Free-text description of current arrangements and the assistance required'),
   "fullName": zod.string(),
   "countryOfResidence": zod.string(),
   "whatsappNumber": zod.string(),
@@ -51,7 +55,11 @@ export const SubmitPrivateBankingEnquiryBody = zod.object({
   "bankingRelationshipType": zod.string().describe('Type of banking relationship sought'),
   "investableWealth": zod.string().describe('Approximate investable wealth'),
   "jurisdictions": zod.array(zod.string()).describe('Jurisdictions of interest (multiple)'),
-  "reasons": zod.array(zod.string()).describe('Main reasons for seeking private banking (multiple)'),
+  "reasons": zod.array(zod.string()).optional().describe('Legacy multi-select reasons (superseded by purpose; optional)'),
+  "purpose": zod.string().optional().describe('Free-text description of what the client wants to achieve'),
+  "sourceOfWealth": zod.string().optional().describe('Free-text general source of wealth or funds'),
+  "initialCapital": zod.string().optional().describe('Approximate initial capital to place with a bank'),
+  "motivation": zod.string().optional().describe('Free-text reason for seeking a new banking relationship now'),
   "timeline": zod.string().describe('How soon to establish relationship'),
   "fullName": zod.string(),
   "countryOfResidence": zod.string(),
@@ -120,4 +128,5 @@ export const SubmitIntroductionRequestResponse = zod.object({
   "whatsappNumber": zod.string().nullish().describe('WhatsApp number for the desk'),
   "whatsappLink": zod.string().nullish().describe('wa.me link for the desk')
 })
+
 

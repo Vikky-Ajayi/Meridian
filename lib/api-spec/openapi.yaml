@@ -222,13 +222,25 @@ components:
           description: "Intended destination for funds"
         purpose:
           type: string
-          description: "Purpose of the transfer"
+          description: "Free-text purpose of the transfer"
         timeline:
           type: string
           description: "When looking to proceed"
         regulatedInstitution:
           type: string
           description: "Whether funds held with regulated institution"
+        sourceOfFunds:
+          type: string
+          description: "Free-text explanation of how the funds were obtained"
+        fundsAvailability:
+          type: string
+          description: "Whether the funds are currently available for transfer"
+        transferAuthority:
+          type: string
+          description: "The client's authority to arrange the transfer"
+        assistanceRequired:
+          type: string
+          description: "Free-text description of current arrangements and the assistance required"
         fullName:
           type: string
         countryOfResidence:
@@ -244,7 +256,6 @@ components:
         - bankingRelationshipType
         - investableWealth
         - jurisdictions
-        - reasons
         - timeline
         - fullName
         - countryOfResidence
@@ -266,7 +277,19 @@ components:
           type: array
           items:
             type: string
-          description: "Main reasons for seeking private banking (multiple)"
+          description: "Legacy multi-select reasons (superseded by purpose; optional)"
+        purpose:
+          type: string
+          description: "Free-text description of what the client wants to achieve"
+        sourceOfWealth:
+          type: string
+          description: "Free-text general source of wealth or funds"
+        initialCapital:
+          type: string
+          description: "Approximate initial capital to place with a bank"
+        motivation:
+          type: string
+          description: "Free-text reason for seeking a new banking relationship now"
         timeline:
           type: string
           description: "How soon to establish relationship"

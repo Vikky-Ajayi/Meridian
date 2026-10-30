@@ -28,6 +28,15 @@ if (process.env.DATABASE_PUBLIC_URL) {
 
 const dryRun = process.argv.includes("--dry-run");
 
+// Test submissions deliberately deleted from the sheet; they still exist in the
+// database, so skip them to stop the backfill from re-adding them.
+const SKIP_REFERENCES = new Set([
+  "MMA-20260727-1415", "MMA-20260727-1518", "MMA-20261021-2214", "MMA-20261022-0829",
+  "MMA-20261025-1848", "MMA-20261025-1925", "MMA-20261025-1942",
+  "PBI-20260727-1415", "PBI-20260727-1320", "PBI-20261022-0954", "PBI-20261022-1005",
+  "PBI-20261025-1933",
+]);
+
 // Imported after the env is loaded: both modules read process.env at import time.
 const { db, moveMoneySbmissionsTable, privateBankingSubmissionsTable, contactSubmissionsTable, introductionRequestsTable } =
   await import("@workspace/db");
@@ -45,7 +54,8 @@ const moveMoney = (await db.select().from(moveMoneySbmissionsTable)).map((r) => 
   cells: [
     r.referenceNumber, iso(r.submittedAt), r.fullName, r.emailAddress, r.whatsappNumber,
     r.countryOfResidence, r.amountRange, r.fundsLocation, r.destination, r.purpose,
-    r.timeline, r.regulatedInstitution,
+    r.timeline, r.regulatedInstitution, r.sourceOfFunds, r.fundsAvailability,
+    r.transferAuthority, r.assistanceRequired,
   ],
 }));
 
@@ -54,7 +64,8 @@ const privateBanking = (await db.select().from(privateBankingSubmissionsTable)).
   cells: [
     r.referenceNumber, iso(r.submittedAt), r.fullName, r.emailAddress, r.whatsappNumber,
     r.countryOfResidence, r.bankingRelationshipType, r.investableWealth,
-    r.jurisdictions.join(", "), r.reasons.join(", "), r.timeline,
+    r.jurisdictions.join(", "), r.purpose || (r.reasons ?? []).join(", "), r.timeline,
+    r.sourceOfWealth, r.initialCapital, r.motivation,
   ],
 }));
 
@@ -80,7 +91,9 @@ const jobs: Job[] = [
 
 for (const job of jobs) {
   const existing = new Set((await readSheetStrict(job.sheet)).map((row) => row[0]));
-  const missing = job.rows.filter((r) => !existing.has(r.referenceNumber));
+  const missing = job.rows.filter(
+    (r) => !existing.has(r.referenceNumber) && !SKIP_REFERENCES.has(r.referenceNumber),
+  );
   console.log(`${job.sheet}: ${job.rows.length} in database, ${missing.length} missing from the sheet`);
   if (dryRun || missing.length === 0) continue;
   await appendToSheetStrict(job.sheet, missing.map((r) => r.cells));

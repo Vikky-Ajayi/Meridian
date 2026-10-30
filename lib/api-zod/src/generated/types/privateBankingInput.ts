@@ -13,8 +13,16 @@ export interface PrivateBankingInput {
   investableWealth: string;
   /** Jurisdictions of interest (multiple) */
   jurisdictions: string[];
-  /** Main reasons for seeking private banking (multiple) */
-  reasons: string[];
+  /** Legacy multi-select reasons (superseded by purpose; optional) */
+  reasons?: string[];
+  /** Free-text description of what the client wants to achieve */
+  purpose?: string;
+  /** Free-text general source of wealth or funds */
+  sourceOfWealth?: string;
+  /** Approximate initial capital to place with a bank */
+  initialCapital?: string;
+  /** Free-text reason for seeking a new banking relationship now */
+  motivation?: string;
   /** How soon to establish relationship */
   timeline: string;
   fullName: string;
