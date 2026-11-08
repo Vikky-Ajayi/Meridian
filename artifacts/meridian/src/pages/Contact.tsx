@@ -70,7 +70,7 @@ export default function Contact() {
           <div className="contact-success">
             <h3>Thank you, your enquiry has been received.</h3>
             <p>
-              A member of our team will be in touch as soon as possible. Quote your reference
+              A member of our team will reach out to you on WhatsApp as soon as possible. Quote your reference
               if asked: <b>{reference}</b>
             </p>
           </div>

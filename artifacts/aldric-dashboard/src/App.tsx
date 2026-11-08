@@ -11,6 +11,7 @@ import SubmitRequirementDashboard from '@/pages/SubmitRequirementDashboard';
 import Profile from '@/pages/Profile';
 import CapabilityDetail from '@/pages/CapabilityDetail';
 import RequirementDetail from '@/pages/RequirementDetail';
+import AdminPage from '@/pages/AdminPage';
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/dashboard/profile" component={() => <ProtectedRoute component={Profile} />} />
       <Route path="/dashboard/capability/:id" component={() => <ProtectedRoute component={CapabilityDetail} />} />
       <Route path="/dashboard/requirement/:id" component={() => <ProtectedRoute component={RequirementDetail} />} />
+      <Route path="/admin" component={AdminPage} />
       <Route component={() => <Redirect to="/register-capability" />} />
     </Switch>
   );

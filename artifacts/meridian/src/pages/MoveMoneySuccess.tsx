@@ -41,8 +41,8 @@ export default function MoveMoneySuccess() {
           <div className="eyebrow">Enquiry Logged</div>
           <h2>Your Line To The Desk Is Open</h2>
           <p>
-            A private client associate has your details and will pick up the conversation
-            directly on WhatsApp. Quote your reference if asked.
+            Our team will review your enquiry and reach out to you on WhatsApp at the number
+            you provided. Quote your reference if asked.
           </p>
           <div className="success-ref">
             <span>Reference: <b>{result?.referenceNumber ?? '—'}</b></span>

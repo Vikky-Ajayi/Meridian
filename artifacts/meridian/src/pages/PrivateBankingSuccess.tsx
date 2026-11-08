@@ -40,8 +40,8 @@ export default function PrivateBankingSuccess() {
           <div className="eyebrow">Enquiry Logged</div>
           <h2>Your Introduction Is Being Arranged</h2>
           <p>
-            A private client associate has your details and will reach out directly to
-            arrange your introduction. Quote your reference if asked.
+            Our team will review your enquiry and reach out to you on WhatsApp at the number
+            you provided to arrange your introduction. Quote your reference if asked.
           </p>
           <p>You can also contact one of our advisors directly via WhatsApp.</p>
           <a
@@ -57,7 +57,7 @@ export default function PrivateBankingSuccess() {
             <span>Reference: <b>{result?.referenceNumber ?? '—'}</b></span>
             <span>{result?.fullName ?? ''}</span>
           </div>
-          <h3>We'll be in touch as soon as possible</h3>
+          <h3>We'll be in touch on WhatsApp</h3>
           <p className="hours-note">Available 08:00–20:00 GMT, Monday to Friday.</p>
         </section>
       </main>

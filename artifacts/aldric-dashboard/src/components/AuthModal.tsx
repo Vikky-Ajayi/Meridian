@@ -382,7 +382,7 @@ export function AuthModal({ onClose }: { onClose?: () => void }) {
         Your account has been created and your submission has been received.
       </h2>
       <p className="mb-12 text-sm leading-relaxed text-black">
-        You can now access your private client dashboard to track your submissions, receive updates from our team, submit additional Capabilities or Requirements, and contact support whenever you need assistance.
+        Our team will reach out to you on WhatsApp once your submission has been reviewed. You can also access your private client dashboard to track your submissions, receive updates from our team, submit additional Capabilities or Requirements, and contact support whenever you need assistance.
       </p>
       <button
         onClick={goDashboard}

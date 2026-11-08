@@ -58,7 +58,7 @@ export default function SubmitRequirementDashboard() {
               </svg>
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Requirement Submitted</h2>
-            <p className="text-gray-500 text-sm mb-6">Your requirement is under review. We'll contact you when a verified match is identified.</p>
+            <p className="text-gray-500 text-sm mb-6">Your requirement is under review. We'll reach out to you on WhatsApp when a verified match is identified.</p>
             <button onClick={() => setSubmitted(false)} className="bg-[#0D1B3E] text-white text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
               Submit Another
             </button>

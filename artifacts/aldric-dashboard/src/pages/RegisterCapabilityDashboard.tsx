@@ -58,7 +58,7 @@ export default function RegisterCapabilityDashboard() {
               </svg>
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Capability Submitted</h2>
-            <p className="text-gray-500 text-sm mb-6">Your capability has been submitted for internal review. We'll be in touch if a match is identified.</p>
+            <p className="text-gray-500 text-sm mb-6">Your capability has been submitted for internal review. We'll reach out to you on WhatsApp if a match is identified.</p>
             <button onClick={() => setSubmitted(false)} className="bg-[#0F61E9] text-white text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
               Submit Another
             </button>
