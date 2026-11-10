@@ -6,6 +6,7 @@ import footerWatermarkMobile from '@/assets/envoi-watermark-mobile.svg';
 const footerLinks = [
   ['Contact', '/contact'],
   ['Regulatory information', '/aml-policy'],
+  ['Privacy', '/privacy'],
 ];
 
 export function Footer() {
