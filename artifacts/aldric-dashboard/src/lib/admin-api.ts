@@ -2,7 +2,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export type AdminForm = "move-money" | "private-banking";
 export type AdminStatus = "new" | "approved" | "hold" | "rejected";
-export type ReplyState = "replied" | "waiting" | "unknown";
 
 export interface AdminAnswer {
   key: string;
@@ -21,13 +20,12 @@ export interface AdminApplication {
   status: AdminStatus;
   note: string;
   approvedAt: string | null;
+  /** How many of the five WhatsApp sequence messages have been sent (0–5). */
+  messagesSent: number;
+  lastMessageAt: string | null;
+  repliedAt: string | null;
   followUpsStoppedAt: string | null;
   answers: AdminAnswer[];
-}
-
-export interface BrevoConnection {
-  connected: boolean;
-  missing: string[];
 }
 
 async function request<T>(path: string, init?: { method: string; body?: unknown }): Promise<T> {
@@ -41,28 +39,22 @@ async function request<T>(path: string, init?: { method: string; body?: unknown 
   return data;
 }
 
-export function getApplications() {
-  return request<{ applications: AdminApplication[]; brevo: BrevoConnection }>("/applications");
-}
-
-export function getWhatsappStatuses() {
-  return request<{ statuses: Record<string, ReplyState> }>("/whatsapp-status");
-}
-
+type One = Promise<{ application: AdminApplication }>;
 const ref = (reference: string) => `/applications/${encodeURIComponent(reference)}`;
+const post = (reference: string, action: string, body: unknown = {}): One =>
+  request(`${ref(reference)}/${action}`, { method: "POST", body });
 
-export function approveApplication(reference: string) {
-  return request<{ application: AdminApplication }>(`${ref(reference)}/approve`, { method: "POST", body: {} });
+export function getApplications() {
+  return request<{ applications: AdminApplication[] }>("/applications");
 }
 
-export function setApplicationStatus(reference: string, status: "new" | "hold" | "rejected") {
-  return request<{ application: AdminApplication }>(`${ref(reference)}/status`, { method: "POST", body: { status } });
-}
-
-export function saveApplicationNote(reference: string, note: string) {
-  return request<{ application: AdminApplication }>(`${ref(reference)}/note`, { method: "PUT", body: { note } });
-}
-
-export function stopApplicationFollowUps(reference: string) {
-  return request<{ application: AdminApplication }>(`${ref(reference)}/stop-follow-ups`, { method: "POST", body: {} });
-}
+/** Approves and records Message 1 as sent. */
+export const approveApplication = (reference: string) => post(reference, "approve");
+export const markMessageSent = (reference: string, step: number) => post(reference, "message-sent", { step });
+export const undoMessage = (reference: string, step: number) => post(reference, "undo-message", { step });
+export const setReplied = (reference: string, replied: boolean) => post(reference, "replied", { replied });
+export const setFollowUpsStopped = (reference: string, stopped: boolean) => post(reference, "follow-ups", { stopped });
+export const setApplicationStatus = (reference: string, status: "new" | "hold" | "rejected") =>
+  post(reference, "status", { status });
+export const saveApplicationNote = (reference: string, note: string): One =>
+  request(`${ref(reference)}/note`, { method: "PUT", body: { note } });

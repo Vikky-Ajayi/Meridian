@@ -1,22 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { EnvoiLogo } from '@/components/EnvoiLogo';
-import { ApplicationDrawer } from '@/components/admin/ApplicationDrawer';
-import { formatDate, formatSubmitted, FormChip, SignalBars, StatusPill } from '@/components/admin/AdminBits';
-import {
-  getApplications,
-  getWhatsappStatuses,
-  type AdminApplication,
-  type AdminForm,
-  type AdminStatus,
-  type BrevoConnection,
-  type ReplyState,
-} from '@/lib/admin-api';
+import { ApplicationDrawer, type ToastAction } from '@/components/admin/ApplicationDrawer';
+import { formatDate, formatSubmitted, FormChip, openWhatsAppAfter, SignalBars, StatusPill, WhatsAppGlyph } from '@/components/admin/AdminBits';
+import { getApplications, markMessageSent, undoMessage, type AdminApplication, type AdminForm, type AdminStatus } from '@/lib/admin-api';
 import { leadSignal } from '@/lib/admin-lead-signal';
-import { FORM_NAMES, SEQUENCE_DAYS, sequenceState, STEP_NAMES, TEMPLATES } from '@/lib/admin-sequences';
+import {
+  fillTemplate,
+  firstName,
+  FORM_NAMES,
+  QUICK_REPLIES,
+  SENDER_WHATSAPP,
+  SEQUENCE_DAYS,
+  sequenceState,
+  STEP_NAMES,
+  TEMPLATES,
+  whatsappLink,
+} from '@/lib/admin-sequences';
 
 // Admin review dashboard at /envoi-dashboard/admin. Unauthenticated by the
 // owner's choice; kept out of search engines with a noindex meta tag (plus
-// robots.txt and X-Robots-Tag on the API).
+// robots.txt and X-Robots-Tag on the API). WhatsApp messages are sent by hand:
+// each button opens WhatsApp with the message pre-filled.
 
 type View = 'queue' | 'followups' | 'templates';
 const TITLES: Record<View, string> = { queue: 'Applications', followups: 'WhatsApp follow-ups', templates: 'Message templates' };
@@ -62,8 +66,6 @@ const td = 'px-4 py-3.5 border-b border-[#ECEEF2] align-middle';
 
 export default function AdminPage() {
   const [apps, setApps] = useState<AdminApplication[]>([]);
-  const [brevo, setBrevo] = useState<BrevoConnection>({ connected: false, missing: [] });
-  const [replies, setReplies] = useState<Record<string, ReplyState>>({});
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [view, setView] = useState<View>('queue');
@@ -71,7 +73,8 @@ export default function AdminPage() {
   const [status, setStatus] = useState<'all' | AdminStatus>('new');
   const [query, setQuery] = useState('');
   const [openRef, setOpenRef] = useState<string | null>(null);
-  const [toast, setToast] = useState('');
+  const [sendingRef, setSendingRef] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; action?: ToastAction } | null>(null);
   const toastTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -92,10 +95,6 @@ export default function AdminPage() {
     try {
       const data = await getApplications();
       setApps(data.applications);
-      setBrevo(data.brevo);
-      if (data.brevo.connected && data.applications.some((a) => a.status === 'approved')) {
-        getWhatsappStatuses().then((r) => setReplies(r.statuses)).catch(() => {});
-      }
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : 'Could not load applications.');
     } finally {
@@ -116,10 +115,10 @@ export default function AdminPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [openRef]);
 
-  const showToast = useCallback((message: string) => {
-    setToast(message);
+  const showToast = useCallback((message: string, action?: ToastAction) => {
+    setToast({ message, action });
     window.clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setToast(''), 3500);
+    toastTimer.current = window.setTimeout(() => setToast(null), action ? 8000 : 3500);
   }, []);
 
   const replaceApp = useCallback((updated: AdminApplication) => {
@@ -128,15 +127,16 @@ export default function AdminPage() {
 
   const pending = apps.filter((a) => a.status === 'new');
   const approved = apps.filter((a) => a.status === 'approved');
-  const repliedCount = approved.filter((a) => sequenceState(a, replies[a.reference])?.kind === 'replied').length;
-  const runningCount = approved.filter((a) => sequenceState(a, replies[a.reference])?.kind === 'running').length;
+  const withSeq = approved.map((a) => ({ app: a, seq: sequenceState(a)! }));
+  const due = withSeq.filter((x) => x.seq.kind === 'due');
+  const replied = withSeq.filter((x) => x.seq.kind === 'replied');
   const weekAgo = Date.now() - 7 * 86_400_000;
 
   const stats: [string, string | number, string][] = [
     ['To review', pending.length, `${pending.filter((a) => leadSignal(a).level === 'strong').length} with a strong signal`],
     ['New this week', apps.filter((a) => Date.parse(a.submittedAt) >= weekAgo).length, 'Across both forms'],
-    ['Approved', approved.length, `${runningCount} in the WhatsApp sequence`],
-    ['Reply rate', approved.length ? `${Math.round((repliedCount / approved.length) * 100)}%` : '–', `${repliedCount} of ${approved.length} approved replied`],
+    ['Follow-ups due', due.length, due.length ? 'Ready to send on WhatsApp' : 'Nothing to send today'],
+    ['Reply rate', approved.length ? `${Math.round((replied.length / approved.length) * 100)}%` : '–', `${replied.length} of ${approved.length} approved replied`],
   ];
 
   const visible = useMemo(() => {
@@ -147,9 +147,33 @@ export default function AdminPage() {
       .filter((a) => !q || [a.fullName, a.email, a.reference, a.country, a.whatsappNumber].join(' ').toLowerCase().includes(q));
   }, [apps, form, status, query]);
 
+  function sendDue(app: AdminApplication, step: number) {
+    setSendingRef(app.reference);
+    const text = fillTemplate(TEMPLATES[app.form][step - 1], app);
+    openWhatsAppAfter(() => markMessageSent(app.reference, step), whatsappLink(app, text))
+      .then(({ application }) => {
+        replaceApp(application);
+        showToast(`Message ${step} to ${firstName(app.fullName)} opened in WhatsApp and marked as sent.`, {
+          label: 'Undo',
+          run: () => {
+            undoMessage(app.reference, step)
+              .then(({ application: undone }) => { replaceApp(undone); showToast(`Message ${step} unmarked.`); })
+              .catch((err) => showToast(err instanceof Error ? err.message : 'Could not undo.'));
+          },
+        });
+      })
+      .catch((err) => showToast(err instanceof Error ? err.message : 'Could not open WhatsApp.'))
+      .finally(() => setSendingRef(null));
+  }
+
   const openApp = apps.find((a) => a.reference === openRef) ?? null;
   const headline = (a: AdminApplication) => a.answers.find((x) => x.key === (a.form === 'move-money' ? 'amount' : 'wealth'))?.answer ?? '–';
   const timeline = (a: AdminApplication) => a.answers.find((x) => x.key === 'timeline')?.answer ?? '–';
+  const rowProps = (a: AdminApplication) => ({
+    tabIndex: 0,
+    onClick: () => setOpenRef(a.reference),
+    onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter') setOpenRef(a.reference); },
+  });
 
   return (
     <div className="min-h-screen bg-white flex flex-col md:flex-row text-black">
@@ -159,33 +183,36 @@ export default function AdminPage() {
           <span className="text-[11px] font-medium tracking-[0.12em] uppercase text-gray-500">Admin</span>
         </div>
         <nav className="flex md:flex-col gap-1 md:gap-1.5 overflow-x-auto" aria-label="Admin sections">
-          {(Object.keys(TITLES) as View[]).map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setView(v)}
-              aria-current={view === v ? 'page' : undefined}
-              className={`flex items-center gap-3.5 px-3.5 md:px-5 py-2.5 md:py-[13px] rounded-full text-[14px] md:text-[15px] font-medium text-left whitespace-nowrap transition-colors ${view === v ? 'bg-[#E6F1FF]' : 'hover:bg-gray-100'}`}
-            >
-              {NAV_ICONS[v]}
-              {TITLES[v]}
-              {v === 'queue' && pending.length > 0 && (
-                <span className="ml-auto text-xs font-medium bg-[#0F61E9] text-white rounded-full px-2 py-px tabular-nums">{pending.length}</span>
-              )}
-            </button>
-          ))}
+          {(Object.keys(TITLES) as View[]).map((v) => {
+            const count = v === 'queue' ? pending.length : v === 'followups' ? due.length : 0;
+            return (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                aria-current={view === v ? 'page' : undefined}
+                className={`flex items-center gap-3.5 px-3.5 md:px-5 py-2.5 md:py-[13px] rounded-full text-[14px] md:text-[15px] font-medium text-left whitespace-nowrap transition-colors ${view === v ? 'bg-[#E6F1FF]' : 'hover:bg-gray-100'}`}
+              >
+                {NAV_ICONS[v]}
+                {TITLES[v]}
+                {count > 0 && (
+                  <span className={`ml-auto text-xs font-medium text-white rounded-full px-2 py-px tabular-nums ${v === 'followups' ? 'bg-orange-500' : 'bg-[#0F61E9]'}`}>{count}</span>
+                )}
+              </button>
+            );
+          })}
         </nav>
         <p className="hidden md:block mt-auto px-2 text-xs text-gray-500 leading-relaxed">
-          Approving an applicant adds them to Brevo, which sends the WhatsApp sequence for their form.
+          Messages open in WhatsApp ready to send. Send them from {SENDER_WHATSAPP}.
         </p>
       </aside>
 
       <main className="flex-1 min-w-0 px-4 md:px-10 pb-12">
         <div className="h-16 md:h-[76px] flex items-center justify-between gap-4">
           <h1 className="text-2xl md:text-[30px] font-semibold tracking-[-0.04em]">{TITLES[view]}</h1>
-          <div className="hidden md:flex items-center gap-2.5 text-[13px] text-gray-500" title={brevo.connected ? undefined : `Missing: ${brevo.missing.join(', ')}`}>
-            <span className={`w-2 h-2 rounded-full ${brevo.connected ? 'bg-green-600' : 'bg-orange-500'}`} />
-            {loading ? 'Checking WhatsApp…' : brevo.connected ? 'WhatsApp connected via Brevo' : 'WhatsApp not connected yet'}
+          <div className="hidden md:flex items-center gap-2 text-[13px] text-gray-500">
+            <WhatsAppGlyph className="w-4 h-4 text-[#25D366]" />
+            Sending from {SENDER_WHATSAPP}
           </div>
         </div>
 
@@ -238,13 +265,7 @@ export default function AdminPage() {
                     <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-500">{apps.length === 0 ? 'No applications yet. They appear here as soon as someone submits either form.' : 'No applications match these filters.'}</td></tr>
                   )}
                   {!loading && visible.map((a) => (
-                    <tr
-                      key={a.reference}
-                      tabIndex={0}
-                      onClick={() => setOpenRef(a.reference)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') setOpenRef(a.reference); }}
-                      className={`cursor-pointer transition-colors last:[&>td]:border-b-0 ${openRef === a.reference ? 'bg-[#E6F1FF]' : 'hover:bg-[#FAFBFC]'}`}
-                    >
+                    <tr key={a.reference} {...rowProps(a)} className={`cursor-pointer transition-colors last:[&>td]:border-b-0 ${openRef === a.reference ? 'bg-[#E6F1FF]' : 'hover:bg-[#FAFBFC]'}`}>
                       <td className={td}>
                         <div className="font-medium">{a.fullName}</div>
                         <div className="text-xs text-gray-500 mt-0.5">{a.country} · <span className="tabular-nums">{a.reference}</span></div>
@@ -253,7 +274,7 @@ export default function AdminPage() {
                       <td className={`${td} tabular-nums whitespace-nowrap`}>{headline(a)}</td>
                       <td className={td}>{timeline(a)}</td>
                       <td className={td}><SignalBars level={leadSignal(a).level} /></td>
-                      <td className={td}><StatusPill app={a} reply={replies[a.reference]} /></td>
+                      <td className={td}><StatusPill app={a} /></td>
                       <td className={`${td} tabular-nums whitespace-nowrap text-gray-600`}>{formatSubmitted(a.submittedAt)}</td>
                     </tr>
                   ))}
@@ -267,37 +288,85 @@ export default function AdminPage() {
         )}
 
         {view === 'followups' && (
-          <section>
-            <div className="border border-[#ECEEF2] rounded-xl overflow-x-auto">
-              <table className="w-full border-collapse min-w-[680px] text-sm">
-                <thead>
-                  <tr><th className={th}>Applicant</th><th className={th}>Form</th><th className={th}>Approved</th><th className={th}>Progress</th><th className={th}>Next message</th></tr>
-                </thead>
-                <tbody>
-                  {approved.length === 0 && (
-                    <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-500">Nobody has been approved yet. Approved applicants and their WhatsApp progress show here.</td></tr>
-                  )}
-                  {[...approved].sort((x, y) => (y.approvedAt ?? '').localeCompare(x.approvedAt ?? '')).map((a) => {
-                    const seq = sequenceState(a, replies[a.reference]);
-                    const next = seq?.kind === 'running'
-                      ? `${STEP_NAMES[seq.sent].split(' · ')[0]} in ${seq.nextInDays} day${seq.nextInDays === 1 ? '' : 's'}`
-                      : seq?.kind === 'replied' ? 'None, they replied' : seq?.kind === 'stopped' ? 'None, follow-ups stopped' : 'None, sequence ended';
-                    return (
-                      <tr key={a.reference} tabIndex={0} onClick={() => setOpenRef(a.reference)} onKeyDown={(e) => { if (e.key === 'Enter') setOpenRef(a.reference); }} className="cursor-pointer hover:bg-[#FAFBFC] last:[&>td]:border-b-0">
-                        <td className={td}><div className="font-medium">{a.fullName}</div><div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div></td>
-                        <td className={td}><FormChip form={a.form} /></td>
-                        <td className={`${td} tabular-nums`}>{a.approvedAt ? formatDate(a.approvedAt) : '–'}</td>
-                        <td className={td}><StatusPill app={a} reply={replies[a.reference]} /></td>
-                        <td className={td}>{next}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          <section className="flex flex-col gap-8">
+            <div>
+              <h2 className="text-lg font-semibold tracking-[-0.02em] mb-1">Due today</h2>
+              <p className="text-[13px] text-gray-500 mb-3.5">
+                Each button opens WhatsApp with the message ready and marks it as sent. If someone has replied, open them and mark them as replied instead.
+              </p>
+              <div className="border border-[#ECEEF2] rounded-xl overflow-x-auto">
+                <table className="w-full border-collapse min-w-[680px] text-sm">
+                  <thead>
+                    <tr><th className={th}>Applicant</th><th className={th}>Form</th><th className={th}>Approved</th><th className={th}>Message</th><th className={th}></th></tr>
+                  </thead>
+                  <tbody>
+                    {due.length === 0 && (
+                      <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-500">No follow-ups due. You're up to date.</td></tr>
+                    )}
+                    {due.map(({ app: a, seq }) => {
+                      const step = seq.kind === 'due' ? seq.next + 1 : 0;
+                      const overdue = seq.kind === 'due' ? seq.daysOverdue : 0;
+                      return (
+                        <tr key={a.reference} className="last:[&>td]:border-b-0">
+                          <td className={td}>
+                            <button type="button" className="text-left font-medium hover:underline" onClick={() => setOpenRef(a.reference)}>{a.fullName}</button>
+                            <div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div>
+                          </td>
+                          <td className={td}><FormChip form={a.form} /></td>
+                          <td className={`${td} tabular-nums`}>{a.approvedAt ? formatDate(a.approvedAt) : '–'}</td>
+                          <td className={td}>
+                            <div>{STEP_NAMES[step - 1]}</div>
+                            {overdue > 0 && <div className="text-xs text-orange-600 mt-0.5">{overdue} day{overdue === 1 ? '' : 's'} overdue</div>}
+                          </td>
+                          <td className={`${td} text-right`}>
+                            <button
+                              type="button"
+                              disabled={sendingRef !== null}
+                              onClick={() => sendDue(a, step)}
+                              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium bg-[#25D366] text-white hover:bg-[#1fb457] disabled:opacity-50 whitespace-nowrap"
+                            >
+                              <WhatsAppGlyph className="w-4 h-4" />
+                              {sendingRef === a.reference ? 'Opening…' : `Send message ${step}`}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <p className="mt-3.5 text-[12.5px] text-gray-500">
-              Progress is estimated from the approval date and Brevo's schedule. Replies land in Brevo Conversations, where your team carries on the chat.
-            </p>
+
+            <div>
+              <h2 className="text-lg font-semibold tracking-[-0.02em] mb-3.5">Everyone approved</h2>
+              <div className="border border-[#ECEEF2] rounded-xl overflow-x-auto">
+                <table className="w-full border-collapse min-w-[680px] text-sm">
+                  <thead>
+                    <tr><th className={th}>Applicant</th><th className={th}>Form</th><th className={th}>Approved</th><th className={th}>Progress</th><th className={th}>Next message</th></tr>
+                  </thead>
+                  <tbody>
+                    {approved.length === 0 && (
+                      <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-500">Nobody has been approved yet.</td></tr>
+                    )}
+                    {[...withSeq].sort((x, y) => (y.app.approvedAt ?? '').localeCompare(x.app.approvedAt ?? '')).map(({ app: a, seq }) => {
+                      const next = seq.kind === 'due' ? 'Due now'
+                        : seq.kind === 'waiting' ? `Message ${seq.next + 1} on ${formatDate(seq.dueAt)}`
+                        : seq.kind === 'replied' ? 'None, they replied'
+                        : seq.kind === 'stopped' ? 'None, follow-ups stopped' : 'None, all sent';
+                      return (
+                        <tr key={a.reference} {...rowProps(a)} className="cursor-pointer hover:bg-[#FAFBFC] last:[&>td]:border-b-0">
+                          <td className={td}><div className="font-medium">{a.fullName}</div><div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div></td>
+                          <td className={td}><FormChip form={a.form} /></td>
+                          <td className={`${td} tabular-nums`}>{a.approvedAt ? formatDate(a.approvedAt) : '–'}</td>
+                          <td className={td}><StatusPill app={a} /></td>
+                          <td className={td}>{next}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </section>
         )}
 
@@ -319,29 +388,40 @@ export default function AdminPage() {
                 </div>
               </div>
             ))}
+            <div>
+              <h2 className="text-lg font-semibold tracking-[-0.02em] mb-3">Quick replies</h2>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
+                {QUICK_REPLIES.map((r) => (
+                  <div key={r.id} className="border border-[#ECEEF2] rounded-xl p-4 flex flex-col gap-2 min-w-0">
+                    <div className="text-[13.5px] font-medium">{r.label}</div>
+                    <p className="text-[13px] text-gray-500 leading-relaxed whitespace-pre-line">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
             <p className="text-[12.5px] text-gray-500">
-              Read-only. The live copies are the Meta-approved templates in Brevo; {'{{1}}'} becomes the applicant's first name. The sequence stops as soon as the applicant replies or asks not to be contacted.
+              {'{{1}}'} becomes the applicant's first name. To change a message, ask your developer to update it in the dashboard.
             </p>
           </section>
         )}
       </main>
 
       {openApp && (
-        <ApplicationDrawer
-          app={openApp}
-          all={apps}
-          reply={replies[openApp.reference]}
-          whatsappConnected={brevo.connected}
-          missingConfig={brevo.missing}
-          onClose={() => setOpenRef(null)}
-          onChanged={replaceApp}
-          onToast={showToast}
-        />
+        <ApplicationDrawer app={openApp} all={apps} onClose={() => setOpenRef(null)} onChanged={replaceApp} onToast={showToast} />
       )}
 
       {toast && (
-        <div className="fixed left-1/2 -translate-x-1/2 bottom-[calc(24px+env(safe-area-inset-bottom,0px))] z-[80] bg-[#020B2B] text-white px-[18px] py-3 rounded-[10px] text-[13.5px] shadow-[0_8px_24px_rgba(2,11,43,0.25)] max-w-[calc(100vw-32px)]" role="status">
-          {toast}
+        <div className="fixed left-1/2 -translate-x-1/2 bottom-[calc(24px+env(safe-area-inset-bottom,0px))] z-[80] bg-[#020B2B] text-white pl-[18px] pr-3 py-3 rounded-[10px] text-[13.5px] shadow-[0_8px_24px_rgba(2,11,43,0.25)] max-w-[calc(100vw-32px)] flex items-center gap-4" role="status">
+          <span>{toast.message}</span>
+          {toast.action && (
+            <button
+              type="button"
+              className="font-medium text-[#8AB4FF] hover:text-white whitespace-nowrap"
+              onClick={() => { const action = toast.action!; setToast(null); action.run(); }}
+            >
+              {toast.action.label}
+            </button>
+          )}
         </div>
       )}
     </div>

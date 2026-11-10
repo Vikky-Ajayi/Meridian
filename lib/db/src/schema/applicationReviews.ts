@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
 
 // Admin review state for Move Money Abroad and Private Banking submissions.
 // Kept in its own table (keyed by reference number) so the submission tables,
@@ -17,6 +17,11 @@ export const applicationReviewsTable = pgTable("application_reviews", {
   status: text("status").notNull().default("new"),
   note: text("note").notNull().default(""),
   approvedAt: timestamp("approved_at"),
+  // WhatsApp sequence (sent by hand from the admin dashboard): how many of the
+  // five messages have been sent, and when the applicant replied.
+  messagesSent: integer("messages_sent").notNull().default(0),
+  lastMessageAt: timestamp("last_message_at"),
+  repliedAt: timestamp("replied_at"),
   followUpsStoppedAt: timestamp("follow_ups_stopped_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

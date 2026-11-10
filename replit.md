@@ -30,11 +30,8 @@ Private banking and international capital transfer web app. Prospects complete a
 | `RESEND_API_KEY` | (Resend API key for OTP email delivery) |
 | `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Envoi & Co <no-reply@yourdomain.com>) |
 | `OTP_SECRET` | (Random secret used to hash OTP codes server-side) |
-| `BREVO_API_KEY` | (Brevo API key — Settings → SMTP & API → API keys) |
-| `BREVO_LIST_MOVE_MONEY` | (Numeric ID of the Brevo list "Approved – Move Money Abroad") |
-| `BREVO_LIST_PRIVATE_BANKING` | (Numeric ID of the Brevo list "Approved – Private Banking") |
 
-Admin review dashboard: `/envoi-dashboard/admin` (unauthenticated by design). Approving an applicant adds them to the Brevo list for their form, and a Brevo automation sends the WhatsApp sequence. Until the three `BREVO_*` variables are set, the dashboard works but the Approve button is disabled. Review state lives in the `application_reviews` table, which the API creates on first use.
+Admin review dashboard: `/envoi-dashboard/admin` (unauthenticated by design). Approving an applicant opens WhatsApp with Message 1 pre-filled; follow-ups (days 2, 5, 9, 14) appear under "WhatsApp follow-ups" with one-tap send buttons until the applicant is marked as replied. Messages are sent by hand from the WhatsApp account set in `SENDER_WHATSAPP` (artifacts/aldric-dashboard/src/lib/admin-sequences.ts). Review state lives in the `application_reviews` table, which the API creates (and adds new columns to) on first use.
 
 OTP email templates live in `artifacts/api-server/src/lib/otpEmailTemplate.ts`.
 Use `renderOtpEmail(...)` for Resend's `html` field and `renderOtpEmailText(...)` for the plain-text fallback.

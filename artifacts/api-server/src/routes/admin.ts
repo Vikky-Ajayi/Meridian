@@ -10,19 +10,14 @@ import {
   type PrivateBanking,
   type ApplicationReview,
 } from "@workspace/db";
-import {
-  addApprovedApplicant,
-  BrevoError,
-  hasReplied,
-  missingBrevoConfig,
-  stopFollowUps,
-  type FormType,
-} from "../lib/brevo";
 import { logger } from "../lib/logger";
 
 // Admin review dashboard API (/api/admin). Deliberately unauthenticated, at the
-// owner's request: anyone with the dashboard URL can read applicants and trigger
-// WhatsApp sequences.
+// owner's request: anyone with the dashboard URL can read applicants.
+//
+// WhatsApp messages are sent by hand from the dashboard (it opens WhatsApp with
+// the message pre-filled); this API only records the review decision and which
+// of the five sequence messages have been sent.
 
 const router = Router();
 
@@ -34,9 +29,12 @@ router.use((_req, res, next) => {
 
 const STATUSES = ["new", "approved", "hold", "rejected"] as const;
 type Status = (typeof STATUSES)[number];
+type FormType = "move-money" | "private-banking";
+const SEQUENCE_LENGTH = 5;
 
-// Mirrors lib/db/src/schema/applicationReviews.ts; creates the table on first
-// use so a deploy doesn't depend on someone running `drizzle-kit push`.
+// Mirrors lib/db/src/schema/applicationReviews.ts; creates the table (and any
+// columns added since) on first use so a deploy doesn't depend on someone
+// running `drizzle-kit push`.
 let reviewsTableReady: Promise<void> | null = null;
 function ensureApplicationReviewsTable() {
   reviewsTableReady ??= pool
@@ -48,10 +46,16 @@ function ensureApplicationReviewsTable() {
         status text DEFAULT 'new' NOT NULL,
         note text DEFAULT '' NOT NULL,
         approved_at timestamp,
+        messages_sent integer DEFAULT 0 NOT NULL,
+        last_message_at timestamp,
+        replied_at timestamp,
         follow_ups_stopped_at timestamp,
         updated_at timestamp DEFAULT now() NOT NULL,
         CONSTRAINT application_reviews_reference_number_unique UNIQUE (reference_number)
-      )`,
+      );
+      ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS messages_sent integer DEFAULT 0 NOT NULL;
+      ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS last_message_at timestamp;
+      ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS replied_at timestamp;`,
     )
     .then(() => undefined)
     .catch((err) => {
@@ -78,6 +82,9 @@ interface AdminApplication {
   status: Status;
   note: string;
   approvedAt: string | null;
+  messagesSent: number;
+  lastMessageAt: string | null;
+  repliedAt: string | null;
   followUpsStoppedAt: string | null;
   answers: Answer[];
 }
@@ -110,6 +117,8 @@ function privateBankingAnswers(row: PrivateBanking): Answer[] {
   ];
 }
 
+const iso = (d: Date | null | undefined) => d?.toISOString() ?? null;
+
 function toApplication(
   form: FormType,
   row: MoveMoney | PrivateBanking,
@@ -126,8 +135,11 @@ function toApplication(
     submittedAt: row.submittedAt.toISOString(),
     status: (STATUSES as readonly string[]).includes(review?.status ?? "") ? (review!.status as Status) : "new",
     note: review?.note ?? "",
-    approvedAt: review?.approvedAt?.toISOString() ?? null,
-    followUpsStoppedAt: review?.followUpsStoppedAt?.toISOString() ?? null,
+    approvedAt: iso(review?.approvedAt),
+    messagesSent: review?.messagesSent ?? 0,
+    lastMessageAt: iso(review?.lastMessageAt),
+    repliedAt: iso(review?.repliedAt),
+    followUpsStoppedAt: iso(review?.followUpsStoppedAt),
     answers,
   };
 }
@@ -167,7 +179,9 @@ async function findApplication(reference: string): Promise<AdminApplication | nu
   return null;
 }
 
-type ReviewChanges = Partial<Pick<ApplicationReview, "status" | "note" | "approvedAt" | "followUpsStoppedAt">>;
+type ReviewChanges = Partial<
+  Pick<ApplicationReview, "status" | "note" | "approvedAt" | "messagesSent" | "lastMessageAt" | "repliedAt" | "followUpsStoppedAt">
+>;
 
 async function saveReview(app: AdminApplication, changes: ReviewChanges) {
   await db
@@ -183,93 +197,94 @@ function sendError(res: Response, status: number, error: string) {
   return res.status(status).json({ error });
 }
 
+const sequenceOver = (app: AdminApplication) =>
+  Boolean(app.repliedAt || app.followUpsStoppedAt) || app.messagesSent >= SEQUENCE_LENGTH;
+
+async function respondWith(res: Response, reference: string) {
+  return res.json({ application: await findApplication(reference) });
+}
+
 // GET /api/admin/applications
 router.get("/applications", async (_req, res) => {
   try {
-    const applications = await loadApplications();
-    const missing = missingBrevoConfig();
-    return res.json({ applications, brevo: { connected: missing.length === 0, missing } });
+    return res.json({ applications: await loadApplications() });
   } catch (err) {
     logger.error({ err }, "Failed to load admin applications");
     return sendError(res, 500, "Could not load applications. Check the server logs and database connection.");
   }
 });
 
-// GET /api/admin/whatsapp-status
-// Reply state for approved applicants whose follow-ups are still running,
-// read from each Brevo contact's WA_REPLIED attribute. Cached briefly to stay
-// well inside Brevo's rate limits.
-const replyCache = new Map<string, { value: boolean | null; at: number }>();
-const REPLY_CACHE_MS = 60_000;
-
-router.get("/whatsapp-status", async (_req, res) => {
-  if (missingBrevoConfig().length > 0) return res.json({ statuses: {} });
-  try {
-    const running = (await loadApplications()).filter((a) => a.status === "approved" && !a.followUpsStoppedAt);
-    const statuses: Record<string, "replied" | "waiting" | "unknown"> = {};
-    const queue = [...running];
-    const worker = async () => {
-      for (let app = queue.shift(); app; app = queue.shift()) {
-        const cached = replyCache.get(app.email);
-        let replied: boolean | null;
-        if (cached && Date.now() - cached.at < REPLY_CACHE_MS) {
-          replied = cached.value;
-        } else {
-          try {
-            replied = await hasReplied(app.email);
-            replyCache.set(app.email, { value: replied, at: Date.now() });
-          } catch (err) {
-            logger.warn({ err, reference: app.reference }, "Could not read WhatsApp reply state from Brevo");
-            statuses[app.reference] = "unknown";
-            continue;
-          }
-        }
-        statuses[app.reference] = replied === null ? "unknown" : replied ? "replied" : "waiting";
-      }
-    };
-    await Promise.all([worker(), worker(), worker(), worker()]);
-    return res.json({ statuses });
-  } catch (err) {
-    logger.error({ err }, "Failed to load WhatsApp reply states");
-    return sendError(res, 500, "Could not load WhatsApp reply states.");
-  }
-});
-
 // POST /api/admin/applications/:reference/approve
+// Approves the applicant and records Message 1 as sent (the dashboard opens
+// WhatsApp with it pre-filled at the same moment).
 router.post("/applications/:reference/approve", async (req, res) => {
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
   if (app.status === "approved") return sendError(res, 409, "This applicant is already approved.");
   if (app.status === "rejected") return sendError(res, 409, "Move this applicant back to review before approving.");
+  const now = new Date();
+  await saveReview(app, {
+    status: "approved",
+    approvedAt: now,
+    messagesSent: 1,
+    lastMessageAt: now,
+    repliedAt: null,
+    followUpsStoppedAt: null,
+  });
+  return respondWith(res, app.reference);
+});
 
-  const missing = missingBrevoConfig();
-  if (missing.length > 0) {
-    return sendError(res, 503, `WhatsApp isn't connected yet. Add ${missing.join(", ")} to the API server's environment, then try again.`);
+// POST /api/admin/applications/:reference/message-sent  { step: 2..5 }
+router.post("/applications/:reference/message-sent", async (req, res) => {
+  const step = (req.body as { step?: unknown } | undefined)?.step;
+  const app = await findApplication(req.params.reference);
+  if (!app) return sendError(res, 404, "Application not found.");
+  if (app.status !== "approved") return sendError(res, 409, "Approve this applicant first.");
+  if (sequenceOver(app)) return sendError(res, 409, "This applicant's follow-ups have ended.");
+  if (step !== app.messagesSent + 1) {
+    return sendError(res, 409, `Message ${app.messagesSent + 1} is the next one to send. Refresh the page.`);
   }
+  await saveReview(app, { messagesSent: step, lastMessageAt: new Date() });
+  return respondWith(res, app.reference);
+});
 
-  try {
-    await addApprovedApplicant({
-      form: app.form,
-      referenceNumber: app.reference,
-      fullName: app.fullName,
-      email: app.email,
-      whatsappNumber: app.whatsappNumber,
-    });
-  } catch (err) {
-    logger.error({ err, reference: app.reference }, "Brevo rejected approved applicant");
-    const message = err instanceof BrevoError ? err.message : "Could not reach Brevo.";
-    return sendError(res, 502, `Not approved: ${message}`);
+// POST /api/admin/applications/:reference/undo-message  { step }
+// Undoes the most recent "sent" mark. Undoing Message 1 also undoes the approval.
+router.post("/applications/:reference/undo-message", async (req, res) => {
+  const step = (req.body as { step?: unknown } | undefined)?.step;
+  const app = await findApplication(req.params.reference);
+  if (!app) return sendError(res, 404, "Application not found.");
+  if (app.status !== "approved" || step !== app.messagesSent) {
+    return sendError(res, 409, "Only the most recent message can be undone. Refresh the page.");
   }
+  if (step === 1) {
+    await saveReview(app, { status: "new", approvedAt: null, messagesSent: 0, lastMessageAt: null });
+  } else {
+    await saveReview(app, { messagesSent: step - 1 });
+  }
+  return respondWith(res, app.reference);
+});
 
-  try {
-    await saveReview(app, { status: "approved", approvedAt: new Date(), followUpsStoppedAt: null });
-  } catch (err) {
-    // Brevo already has the contact, so the sequence has started; say so plainly.
-    logger.error({ err, reference: app.reference }, "Approved in Brevo but failed to save review state");
-    return sendError(res, 500, "The WhatsApp sequence started, but the approval wasn't saved here. Refresh before doing anything else.");
-  }
-  replyCache.delete(app.email);
-  return res.json({ application: await findApplication(app.reference) });
+// POST /api/admin/applications/:reference/replied  { replied: boolean }
+router.post("/applications/:reference/replied", async (req, res) => {
+  const replied = (req.body as { replied?: unknown } | undefined)?.replied;
+  if (typeof replied !== "boolean") return sendError(res, 400, "replied must be true or false.");
+  const app = await findApplication(req.params.reference);
+  if (!app) return sendError(res, 404, "Application not found.");
+  if (app.status !== "approved") return sendError(res, 409, "Only approved applicants can be marked as replied.");
+  await saveReview(app, { repliedAt: replied ? new Date() : null });
+  return respondWith(res, app.reference);
+});
+
+// POST /api/admin/applications/:reference/follow-ups  { stopped: boolean }
+router.post("/applications/:reference/follow-ups", async (req, res) => {
+  const stopped = (req.body as { stopped?: unknown } | undefined)?.stopped;
+  if (typeof stopped !== "boolean") return sendError(res, 400, "stopped must be true or false.");
+  const app = await findApplication(req.params.reference);
+  if (!app) return sendError(res, 404, "Application not found.");
+  if (app.status !== "approved") return sendError(res, 409, "Only approved applicants have follow-ups.");
+  await saveReview(app, { followUpsStoppedAt: stopped ? new Date() : null });
+  return respondWith(res, app.reference);
 });
 
 // POST /api/admin/applications/:reference/status  { status: "new" | "hold" | "rejected" }
@@ -281,10 +296,10 @@ router.post("/applications/:reference/status", async (req, res) => {
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
   if (app.status === "approved") {
-    return sendError(res, 409, "This applicant is already in the WhatsApp sequence. Use Stop follow-ups instead.");
+    return sendError(res, 409, "This applicant is already approved. Use Stop follow-ups instead.");
   }
   await saveReview(app, { status });
-  return res.json({ application: await findApplication(app.reference) });
+  return respondWith(res, app.reference);
 });
 
 // PUT /api/admin/applications/:reference/note  { note: string }
@@ -296,26 +311,7 @@ router.put("/applications/:reference/note", async (req, res) => {
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
   await saveReview(app, { note });
-  return res.json({ application: await findApplication(app.reference) });
-});
-
-// POST /api/admin/applications/:reference/stop-follow-ups
-router.post("/applications/:reference/stop-follow-ups", async (req, res) => {
-  const app = await findApplication(req.params.reference);
-  if (!app) return sendError(res, 404, "Application not found.");
-  if (app.status !== "approved") return sendError(res, 409, "Only approved applicants have follow-ups to stop.");
-  if (app.followUpsStoppedAt) return res.json({ application: app });
-
-  try {
-    await stopFollowUps(app.email);
-  } catch (err) {
-    logger.error({ err, reference: app.reference }, "Failed to stop follow-ups in Brevo");
-    const message = err instanceof BrevoError ? err.message : "Could not reach Brevo.";
-    return sendError(res, 502, `Follow-ups not stopped: ${message}`);
-  }
-  await saveReview(app, { followUpsStoppedAt: new Date() });
-  replyCache.delete(app.email);
-  return res.json({ application: await findApplication(app.reference) });
+  return respondWith(res, app.reference);
 });
 
 export default router;
