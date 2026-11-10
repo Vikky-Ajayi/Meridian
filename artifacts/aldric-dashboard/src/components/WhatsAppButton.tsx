@@ -11,7 +11,9 @@ export function WhatsAppButton({ className = '', size = 'md', iconOnly = false, 
 
   return (
     <a
-      href="#"
+      href="https://wa.me/447886857463"
+      target="_blank"
+      rel="noreferrer"
       aria-label={iconOnly ? 'Message the Desk on WhatsApp' : undefined}
       className={`items-center gap-2 font-semibold rounded-full transition-colors ${
         iconOnly

@@ -21,8 +21,8 @@ const router = Router();
 
 // Desk WhatsApp contact shown on the success pages. Fixed here rather than read
 // from env so a stale WHATSAPP_NUMBER/WHATSAPP_LINK deployment value can't override it.
-const DESK_WHATSAPP_NUMBER = "+44 7393 908896";
-const DESK_WHATSAPP_LINK = "https://wa.me/message/P7FHBCAOENHQF1";
+const DESK_WHATSAPP_NUMBER = "+44 7886 857463";
+const DESK_WHATSAPP_LINK = "https://wa.me/447886857463";
 
 // POST /api/enquiries/move-money
 router.post("/move-money", async (req, res) => {
