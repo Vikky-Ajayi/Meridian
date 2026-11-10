@@ -1,23 +1,24 @@
 import { Router, type Response } from "express";
-import { desc, eq } from "drizzle-orm";
-import {
-  db,
-  pool,
-  moveMoneySbmissionsTable,
-  privateBankingSubmissionsTable,
-  applicationReviewsTable,
-  type MoveMoney,
-  type PrivateBanking,
-  type ApplicationReview,
-} from "@workspace/db";
+import { asc, eq } from "drizzle-orm";
+import { db, whatsappMessagesTable } from "@workspace/db";
+import { ensureAdminTables } from "../lib/adminTables";
+import { findApplication, loadApplications, saveReview, sequenceOver, type AdminApplication } from "../lib/applications";
 import { logger } from "../lib/logger";
+import { whatsappDigits } from "../lib/phone";
+import { cloudApiConfigured, sendTemplate, sendText, WhatsAppError } from "../lib/whatsappCloud";
+import { dueStep, recordMessage, sendApplicantTemplate, sendFollowUp } from "../lib/whatsappMessaging";
+import { fillFirstName, firstNameOf, RESTART_TEMPLATE, SEQUENCE_TEMPLATES, TEMPLATE_LANGUAGE } from "../lib/whatsappTemplates";
 
 // Admin review dashboard API (/api/admin). Deliberately unauthenticated, at the
-// owner's request: anyone with the dashboard URL can read applicants.
+// owner's request: anyone with the dashboard URL can read applicants and
+// message them.
 //
-// WhatsApp messages are sent by hand from the dashboard (it opens WhatsApp with
-// the message pre-filled); this API only records the review decision and which
-// of the five sequence messages have been sent.
+// Two WhatsApp modes:
+//  • automatic – WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID are set: approving
+//    sends Message 1 through the WhatsApp Cloud API and follow-ups are sent by the
+//    scheduler (lib/whatsappMessaging.ts); replies arrive through the webhook.
+//  • manual – the dashboard opens WhatsApp with each message pre-filled and the
+//    admin records what was sent.
 
 const router = Router();
 
@@ -27,178 +28,11 @@ router.use((_req, res, next) => {
   next();
 });
 
-const STATUSES = ["new", "approved", "hold", "rejected"] as const;
-type Status = (typeof STATUSES)[number];
-type FormType = "move-money" | "private-banking";
-const SEQUENCE_LENGTH = 5;
-
-// Mirrors lib/db/src/schema/applicationReviews.ts; creates the table (and any
-// columns added since) on first use so a deploy doesn't depend on someone
-// running `drizzle-kit push`.
-let reviewsTableReady: Promise<void> | null = null;
-function ensureApplicationReviewsTable() {
-  reviewsTableReady ??= pool
-    .query(
-      `CREATE TABLE IF NOT EXISTS application_reviews (
-        id serial PRIMARY KEY,
-        reference_number text NOT NULL,
-        form_type text NOT NULL,
-        status text DEFAULT 'new' NOT NULL,
-        note text DEFAULT '' NOT NULL,
-        approved_at timestamp,
-        messages_sent integer DEFAULT 0 NOT NULL,
-        last_message_at timestamp,
-        replied_at timestamp,
-        follow_ups_stopped_at timestamp,
-        updated_at timestamp DEFAULT now() NOT NULL,
-        CONSTRAINT application_reviews_reference_number_unique UNIQUE (reference_number)
-      );
-      ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS messages_sent integer DEFAULT 0 NOT NULL;
-      ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS last_message_at timestamp;
-      ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS replied_at timestamp;`,
-    )
-    .then(() => undefined)
-    .catch((err) => {
-      reviewsTableReady = null;
-      throw err;
-    });
-  return reviewsTableReady;
-}
-
-interface Answer {
-  key: string;
-  question: string;
-  answer: string;
-}
-
-interface AdminApplication {
-  reference: string;
-  form: FormType;
-  fullName: string;
-  email: string;
-  whatsappNumber: string;
-  country: string;
-  submittedAt: string;
-  status: Status;
-  note: string;
-  approvedAt: string | null;
-  messagesSent: number;
-  lastMessageAt: string | null;
-  repliedAt: string | null;
-  followUpsStoppedAt: string | null;
-  answers: Answer[];
-}
-
-function moveMoneyAnswers(row: MoveMoney): Answer[] {
-  return [
-    { key: "amount", question: "Approximate amount to move", answer: row.amountRange },
-    { key: "origin", question: "Where the funds are located", answer: row.fundsLocation },
-    { key: "destination", question: "Where the funds are going", answer: row.destination },
-    { key: "purpose", question: "Purpose of the transfer", answer: row.purpose },
-    { key: "source", question: "Source of the funds", answer: row.sourceOfFunds },
-    { key: "institution", question: "Funds held with a bank or regulated institution", answer: row.regulatedInstitution },
-    { key: "availability", question: "Funds available for transfer", answer: row.fundsAvailability },
-    { key: "authority", question: "Authority to arrange the transfer", answer: row.transferAuthority },
-    { key: "timeline", question: "When they want to proceed", answer: row.timeline },
-    { key: "assistance", question: "Assistance required", answer: row.assistanceRequired },
-  ];
-}
-
-function privateBankingAnswers(row: PrivateBanking): Answer[] {
-  return [
-    { key: "banking", question: "Banking relationship sought", answer: row.bankingRelationshipType },
-    { key: "wealth", question: "Approximate investable wealth", answer: row.investableWealth },
-    { key: "jurisdictions", question: "Jurisdictions of interest", answer: (row.jurisdictions ?? []).join(", ") },
-    { key: "purpose", question: "What they want to achieve", answer: row.purpose || (row.reasons ?? []).join(", ") },
-    { key: "source", question: "Source of wealth or funds", answer: row.sourceOfWealth },
-    { key: "capital", question: "Initial capital to place", answer: row.initialCapital },
-    { key: "timeline", question: "How soon they want to start", answer: row.timeline },
-    { key: "motivation", question: "What prompted the enquiry", answer: row.motivation },
-  ];
-}
-
-const iso = (d: Date | null | undefined) => d?.toISOString() ?? null;
-
-function toApplication(
-  form: FormType,
-  row: MoveMoney | PrivateBanking,
-  answers: Answer[],
-  review: ApplicationReview | undefined,
-): AdminApplication {
-  return {
-    reference: row.referenceNumber,
-    form,
-    fullName: row.fullName,
-    email: row.emailAddress,
-    whatsappNumber: row.whatsappNumber,
-    country: row.countryOfResidence,
-    submittedAt: row.submittedAt.toISOString(),
-    status: (STATUSES as readonly string[]).includes(review?.status ?? "") ? (review!.status as Status) : "new",
-    note: review?.note ?? "",
-    approvedAt: iso(review?.approvedAt),
-    messagesSent: review?.messagesSent ?? 0,
-    lastMessageAt: iso(review?.lastMessageAt),
-    repliedAt: iso(review?.repliedAt),
-    followUpsStoppedAt: iso(review?.followUpsStoppedAt),
-    answers,
-  };
-}
-
-async function loadApplications(): Promise<AdminApplication[]> {
-  await ensureApplicationReviewsTable();
-  const [moveRows, bankRows, reviews] = await Promise.all([
-    db.select().from(moveMoneySbmissionsTable).orderBy(desc(moveMoneySbmissionsTable.submittedAt)),
-    db.select().from(privateBankingSubmissionsTable).orderBy(desc(privateBankingSubmissionsTable.submittedAt)),
-    db.select().from(applicationReviewsTable),
-  ]);
-  const reviewByRef = new Map(reviews.map((r) => [r.referenceNumber, r]));
-  return [
-    ...moveRows.map((row) => toApplication("move-money", row, moveMoneyAnswers(row), reviewByRef.get(row.referenceNumber))),
-    ...bankRows.map((row) => toApplication("private-banking", row, privateBankingAnswers(row), reviewByRef.get(row.referenceNumber))),
-  ].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
-}
-
-async function findApplication(reference: string): Promise<AdminApplication | null> {
-  await ensureApplicationReviewsTable();
-  const [review] = await db
-    .select()
-    .from(applicationReviewsTable)
-    .where(eq(applicationReviewsTable.referenceNumber, reference));
-
-  if (reference.startsWith("MMA-")) {
-    const [row] = await db.select().from(moveMoneySbmissionsTable).where(eq(moveMoneySbmissionsTable.referenceNumber, reference));
-    return row ? toApplication("move-money", row, moveMoneyAnswers(row), review) : null;
-  }
-  if (reference.startsWith("PBI-")) {
-    const [row] = await db
-      .select()
-      .from(privateBankingSubmissionsTable)
-      .where(eq(privateBankingSubmissionsTable.referenceNumber, reference));
-    return row ? toApplication("private-banking", row, privateBankingAnswers(row), review) : null;
-  }
-  return null;
-}
-
-type ReviewChanges = Partial<
-  Pick<ApplicationReview, "status" | "note" | "approvedAt" | "messagesSent" | "lastMessageAt" | "repliedAt" | "followUpsStoppedAt">
->;
-
-async function saveReview(app: AdminApplication, changes: ReviewChanges) {
-  await db
-    .insert(applicationReviewsTable)
-    .values({ referenceNumber: app.reference, formType: app.form, status: app.status, note: app.note, ...changes })
-    .onConflictDoUpdate({
-      target: applicationReviewsTable.referenceNumber,
-      set: { ...changes, updatedAt: new Date() },
-    });
-}
-
 function sendError(res: Response, status: number, error: string) {
   return res.status(status).json({ error });
 }
 
-const sequenceOver = (app: AdminApplication) =>
-  Boolean(app.repliedAt || app.followUpsStoppedAt) || app.messagesSent >= SEQUENCE_LENGTH;
+const whatsappMode = () => (cloudApiConfigured() ? "automatic" : "manual");
 
 async function respondWith(res: Response, reference: string) {
   return res.json({ application: await findApplication(reference) });
@@ -207,7 +41,13 @@ async function respondWith(res: Response, reference: string) {
 // GET /api/admin/applications
 router.get("/applications", async (_req, res) => {
   try {
-    return res.json({ applications: await loadApplications() });
+    return res.json({
+      applications: await loadApplications(),
+      whatsapp: {
+        mode: whatsappMode(),
+        repliesConnected: Boolean(process.env.WHATSAPP_APP_SECRET && process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN),
+      },
+    });
   } catch (err) {
     logger.error({ err }, "Failed to load admin applications");
     return sendError(res, 500, "Could not load applications. Check the server logs and database connection.");
@@ -215,13 +55,23 @@ router.get("/applications", async (_req, res) => {
 });
 
 // POST /api/admin/applications/:reference/approve
-// Approves the applicant and records Message 1 as sent (the dashboard opens
-// WhatsApp with it pre-filled at the same moment).
+// Automatic mode sends Message 1 now; manual mode records it as sent (the
+// dashboard opens WhatsApp with it pre-filled at the same moment).
 router.post("/applications/:reference/approve", async (req, res) => {
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
   if (app.status === "approved") return sendError(res, 409, "This applicant is already approved.");
   if (app.status === "rejected") return sendError(res, 409, "Move this applicant back to review before approving.");
+
+  if (cloudApiConfigured()) {
+    try {
+      await sendApplicantTemplate(app, SEQUENCE_TEMPLATES[app.form][0]);
+    } catch (err) {
+      logger.warn({ err, reference: app.reference }, "Approval message failed");
+      return sendError(res, 502, `Not approved, Message 1 wasn't sent: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   const now = new Date();
   await saveReview(app, {
     status: "approved",
@@ -230,12 +80,29 @@ router.post("/applications/:reference/approve", async (req, res) => {
     lastMessageAt: now,
     repliedAt: null,
     followUpsStoppedAt: null,
+    optedOutAt: null,
+    choice: null,
+    sendError: null,
+    sendErrorAt: null,
   });
   return respondWith(res, app.reference);
 });
 
-// POST /api/admin/applications/:reference/message-sent  { step: 2..5 }
+// POST /api/admin/applications/:reference/send-due  (automatic mode)
+// Sends the follow-up that's due now, e.g. to retry after a failure or outside sending hours.
+router.post("/applications/:reference/send-due", async (req, res) => {
+  if (!cloudApiConfigured()) return sendError(res, 409, "Automatic sending isn't connected.");
+  const app = await findApplication(req.params.reference);
+  if (!app) return sendError(res, 404, "Application not found.");
+  const index = dueStep(app, new Date());
+  if (index === null || index === 0) return sendError(res, 409, "No follow-up is due for this applicant.");
+  await sendFollowUp(app, index);
+  return respondWith(res, app.reference);
+});
+
+// POST /api/admin/applications/:reference/message-sent  { step: 2..5 }  (manual mode)
 router.post("/applications/:reference/message-sent", async (req, res) => {
+  if (cloudApiConfigured()) return sendError(res, 409, "Follow-ups are sent automatically now. Refresh the page.");
   const step = (req.body as { step?: unknown } | undefined)?.step;
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
@@ -248,9 +115,10 @@ router.post("/applications/:reference/message-sent", async (req, res) => {
   return respondWith(res, app.reference);
 });
 
-// POST /api/admin/applications/:reference/undo-message  { step }
+// POST /api/admin/applications/:reference/undo-message  { step }  (manual mode)
 // Undoes the most recent "sent" mark. Undoing Message 1 also undoes the approval.
 router.post("/applications/:reference/undo-message", async (req, res) => {
+  if (cloudApiConfigured()) return sendError(res, 409, "Messages sent automatically can't be undone.");
   const step = (req.body as { step?: unknown } | undefined)?.step;
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
@@ -283,6 +151,7 @@ router.post("/applications/:reference/follow-ups", async (req, res) => {
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
   if (app.status !== "approved") return sendError(res, 409, "Only approved applicants have follow-ups.");
+  if (!stopped && app.optedOutAt) return sendError(res, 409, "This applicant asked not to be contacted.");
   await saveReview(app, { followUpsStoppedAt: stopped ? new Date() : null });
   return respondWith(res, app.reference);
 });
@@ -312,6 +181,133 @@ router.put("/applications/:reference/note", async (req, res) => {
   if (!app) return sendError(res, 404, "Application not found.");
   await saveReview(app, { note });
   return respondWith(res, app.reference);
+});
+
+// ── Inbox (automatic mode) ─────────────────────────────────────────────────
+
+const REPLY_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+function applicantByWaId(apps: AdminApplication[]) {
+  const map = new Map<string, AdminApplication>();
+  for (const app of apps) {
+    const key = whatsappDigits(app.whatsappNumber);
+    const current = map.get(key);
+    if (!current || (app.status === "approved" && current.status !== "approved")) map.set(key, app);
+  }
+  return map;
+}
+
+function contactSummary(waId: string, messages: (typeof whatsappMessagesTable.$inferSelect)[], app: AdminApplication | undefined) {
+  const last = messages[messages.length - 1];
+  const lastIn = [...messages].reverse().find((m) => m.direction === "in");
+  // Awaiting a reply if nothing has actually gone out since their last message.
+  const answered = Boolean(lastIn && messages.some((m) => m.direction === "out" && m.status !== "failed" && m.createdAt >= lastIn.createdAt));
+  const profileName = [...messages].reverse().find((m) => m.profileName)?.profileName ?? null;
+  return {
+    waId,
+    name: app?.fullName ?? profileName ?? `+${waId}`,
+    profileName,
+    reference: app?.reference ?? null,
+    form: app?.form ?? null,
+    lastMessage: last ? { body: last.body, direction: last.direction, at: last.createdAt.toISOString(), status: last.status } : null,
+    lastInboundAt: lastIn?.createdAt.toISOString() ?? null,
+    canReply: Boolean(lastIn && Date.now() - lastIn.createdAt.getTime() < REPLY_WINDOW_MS),
+    awaitingReply: Boolean(lastIn) && !answered,
+  };
+}
+
+const validWaId = (s: string) => /^\d{6,15}$/.test(s);
+
+// GET /api/admin/conversations
+router.get("/conversations", async (_req, res) => {
+  try {
+    await ensureAdminTables();
+    const [messages, apps] = await Promise.all([
+      db.select().from(whatsappMessagesTable).orderBy(asc(whatsappMessagesTable.createdAt)),
+      loadApplications(),
+    ]);
+    const byWaId = new Map<string, typeof messages>();
+    for (const m of messages) byWaId.set(m.waId, [...(byWaId.get(m.waId) ?? []), m]);
+    const applicants = applicantByWaId(apps);
+    const conversations = [...byWaId.entries()]
+      .map(([waId, list]) => contactSummary(waId, list, applicants.get(waId)))
+      .sort((a, b) => (b.lastMessage?.at ?? "").localeCompare(a.lastMessage?.at ?? ""));
+    return res.json({ conversations });
+  } catch (err) {
+    logger.error({ err }, "Failed to load WhatsApp conversations");
+    return sendError(res, 500, "Could not load conversations.");
+  }
+});
+
+async function loadThread(waId: string) {
+  await ensureAdminTables();
+  const [messages, apps] = await Promise.all([
+    db.select().from(whatsappMessagesTable).where(eq(whatsappMessagesTable.waId, waId)).orderBy(asc(whatsappMessagesTable.createdAt)),
+    loadApplications(),
+  ]);
+  return {
+    conversation: contactSummary(waId, messages, applicantByWaId(apps).get(waId)),
+    messages: messages.map((m) => ({
+      id: m.id,
+      direction: m.direction,
+      kind: m.kind,
+      templateName: m.templateName,
+      body: m.body,
+      status: m.status,
+      error: m.error,
+      at: m.createdAt.toISOString(),
+    })),
+  };
+}
+
+// GET /api/admin/conversations/:waId
+router.get("/conversations/:waId", async (req, res) => {
+  if (!validWaId(req.params.waId)) return sendError(res, 400, "Invalid WhatsApp number.");
+  return res.json(await loadThread(req.params.waId));
+});
+
+// POST /api/admin/conversations/:waId/messages  { text }
+router.post("/conversations/:waId/messages", async (req, res) => {
+  const { waId } = req.params;
+  const text = (req.body as { text?: unknown } | undefined)?.text;
+  if (!validWaId(waId)) return sendError(res, 400, "Invalid WhatsApp number.");
+  if (typeof text !== "string" || !text.trim() || text.length > 4096) {
+    return sendError(res, 400, "Write a message of up to 4,096 characters.");
+  }
+  if (!cloudApiConfigured()) return sendError(res, 409, "WhatsApp Cloud API isn't connected.");
+  const thread = await loadThread(waId);
+  try {
+    const metaMessageId = await sendText(waId, text.trim());
+    await recordMessage({ waId, direction: "out", referenceNumber: thread.conversation.reference, kind: "text", body: text.trim(), metaMessageId, status: "sent" });
+  } catch (err) {
+    return sendError(res, 502, err instanceof WhatsAppError ? err.message : "Could not send the message.");
+  }
+  return res.json(await loadThread(waId));
+});
+
+// POST /api/admin/conversations/:waId/restart  – template message after the 24-hour window
+router.post("/conversations/:waId/restart", async (req, res) => {
+  const { waId } = req.params;
+  if (!validWaId(waId)) return sendError(res, 400, "Invalid WhatsApp number.");
+  if (!cloudApiConfigured()) return sendError(res, 409, "WhatsApp Cloud API isn't connected.");
+  const thread = await loadThread(waId);
+  const name = firstNameOf(thread.conversation.reference ? thread.conversation.name : thread.conversation.profileName ?? "");
+  try {
+    const metaMessageId = await sendTemplate(waId, RESTART_TEMPLATE.name, TEMPLATE_LANGUAGE, name);
+    await recordMessage({
+      waId,
+      direction: "out",
+      referenceNumber: thread.conversation.reference,
+      kind: "template",
+      templateName: RESTART_TEMPLATE.name,
+      body: fillFirstName(RESTART_TEMPLATE.text, name || "there"),
+      metaMessageId,
+      status: "sent",
+    });
+  } catch (err) {
+    return sendError(res, 502, err instanceof WhatsAppError ? err.message : "Could not send the message.");
+  }
+  return res.json(await loadThread(waId));
 });
 
 export default router;

@@ -38,7 +38,14 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json());
+app.use(
+  express.json({
+    // Keep the raw bytes so the WhatsApp webhook can verify Meta's signature.
+    verify: (req, _res, buf) => {
+      (req as typeof req & { rawBody?: Buffer }).rawBody = buf;
+    },
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

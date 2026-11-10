@@ -1,7 +1,9 @@
 import type { AdminApplication, AdminForm } from './admin-api';
 
-// WhatsApp follow-up messages, sent by hand: the dashboard opens WhatsApp with
-// the text pre-filled and the admin presses send. {{1}} is the applicant's first name.
+// WhatsApp follow-up messages. In manual mode the dashboard opens WhatsApp with
+// the text pre-filled; in automatic mode the server sends the matching Meta
+// templates (artifacts/api-server/src/lib/whatsappTemplates.ts, keep in step).
+// {{1}} is the applicant's first name.
 
 /** The WhatsApp account messages should be sent from. Shown as a reminder only. */
 export const SENDER_WHATSAPP = '+44 7886 857463';
@@ -10,6 +12,12 @@ export const SENDER_WHATSAPP = '+44 7886 857463';
 export const CALENDLY_URL = '';
 
 export const SEQUENCE_DAYS = [0, 2, 5, 9, 14] as const;
+
+/** Names of the matching templates in Meta's WhatsApp Manager (automatic mode). */
+export const META_TEMPLATE_NAMES: Record<AdminForm, readonly string[]> = {
+  'move-money': ['mma_1_invite', 'mma_2_followup', 'mma_3_questions', 'mma_4_checkin', 'mma_5_final'],
+  'private-banking': ['pbi_1_invite', 'pbi_2_followup', 'pbi_3_questions', 'pbi_4_checkin', 'pbi_5_final'],
+};
 
 export const STEP_NAMES = [
   'Initial invitation',
@@ -91,6 +99,7 @@ export function whatsappLink(app: AdminApplication, text?: string) {
 const DAY_MS = 86_400_000;
 
 export type SequenceState =
+  | { kind: 'optedOut'; sent: number }
   | { kind: 'replied'; sent: number }
   | { kind: 'stopped'; sent: number }
   | { kind: 'finished'; sent: number }
@@ -103,6 +112,7 @@ export type SequenceState =
 export function sequenceState(app: AdminApplication, now = Date.now()): SequenceState | null {
   if (app.status !== 'approved' || !app.approvedAt) return null;
   const sent = app.messagesSent;
+  if (app.optedOutAt) return { kind: 'optedOut', sent };
   if (app.repliedAt) return { kind: 'replied', sent };
   if (app.followUpsStoppedAt) return { kind: 'stopped', sent };
   if (sent >= SEQUENCE_DAYS.length) return { kind: 'finished', sent };

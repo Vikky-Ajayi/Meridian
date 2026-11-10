@@ -30,8 +30,15 @@ Private banking and international capital transfer web app. Prospects complete a
 | `RESEND_API_KEY` | (Resend API key for OTP email delivery) |
 | `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Envoi & Co <no-reply@yourdomain.com>) |
 | `OTP_SECRET` | (Random secret used to hash OTP codes server-side) |
+| `WHATSAPP_ACCESS_TOKEN` | (Optional) Permanent Meta System User token with whatsapp_business_messaging + whatsapp_business_management |
+| `WHATSAPP_PHONE_NUMBER_ID` | (Optional) Phone number ID from Meta → WhatsApp → API Setup (not the number itself) |
+| `WHATSAPP_APP_SECRET` | (Optional) Meta app secret (App settings → Basic); verifies webhook signatures |
+| `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | (Optional) Any long random phrase; also entered in Meta's webhook settings |
 
-Admin review dashboard: `/envoi-dashboard/admin` (unauthenticated by design). Approving an applicant opens WhatsApp with Message 1 pre-filled; follow-ups (days 2, 5, 9, 14) appear under "WhatsApp follow-ups" with one-tap send buttons until the applicant is marked as replied. Messages are sent by hand from the WhatsApp account set in `SENDER_WHATSAPP` (artifacts/aldric-dashboard/src/lib/admin-sequences.ts). Review state lives in the `application_reviews` table, which the API creates (and adds new columns to) on first use.
+Admin review dashboard: `/envoi-dashboard/admin` (unauthenticated by design). Two WhatsApp modes:
+- **Automatic** (WhatsApp Cloud API) when `WHATSAPP_ACCESS_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set: approving sends template `mma_1_invite` / `pbi_1_invite`; the API's scheduler sends follow-ups on days 2, 5, 9, 14 (weekdays 08:00–20:00 UK) and stops when the applicant replies or opts out; replies arrive via the webhook `POST /api/whatsapp/webhook` (subscribe to the `messages` field) and show in the dashboard Inbox. Template names and texts: `artifacts/api-server/src/lib/whatsappTemplates.ts` (all `en_GB`, one `{{1}}` variable = first name; also `reply_chose_whatsapp`, `reply_chose_call` with a Calendly URL button, and `envoi_restart`).
+- **Manual** otherwise: each message opens WhatsApp pre-filled and the admin records what was sent.
+Review state and inbox messages live in `application_reviews` and `whatsapp_messages`, which the API creates (and adds new columns to) on first use.
 
 OTP email templates live in `artifacts/api-server/src/lib/otpEmailTemplate.ts`.
 Use `renderOtpEmail(...)` for Resend's `html` field and `renderOtpEmailText(...)` for the plain-text fallback.

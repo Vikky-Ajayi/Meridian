@@ -3,11 +3,13 @@ import {
   approveApplication,
   markMessageSent,
   saveApplicationNote,
+  sendDueNow,
   setApplicationStatus,
   setFollowUpsStopped,
   setReplied,
   undoMessage,
   type AdminApplication,
+  type WhatsAppMode,
 } from '@/lib/admin-api';
 import {
   CALENDLY_URL,
@@ -19,6 +21,7 @@ import {
   sequenceState,
   STEP_NAMES,
   TEMPLATES,
+  whatsappDigits,
   whatsappLink,
 } from '@/lib/admin-sequences';
 import { findDuplicates, leadSignal } from '@/lib/admin-lead-signal';
@@ -35,6 +38,8 @@ interface Props {
   onClose: () => void;
   onChanged: (app: AdminApplication) => void;
   onToast: (message: string, action?: ToastAction) => void;
+  mode: WhatsAppMode;
+  onOpenConversation: (waId: string) => void;
 }
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
@@ -45,7 +50,8 @@ const btn = 'inline-flex items-center justify-center gap-2 rounded-lg px-[18px] 
 const ghost = `${btn} bg-[#F8F9FB] hover:bg-[#EEF0F3] text-black`;
 const primary = `${btn} bg-black text-white hover:bg-gray-800`;
 
-export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Props) {
+export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode, onOpenConversation }: Props) {
+  const automatic = mode === 'automatic';
   const [note, setNote] = useState(app.note);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -132,7 +138,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
             <span>
               Submitted {formatDate(app.submittedAt)}, {submitted.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
             </span>
-            <StatusPill app={app} />
+            <StatusPill app={app} mode={mode} />
           </div>
         </div>
 
@@ -155,12 +161,14 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
                   dueAt.setDate(dueAt.getDate() + d);
                   const sent = i < seq.sent;
                   const isNext = (seq.kind === 'due' || seq.kind === 'waiting') && i === seq.next;
-                  const cancelled = !sent && (seq.kind === 'replied' || seq.kind === 'stopped');
+                  const cancelled = !sent && (seq.kind === 'replied' || seq.kind === 'stopped' || seq.kind === 'optedOut');
                   const detail = sent
                     ? step === seq.sent && app.lastMessageAt ? `Sent ${formatDate(app.lastMessageAt)}` : 'Sent'
                     : cancelled
-                      ? seq.kind === 'replied' ? 'Not needed, they replied' : 'Not needed, follow-ups stopped'
-                      : `Due ${formatDate(dueAt.getTime())}`;
+                      ? seq.kind === 'replied' ? 'Not needed, they replied' : seq.kind === 'optedOut' ? 'Cancelled, they asked not to be contacted' : 'Not needed, follow-ups stopped'
+                      : automatic
+                        ? isNext && seq.kind === 'due' ? 'Queued, sends automatically in business hours' : `Sends automatically on ${formatDate(dueAt.getTime())}`
+                        : `Due ${formatDate(dueAt.getTime())}`;
                   return (
                     <li key={d} className={`relative grid grid-cols-[20px_minmax(0,1fr)_auto] gap-3 items-start pb-3.5 ${cancelled ? 'opacity-45' : ''}`}>
                       {i < SEQUENCE_DAYS.length - 1 && <span className="absolute left-[9px] top-5 bottom-0 w-0.5 bg-[#ECEEF2]" />}
@@ -170,7 +178,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
                       <div className="min-w-0">
                         <div className="text-[13.5px] font-medium">{STEP_NAMES[i]}</div>
                         <div className="text-xs text-gray-500 mt-0.5">{detail}</div>
-                        {isNext && (
+                        {isNext && !automatic && (
                           <button
                             type="button"
                             disabled={busy !== null}
@@ -187,13 +195,30 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
                   );
                 })}
               </ol>
+              {automatic && app.sendError && !['replied', 'stopped', 'optedOut', 'finished'].includes(seq.kind) && (
+                <div className="mb-3 rounded-[10px] border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] leading-relaxed text-red-800 flex flex-col gap-2">
+                  <span><b className="font-medium">Last send failed.</b> {app.sendError}</span>
+                  {seq.kind === 'due' && (
+                    <button type="button" disabled={busy !== null} onClick={() => run('retry', () => sendDueNow(app.reference), 'Sent.')} className="self-start rounded-lg px-3 py-1.5 text-[13px] font-medium bg-white border border-red-200 hover:bg-red-100 disabled:opacity-50">
+                      {busy === 'retry' ? 'Sending…' : 'Retry now'}
+                    </button>
+                  )}
+                </div>
+              )}
+              {automatic && app.choice && (
+                <p className="mb-2 text-[13px]">
+                  {app.choice === 'call' ? 'They asked for a call. The Calendly booking message was sent automatically.' : 'They chose to chat on WhatsApp. The follow-up reply was sent automatically.'}
+                </p>
+              )}
               <p className="text-xs text-gray-500">
-                Each button opens WhatsApp with the message ready. Send it from the WhatsApp account {SENDER_WHATSAPP}. If they reply, mark them as replied so the reminders stop.
+                {automatic
+                  ? 'Follow-ups send automatically on weekdays between 08:00 and 20:00 UK time, and stop as soon as they reply.'
+                  : `Each button opens WhatsApp with the message ready. Send it from the WhatsApp account ${SENDER_WHATSAPP}. If they reply, mark them as replied so the reminders stop.`}
               </p>
             </section>
           )}
 
-          {app.status === 'approved' && (
+          {app.status === 'approved' && !automatic && (
             <section>
               <SectionTitle>Quick replies</SectionTitle>
               <div className="flex flex-wrap gap-2">
@@ -285,7 +310,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
               <>
                 <button type="button" className={`${primary} flex-1 min-w-[200px]`} disabled={busy !== null} onClick={() => setApproving(true)}>
                   <WhatsAppGlyph />
-                  Approve &amp; open WhatsApp
+                  {automatic ? 'Approve & send WhatsApp' : 'Approve & open WhatsApp'}
                 </button>
                 {app.status === 'new' ? (
                   <button type="button" className={ghost} disabled={busy !== null} onClick={() => run('hold', () => setApplicationStatus(app.reference, 'hold'), `${name} is on hold.`)}>
@@ -318,7 +343,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
                     {busy === 'replied' ? 'Saving…' : 'Mark as replied'}
                   </button>
                 )}
-                {!app.repliedAt && (seq?.kind === 'stopped' ? (
+                {!app.repliedAt && seq?.kind !== 'optedOut' && (seq?.kind === 'stopped' ? (
                   <button type="button" className={ghost} disabled={busy !== null} onClick={() => run('stop', () => setFollowUpsStopped(app.reference, false), `Follow-ups resumed for ${name}.`)}>
                     Resume follow-ups
                   </button>
@@ -327,10 +352,17 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
                     {busy === 'stop' ? 'Saving…' : 'Stop follow-ups'}
                   </button>
                 ))}
-                <a href={whatsappLink(app)} target="_blank" rel="noreferrer" className={ghost}>
-                  <WhatsAppGlyph />
-                  Open chat
-                </a>
+{automatic ? (
+                  <button type="button" className={ghost} onClick={() => onOpenConversation(whatsappDigits(app.whatsappNumber))}>
+                    <WhatsAppGlyph />
+                    Open conversation
+                  </button>
+                ) : (
+                  <a href={whatsappLink(app)} target="_blank" rel="noreferrer" className={ghost}>
+                    <WhatsAppGlyph />
+                    Open chat
+                  </a>
+                )}
                 <button type="button" className={ghost} onClick={copyNumber}>Copy number</button>
               </>
             )}
@@ -341,11 +373,12 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
       {approving && (
         <ApproveDialog
           app={app}
+          automatic={automatic}
           onCancel={() => setApproving(false)}
           onApproved={(updated) => {
             setApproving(false);
             onChanged(updated);
-            onToast(`${name} approved. Message 1 is ready in WhatsApp. Press send.`, undoStep(1));
+            onToast(automatic ? `${name} approved. Message 1 sent on WhatsApp.` : `${name} approved. Message 1 is ready in WhatsApp. Press send.`, automatic ? undefined : undoStep(1));
           }}
         />
       )}
@@ -353,7 +386,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast }: Pro
   );
 }
 
-function ApproveDialog({ app, onCancel, onApproved }: { app: AdminApplication; onCancel: () => void; onApproved: (app: AdminApplication) => void }) {
+function ApproveDialog({ app, automatic, onCancel, onApproved }: { app: AdminApplication; automatic: boolean; onCancel: () => void; onApproved: (app: AdminApplication) => void }) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const confirmRef = useRef<HTMLButtonElement>(null);
@@ -377,7 +410,7 @@ function ApproveDialog({ app, onCancel, onApproved }: { app: AdminApplication; o
   function confirm() {
     setSending(true);
     setError('');
-    openWhatsAppAfter(() => approveApplication(app.reference), whatsappLink(app, message))
+    (automatic ? approveApplication(app.reference) : openWhatsAppAfter(() => approveApplication(app.reference), whatsappLink(app, message)))
       .then(({ application }) => onApproved(application))
       .catch((err) => {
         setError(err instanceof Error ? err.message : 'Could not approve. Try again.');
@@ -391,7 +424,9 @@ function ApproveDialog({ app, onCancel, onApproved }: { app: AdminApplication; o
         <header className="px-6 pt-[22px] pb-1.5">
           <h2 id="approve-title" className="text-[21px] font-semibold tracking-[-0.03em] mb-1.5">Approve {firstName(app.fullName)}?</h2>
           <p className="text-[13.5px] text-gray-500 leading-relaxed">
-            WhatsApp opens with this message ready to send to {app.whatsappNumber}. Send it from {SENDER_WHATSAPP}. The dashboard then reminds you about the follow-ups on days 2, 5, 9 and 14 unless they reply.
+            {automatic
+              ? `This message is sent to ${app.whatsappNumber} straight away. If they don't reply, follow-ups go out automatically on days 2, 5, 9 and 14, and stop as soon as they reply.`
+              : `WhatsApp opens with this message ready to send to ${app.whatsappNumber}. Send it from ${SENDER_WHATSAPP}. The dashboard then reminds you about the follow-ups on days 2, 5, 9 and 14 unless they reply.`}
           </p>
         </header>
         <div className="mx-6 my-4 bg-[#EFE7DD] rounded-xl p-3.5 flex flex-col gap-2">
@@ -409,7 +444,7 @@ function ApproveDialog({ app, onCancel, onApproved }: { app: AdminApplication; o
             Cancel
           </button>
           <button ref={confirmRef} type="button" onClick={confirm} disabled={sending} className="rounded-lg px-[18px] py-3 text-sm font-medium bg-black text-white hover:bg-gray-800 disabled:opacity-60">
-            {sending ? 'Opening WhatsApp…' : 'Approve and open WhatsApp'}
+            {sending ? (automatic ? 'Sending…' : 'Opening WhatsApp…') : automatic ? 'Approve and send' : 'Approve and open WhatsApp'}
           </button>
         </footer>
       </div>

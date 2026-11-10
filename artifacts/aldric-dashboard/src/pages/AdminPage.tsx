@@ -1,13 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { EnvoiLogo } from '@/components/EnvoiLogo';
 import { ApplicationDrawer, type ToastAction } from '@/components/admin/ApplicationDrawer';
+import { InboxView } from '@/components/admin/InboxView';
 import { formatDate, formatSubmitted, FormChip, openWhatsAppAfter, SignalBars, StatusPill, WhatsAppGlyph } from '@/components/admin/AdminBits';
-import { getApplications, markMessageSent, undoMessage, type AdminApplication, type AdminForm, type AdminStatus } from '@/lib/admin-api';
+import {
+  getApplications,
+  getConversations,
+  markMessageSent,
+  undoMessage,
+  type AdminApplication,
+  type AdminForm,
+  type AdminStatus,
+  type Conversation,
+  type WhatsAppInfo,
+} from '@/lib/admin-api';
 import { leadSignal } from '@/lib/admin-lead-signal';
 import {
   fillTemplate,
   firstName,
   FORM_NAMES,
+  META_TEMPLATE_NAMES,
   QUICK_REPLIES,
   SENDER_WHATSAPP,
   SEQUENCE_DAYS,
@@ -19,16 +31,22 @@ import {
 
 // Admin review dashboard at /envoi-dashboard/admin. Unauthenticated by the
 // owner's choice; kept out of search engines with a noindex meta tag (plus
-// robots.txt and X-Robots-Tag on the API). WhatsApp messages are sent by hand:
-// each button opens WhatsApp with the message pre-filled.
+// robots.txt and X-Robots-Tag on the API). With the WhatsApp Cloud API connected
+// (automatic mode) the server sends messages and replies land in the Inbox;
+// otherwise (manual mode) each button opens WhatsApp with the message pre-filled.
 
-type View = 'queue' | 'followups' | 'templates';
-const TITLES: Record<View, string> = { queue: 'Applications', followups: 'WhatsApp follow-ups', templates: 'Message templates' };
+type View = 'queue' | 'inbox' | 'followups' | 'templates';
+const TITLES: Record<View, string> = { queue: 'Applications', inbox: 'Inbox', followups: 'WhatsApp follow-ups', templates: 'Message templates' };
 
 const NAV_ICONS: Record<View, ReactElement> = {
   queue: (
     <svg viewBox="0 0 24 24" className="w-[19px] h-[19px] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
       <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" />
+    </svg>
+  ),
+  inbox: (
+    <svg viewBox="0 0 24 24" className="w-[19px] h-[19px] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z" />
     </svg>
   ),
   followups: (
@@ -66,6 +84,10 @@ const td = 'px-4 py-3.5 border-b border-[#ECEEF2] align-middle';
 
 export default function AdminPage() {
   const [apps, setApps] = useState<AdminApplication[]>([]);
+  const [whatsapp, setWhatsapp] = useState<WhatsAppInfo>({ mode: 'manual', repliesConnected: false });
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversationsLoading, setConversationsLoading] = useState(true);
+  const [inboxSelected, setInboxSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [view, setView] = useState<View>('queue');
@@ -95,6 +117,7 @@ export default function AdminPage() {
     try {
       const data = await getApplications();
       setApps(data.applications);
+      setWhatsapp(data.whatsapp);
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : 'Could not load applications.');
     } finally {
@@ -105,6 +128,30 @@ export default function AdminPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const automatic = whatsapp.mode === 'automatic';
+
+  const loadConversations = useCallback(async () => {
+    try {
+      setConversations((await getConversations()).conversations);
+    } catch {
+      // The inbox shows the last list it had; the next poll tries again.
+    } finally {
+      setConversationsLoading(false);
+    }
+  }, []);
+
+  // In automatic mode replies arrive in the background, so keep the lists fresh.
+  useEffect(() => {
+    if (!automatic) return;
+    loadConversations();
+    const convoTimer = window.setInterval(loadConversations, 30_000);
+    const appsTimer = window.setInterval(load, 60_000);
+    return () => {
+      window.clearInterval(convoTimer);
+      window.clearInterval(appsTimer);
+    };
+  }, [automatic, load, loadConversations]);
 
   useEffect(() => {
     if (!openRef) return;
@@ -129,13 +176,17 @@ export default function AdminPage() {
   const approved = apps.filter((a) => a.status === 'approved');
   const withSeq = approved.map((a) => ({ app: a, seq: sequenceState(a)! }));
   const due = withSeq.filter((x) => x.seq.kind === 'due');
+  const failing = withSeq.filter((x) => x.app.sendError && ['due', 'waiting'].includes(x.seq.kind));
+  const awaitingReply = conversations.filter((c) => c.awaitingReply).length;
   const replied = withSeq.filter((x) => x.seq.kind === 'replied');
   const weekAgo = Date.now() - 7 * 86_400_000;
 
   const stats: [string, string | number, string][] = [
     ['To review', pending.length, `${pending.filter((a) => leadSignal(a).level === 'strong').length} with a strong signal`],
     ['New this week', apps.filter((a) => Date.parse(a.submittedAt) >= weekAgo).length, 'Across both forms'],
-    ['Follow-ups due', due.length, due.length ? 'Ready to send on WhatsApp' : 'Nothing to send today'],
+    automatic
+      ? ['Needs attention', failing.length + awaitingReply, `${awaitingReply} awaiting your reply · ${failing.length} failed sends`]
+      : ['Follow-ups due', due.length, due.length ? 'Ready to send on WhatsApp' : 'Nothing to send today'],
     ['Reply rate', approved.length ? `${Math.round((replied.length / approved.length) * 100)}%` : '–', `${replied.length} of ${approved.length} approved replied`],
   ];
 
@@ -183,8 +234,8 @@ export default function AdminPage() {
           <span className="text-[11px] font-medium tracking-[0.12em] uppercase text-gray-500">Admin</span>
         </div>
         <nav className="flex md:flex-col gap-1 md:gap-1.5 overflow-x-auto" aria-label="Admin sections">
-          {(Object.keys(TITLES) as View[]).map((v) => {
-            const count = v === 'queue' ? pending.length : v === 'followups' ? due.length : 0;
+          {(Object.keys(TITLES) as View[]).filter((v) => v !== 'inbox' || automatic).map((v) => {
+            const count = v === 'queue' ? pending.length : v === 'inbox' ? awaitingReply : v === 'followups' ? (automatic ? failing.length : due.length) : 0;
             return (
               <button
                 key={v}
@@ -196,14 +247,16 @@ export default function AdminPage() {
                 {NAV_ICONS[v]}
                 {TITLES[v]}
                 {count > 0 && (
-                  <span className={`ml-auto text-xs font-medium text-white rounded-full px-2 py-px tabular-nums ${v === 'followups' ? 'bg-orange-500' : 'bg-[#0F61E9]'}`}>{count}</span>
+                  <span className={`ml-auto text-xs font-medium text-white rounded-full px-2 py-px tabular-nums ${v === 'followups' ? (automatic ? 'bg-red-600' : 'bg-orange-500') : v === 'inbox' ? 'bg-[#25D366]' : 'bg-[#0F61E9]'}`}>{count}</span>
                 )}
               </button>
             );
           })}
         </nav>
         <p className="hidden md:block mt-auto px-2 text-xs text-gray-500 leading-relaxed">
-          Messages open in WhatsApp ready to send. Send them from {SENDER_WHATSAPP}.
+          {automatic
+            ? 'WhatsApp messages are sent automatically. Replies appear in the Inbox.'
+            : `Messages open in WhatsApp ready to send. Send them from ${SENDER_WHATSAPP}.`}
         </p>
       </aside>
 
@@ -212,7 +265,7 @@ export default function AdminPage() {
           <h1 className="text-2xl md:text-[30px] font-semibold tracking-[-0.04em]">{TITLES[view]}</h1>
           <div className="hidden md:flex items-center gap-2 text-[13px] text-gray-500">
             <WhatsAppGlyph className="w-4 h-4 text-[#25D366]" />
-            Sending from {SENDER_WHATSAPP}
+            {loading ? 'Checking WhatsApp…' : automatic ? `Automatic sending from ${SENDER_WHATSAPP}` : `Manual mode · send from ${SENDER_WHATSAPP}`}
           </div>
         </div>
 
@@ -274,7 +327,7 @@ export default function AdminPage() {
                       <td className={`${td} tabular-nums whitespace-nowrap`}>{headline(a)}</td>
                       <td className={td}>{timeline(a)}</td>
                       <td className={td}><SignalBars level={leadSignal(a).level} /></td>
-                      <td className={td}><StatusPill app={a} /></td>
+                      <td className={td}><StatusPill app={a} mode={whatsapp.mode} /></td>
                       <td className={`${td} tabular-nums whitespace-nowrap text-gray-600`}>{formatSubmitted(a.submittedAt)}</td>
                     </tr>
                   ))}
@@ -287,8 +340,41 @@ export default function AdminPage() {
           </section>
         )}
 
+        {view === 'inbox' && automatic && (
+          <InboxView
+            conversations={conversations}
+            loading={conversationsLoading}
+            selected={inboxSelected}
+            onSelect={setInboxSelected}
+            onChanged={loadConversations}
+            onOpenApplication={(reference) => setOpenRef(reference)}
+            repliesConnected={whatsapp.repliesConnected}
+          />
+        )}
+
         {view === 'followups' && (
           <section className="flex flex-col gap-8">
+            {automatic ? (
+              <div>
+                <h2 className="text-lg font-semibold tracking-[-0.02em] mb-1">Needs attention</h2>
+                <p className="text-[13px] text-gray-500 mb-3.5">Follow-ups send automatically. Anything that failed to send shows here; open the applicant to see why and retry.</p>
+                <div className="border border-[#ECEEF2] rounded-xl overflow-x-auto">
+                  <table className="w-full border-collapse min-w-[680px] text-sm">
+                    <thead><tr><th className={th}>Applicant</th><th className={th}>Form</th><th className={th}>Problem</th></tr></thead>
+                    <tbody>
+                      {failing.length === 0 && <tr><td colSpan={3} className="px-4 py-10 text-center text-gray-500">Nothing needs attention. Follow-ups are going out on schedule.</td></tr>}
+                      {failing.map(({ app: a }) => (
+                        <tr key={a.reference} {...rowProps(a)} className="cursor-pointer hover:bg-[#FAFBFC] last:[&>td]:border-b-0">
+                          <td className={td}><div className="font-medium">{a.fullName}</div><div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div></td>
+                          <td className={td}><FormChip form={a.form} /></td>
+                          <td className={`${td} text-red-700`}>{a.sendError}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
             <div>
               <h2 className="text-lg font-semibold tracking-[-0.02em] mb-1">Due today</h2>
               <p className="text-[13px] text-gray-500 mb-3.5">
@@ -336,6 +422,7 @@ export default function AdminPage() {
                 </table>
               </div>
             </div>
+            )}
 
             <div>
               <h2 className="text-lg font-semibold tracking-[-0.02em] mb-3.5">Everyone approved</h2>
@@ -349,16 +436,17 @@ export default function AdminPage() {
                       <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-500">Nobody has been approved yet.</td></tr>
                     )}
                     {[...withSeq].sort((x, y) => (y.app.approvedAt ?? '').localeCompare(x.app.approvedAt ?? '')).map(({ app: a, seq }) => {
-                      const next = seq.kind === 'due' ? 'Due now'
+                      const next = seq.kind === 'due' ? (automatic ? 'Sending in business hours' : 'Due now')
                         : seq.kind === 'waiting' ? `Message ${seq.next + 1} on ${formatDate(seq.dueAt)}`
                         : seq.kind === 'replied' ? 'None, they replied'
-                        : seq.kind === 'stopped' ? 'None, follow-ups stopped' : 'None, all sent';
+                        : seq.kind === 'stopped' ? 'None, follow-ups stopped'
+                        : seq.kind === 'optedOut' ? 'None, opted out' : 'None, all sent';
                       return (
                         <tr key={a.reference} {...rowProps(a)} className="cursor-pointer hover:bg-[#FAFBFC] last:[&>td]:border-b-0">
                           <td className={td}><div className="font-medium">{a.fullName}</div><div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div></td>
                           <td className={td}><FormChip form={a.form} /></td>
                           <td className={`${td} tabular-nums`}>{a.approvedAt ? formatDate(a.approvedAt) : '–'}</td>
-                          <td className={td}><StatusPill app={a} /></td>
+                          <td className={td}><StatusPill app={a} mode={whatsapp.mode} /></td>
                           <td className={td}>{next}</td>
                         </tr>
                       );
@@ -383,6 +471,7 @@ export default function AdminPage() {
                         <span className="text-xs font-medium px-2.5 py-0.5 rounded-sm border bg-[#E6F1FF] text-[#0F61E9] border-blue-200">Day {SEQUENCE_DAYS[i]}</span>
                       </div>
                       <p className="text-[13px] text-gray-500 leading-relaxed whitespace-pre-line">{text}</p>
+                      <p className="text-xs text-gray-400 mt-auto">Meta template name: <code className="text-gray-600">{META_TEMPLATE_NAMES[f][i]}</code></p>
                     </div>
                   ))}
                 </div>
@@ -407,7 +496,15 @@ export default function AdminPage() {
       </main>
 
       {openApp && (
-        <ApplicationDrawer app={openApp} all={apps} onClose={() => setOpenRef(null)} onChanged={replaceApp} onToast={showToast} />
+        <ApplicationDrawer
+          app={openApp}
+          all={apps}
+          mode={whatsapp.mode}
+          onClose={() => setOpenRef(null)}
+          onChanged={replaceApp}
+          onToast={showToast}
+          onOpenConversation={(waId) => { setOpenRef(null); setInboxSelected(waId); setView('inbox'); }}
+        />
       )}
 
       {toast && (

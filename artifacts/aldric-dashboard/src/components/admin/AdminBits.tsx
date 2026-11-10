@@ -1,4 +1,4 @@
-import type { AdminApplication, AdminForm } from '@/lib/admin-api';
+import type { AdminApplication, AdminForm, WhatsAppMode } from '@/lib/admin-api';
 import { FORM_NAMES, sequenceState } from '@/lib/admin-sequences';
 import type { SignalLevel } from '@/lib/admin-lead-signal';
 
@@ -20,13 +20,18 @@ const PILL = {
   grey: 'bg-gray-100 text-gray-500 border-gray-200',
 } as const;
 
-export function statusInfo(app: AdminApplication): { label: string; tone: keyof typeof PILL } {
+export function statusInfo(app: AdminApplication, mode: WhatsAppMode = 'manual'): { label: string; tone: keyof typeof PILL } {
   const seq = sequenceState(app);
   if (seq) {
-    if (seq.kind === 'replied') return { label: 'Replied', tone: 'green' };
+    if (seq.kind === 'optedOut') return { label: 'Opted out', tone: 'red' };
+    if (seq.kind === 'replied') {
+      const choice = app.choice === 'call' ? ' · wants a call' : app.choice === 'whatsapp' ? ' · chat on WhatsApp' : '';
+      return { label: `Replied${choice}`, tone: 'green' };
+    }
     if (seq.kind === 'stopped') return { label: 'Follow-ups stopped', tone: 'grey' };
     if (seq.kind === 'finished') return { label: 'All 5 messages sent', tone: 'grey' };
-    if (seq.kind === 'due') return { label: `Message ${seq.next + 1} due`, tone: 'orange' };
+    if (mode === 'automatic' && app.sendError) return { label: 'Send failed', tone: 'red' };
+    if (seq.kind === 'due') return { label: mode === 'automatic' ? `Message ${seq.next + 1} queued` : `Message ${seq.next + 1} due`, tone: 'orange' };
     return { label: `Message ${seq.sent} of 5 sent`, tone: 'blue' };
   }
   if (app.status === 'hold') return { label: 'On hold', tone: 'yellow' };
@@ -34,8 +39,8 @@ export function statusInfo(app: AdminApplication): { label: string; tone: keyof 
   return { label: 'To review', tone: 'blue' };
 }
 
-export function StatusPill({ app }: { app: AdminApplication }) {
-  const { label, tone } = statusInfo(app);
+export function StatusPill({ app, mode }: { app: AdminApplication; mode?: WhatsAppMode }) {
+  const { label, tone } = statusInfo(app, mode);
   return <span className={`inline-block text-xs font-medium px-2.5 py-0.5 rounded-sm border whitespace-nowrap ${PILL[tone]}`}>{label}</span>;
 }
 
