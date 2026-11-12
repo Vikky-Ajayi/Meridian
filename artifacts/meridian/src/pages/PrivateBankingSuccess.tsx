@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
-import { WhatsAppIcon } from '@/components/WhatsAppIcon';
-import { DESK_WHATSAPP_LINK } from '@/lib/contact';
 
 interface EnquiryResult {
   referenceNumber: string;
@@ -37,28 +35,18 @@ export default function PrivateBankingSuccess() {
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           </div>
-          <div className="eyebrow">Enquiry Logged</div>
-          <h2>Your Introduction Is Being Arranged</h2>
+          <div className="eyebrow">Enquiry Received</div>
+          <h2>Your request is under review</h2>
           <p>
-            Our team will review your enquiry and reach out to you on WhatsApp at the number
-            you provided to arrange your introduction. Quote your reference if asked.
+            Our team is reviewing your request for a private banking introduction. If you match
+            our client profile, we’ll contact you by email and on WhatsApp using the number you
+            provided to discuss the next steps.
           </p>
-          <p>You can also contact one of our advisors directly via WhatsApp.</p>
-          <a
-            href={DESK_WHATSAPP_LINK}
-            target="_blank"
-            rel="noreferrer"
-            className="whatsapp-icon-link"
-            aria-label="Chat with an advisor on WhatsApp"
-          >
-            <WhatsAppIcon size={28} />
-          </a>
+          <p>Please keep your reference number handy.</p>
           <div className="success-ref">
             <span>Reference: <b>{result?.referenceNumber ?? '—'}</b></span>
             <span>{result?.fullName ?? ''}</span>
           </div>
-          <h3>We'll be in touch on WhatsApp</h3>
-          <p className="hours-note">Available 08:00–20:00 GMT, Monday to Friday.</p>
         </section>
       </main>
     </div>

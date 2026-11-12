@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
-import { WhatsAppIcon } from '@/components/WhatsAppIcon';
-import { DESK_WHATSAPP_LINK, DESK_WHATSAPP_NUMBER } from '@/lib/contact';
 
 interface EnquiryResult {
   referenceNumber: string;
@@ -38,24 +36,17 @@ export default function MoveMoneySuccess() {
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           </div>
-          <div className="eyebrow">Enquiry Logged</div>
-          <h2>Your Line To The Desk Is Open</h2>
+          <div className="eyebrow">Enquiry Received</div>
+          <h2>Your request is under review</h2>
           <p>
-            Our team will review your enquiry and reach out to you on WhatsApp at the number
-            you provided. Quote your reference if asked.
+            Our team is reviewing your request to move money abroad. If you match our client
+            profile, we’ll contact you by email and on WhatsApp using the number you provided.
           </p>
+          <p>Please keep your reference number handy.</p>
           <div className="success-ref">
             <span>Reference: <b>{result?.referenceNumber ?? '—'}</b></span>
             <span>{result?.fullName ?? ''}</span>
           </div>
-          <a href={DESK_WHATSAPP_LINK} target="_blank" rel="noreferrer" className="whatsapp-btn-link">
-            <button type="button" className="whatsapp-btn">
-              <WhatsAppIcon />
-              Message the Desk on WhatsApp
-            </button>
-          </a>
-          <h3>{DESK_WHATSAPP_NUMBER}</h3>
-          <p className="hours-note">Available 08:00–20:00 GMT, Monday to Friday.</p>
         </section>
       </main>
     </div>
