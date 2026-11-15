@@ -25,6 +25,8 @@ ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS opted_out_at timestamp;
 ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS choice text;
 ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS send_error text;
 ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS send_error_at timestamp;
+ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS whatsapp_clicked_at timestamp;
+ALTER TABLE application_reviews ADD COLUMN IF NOT EXISTS contact_channel text;
 
 CREATE TABLE IF NOT EXISTS whatsapp_messages (
   id serial PRIMARY KEY,

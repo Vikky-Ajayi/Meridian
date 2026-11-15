@@ -36,6 +36,8 @@ export interface AdminApplication {
   status: Status;
   note: string;
   approvedAt: string | null;
+  /** Channel fixed at approval; null for applicants approved before this was recorded (manual). */
+  contactChannel: "whatsapp" | "email" | "manual" | null;
   messagesSent: number;
   lastMessageAt: string | null;
   repliedAt: string | null;
@@ -44,6 +46,7 @@ export interface AdminApplication {
   choice: "whatsapp" | "call" | null;
   sendError: string | null;
   sendErrorAt: string | null;
+  whatsappClickedAt: string | null;
   answers: Answer[];
 }
 
@@ -94,6 +97,10 @@ function toApplication(
     status: (STATUSES as readonly string[]).includes(review?.status ?? "") ? (review!.status as Status) : "new",
     note: review?.note ?? "",
     approvedAt: iso(review?.approvedAt),
+    contactChannel:
+      review?.contactChannel === "whatsapp" || review?.contactChannel === "email" || review?.contactChannel === "manual"
+        ? review.contactChannel
+        : null,
     messagesSent: review?.messagesSent ?? 0,
     lastMessageAt: iso(review?.lastMessageAt),
     repliedAt: iso(review?.repliedAt),
@@ -102,6 +109,7 @@ function toApplication(
     choice: review?.choice === "whatsapp" || review?.choice === "call" ? review.choice : null,
     sendError: review?.sendError ?? null,
     sendErrorAt: iso(review?.sendErrorAt),
+    whatsappClickedAt: iso(review?.whatsappClickedAt),
     answers,
   };
 }
@@ -147,6 +155,7 @@ export type ReviewChanges = Partial<
     | "status"
     | "note"
     | "approvedAt"
+    | "contactChannel"
     | "messagesSent"
     | "lastMessageAt"
     | "repliedAt"
@@ -155,6 +164,7 @@ export type ReviewChanges = Partial<
     | "choice"
     | "sendError"
     | "sendErrorAt"
+    | "whatsappClickedAt"
   >
 >;
 
@@ -168,6 +178,9 @@ export async function saveReview(app: AdminApplication, changes: ReviewChanges) 
       set: { ...changes, updatedAt: new Date() },
     });
 }
+
+/** The channel this applicant's follow-ups use (applicants approved before channels existed are manual). */
+export const applicantChannel = (app: AdminApplication) => app.contactChannel ?? "manual";
 
 /** No more sequence messages should go to this applicant. */
 export const sequenceOver = (app: AdminApplication) =>

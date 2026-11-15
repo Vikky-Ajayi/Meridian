@@ -2,9 +2,11 @@ import { Router, type Response } from "express";
 import { asc, eq } from "drizzle-orm";
 import { db, whatsappMessagesTable } from "@workspace/db";
 import { ensureAdminTables } from "../lib/adminTables";
-import { findApplication, loadApplications, saveReview, sequenceOver, type AdminApplication } from "../lib/applications";
+import { applicantChannel, findApplication, loadApplications, saveReview, sequenceOver, type AdminApplication } from "../lib/applications";
 import { logger } from "../lib/logger";
 import { whatsappDigits } from "../lib/phone";
+import { currentChannel } from "../lib/channel";
+import { EMAIL_SEQUENCE, missingEmailConfig, prefilledWhatsAppText, renderSequenceEmail, sendSequenceEmail } from "../lib/emailSequence";
 import { cloudApiConfigured, sendTemplate, sendText, WhatsAppError } from "../lib/whatsappCloud";
 import { dueStep, recordMessage, sendApplicantTemplate, sendFollowUp } from "../lib/whatsappMessaging";
 import { fillFirstName, firstNameOf, RESTART_TEMPLATE, SEQUENCE_TEMPLATES, TEMPLATE_LANGUAGE } from "../lib/whatsappTemplates";
@@ -13,10 +15,11 @@ import { fillFirstName, firstNameOf, RESTART_TEMPLATE, SEQUENCE_TEMPLATES, TEMPL
 // owner's request: anyone with the dashboard URL can read applicants and
 // message them.
 //
-// Two WhatsApp modes:
-//  • automatic – WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID are set: approving
-//    sends Message 1 through the WhatsApp Cloud API and follow-ups are sent by the
-//    scheduler (lib/whatsappMessaging.ts); replies arrive through the webhook.
+// Contact channel (lib/channel.ts):
+//  • whatsapp – WhatsApp Cloud API connected: approving sends Message 1 as a template,
+//    the scheduler (lib/whatsappMessaging.ts) sends follow-ups, replies arrive via the webhook.
+//  • email – approving sends an "approved" email with a WhatsApp button; follow-up emails
+//    go out until the admin marks "They've messaged us" (lib/emailSequence.ts).
 //  • manual – the dashboard opens WhatsApp with each message pre-filled and the
 //    admin records what was sent.
 
@@ -32,7 +35,6 @@ function sendError(res: Response, status: number, error: string) {
   return res.status(status).json({ error });
 }
 
-const whatsappMode = () => (cloudApiConfigured() ? "automatic" : "manual");
 
 async function respondWith(res: Response, reference: string) {
   return res.json({ application: await findApplication(reference) });
@@ -44,8 +46,9 @@ router.get("/applications", async (_req, res) => {
     return res.json({
       applications: await loadApplications(),
       whatsapp: {
-        mode: whatsappMode(),
+        mode: currentChannel(),
         repliesConnected: Boolean(process.env.WHATSAPP_APP_SECRET && process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN),
+        missingEmailConfig: missingEmailConfig(),
       },
     });
   } catch (err) {
@@ -55,20 +58,23 @@ router.get("/applications", async (_req, res) => {
 });
 
 // POST /api/admin/applications/:reference/approve
-// Automatic mode sends Message 1 now; manual mode records it as sent (the
-// dashboard opens WhatsApp with it pre-filled at the same moment).
+// WhatsApp and email channels send Message / Email 1 now; manual mode records it
+// as sent (the dashboard opens WhatsApp with it pre-filled at the same moment).
 router.post("/applications/:reference/approve", async (req, res) => {
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
   if (app.status === "approved") return sendError(res, 409, "This applicant is already approved.");
   if (app.status === "rejected") return sendError(res, 409, "Move this applicant back to review before approving.");
 
-  if (cloudApiConfigured()) {
+  const channel = currentChannel();
+  if (channel !== "manual") {
     try {
-      await sendApplicantTemplate(app, SEQUENCE_TEMPLATES[app.form][0]);
+      if (channel === "email") await sendSequenceEmail(app, 0);
+      else await sendApplicantTemplate(app, SEQUENCE_TEMPLATES[app.form][0]);
     } catch (err) {
       logger.warn({ err, reference: app.reference }, "Approval message failed");
-      return sendError(res, 502, `Not approved, Message 1 wasn't sent: ${err instanceof Error ? err.message : String(err)}`);
+      const what = channel === "email" ? "the approval email" : "Message 1";
+      return sendError(res, 502, `Not approved, ${what} wasn't sent: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -76,6 +82,7 @@ router.post("/applications/:reference/approve", async (req, res) => {
   await saveReview(app, {
     status: "approved",
     approvedAt: now,
+    contactChannel: channel,
     messagesSent: 1,
     lastMessageAt: now,
     repliedAt: null,
@@ -84,16 +91,19 @@ router.post("/applications/:reference/approve", async (req, res) => {
     choice: null,
     sendError: null,
     sendErrorAt: null,
+    whatsappClickedAt: null,
   });
   return respondWith(res, app.reference);
 });
 
-// POST /api/admin/applications/:reference/send-due  (automatic mode)
+// POST /api/admin/applications/:reference/send-due  (WhatsApp or email channel)
 // Sends the follow-up that's due now, e.g. to retry after a failure or outside sending hours.
 router.post("/applications/:reference/send-due", async (req, res) => {
-  if (!cloudApiConfigured()) return sendError(res, 409, "Automatic sending isn't connected.");
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
+  if (applicantChannel(app) === "manual" || applicantChannel(app) !== currentChannel()) {
+    return sendError(res, 409, "This applicant's follow-ups aren't sent automatically.");
+  }
   const index = dueStep(app, new Date());
   if (index === null || index === 0) return sendError(res, 409, "No follow-up is due for this applicant.");
   await sendFollowUp(app, index);
@@ -102,10 +112,10 @@ router.post("/applications/:reference/send-due", async (req, res) => {
 
 // POST /api/admin/applications/:reference/message-sent  { step: 2..5 }  (manual mode)
 router.post("/applications/:reference/message-sent", async (req, res) => {
-  if (cloudApiConfigured()) return sendError(res, 409, "Follow-ups are sent automatically now. Refresh the page.");
   const step = (req.body as { step?: unknown } | undefined)?.step;
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
+  if (applicantChannel(app) !== "manual") return sendError(res, 409, "This applicant's follow-ups are sent automatically.");
   if (app.status !== "approved") return sendError(res, 409, "Approve this applicant first.");
   if (sequenceOver(app)) return sendError(res, 409, "This applicant's follow-ups have ended.");
   if (step !== app.messagesSent + 1) {
@@ -118,10 +128,10 @@ router.post("/applications/:reference/message-sent", async (req, res) => {
 // POST /api/admin/applications/:reference/undo-message  { step }  (manual mode)
 // Undoes the most recent "sent" mark. Undoing Message 1 also undoes the approval.
 router.post("/applications/:reference/undo-message", async (req, res) => {
-  if (cloudApiConfigured()) return sendError(res, 409, "Messages sent automatically can't be undone.");
   const step = (req.body as { step?: unknown } | undefined)?.step;
   const app = await findApplication(req.params.reference);
   if (!app) return sendError(res, 404, "Application not found.");
+  if (app.status === "approved" && applicantChannel(app) !== "manual") return sendError(res, 409, "Messages sent automatically can't be undone.");
   if (app.status !== "approved" || step !== app.messagesSent) {
     return sendError(res, 409, "Only the most recent message can be undone. Refresh the page.");
   }
@@ -183,7 +193,23 @@ router.put("/applications/:reference/note", async (req, res) => {
   return respondWith(res, app.reference);
 });
 
-// ── Inbox (automatic mode) ─────────────────────────────────────────────────
+// ── Email channel ─────────────────────────────────────────────────────────
+
+// GET /api/admin/email-templates  – the email wording, for the dashboard's templates page
+router.get("/email-templates", (_req, res) => {
+  return res.json({ templates: EMAIL_SEQUENCE, prefilledWhatsAppText: prefilledWhatsAppText("MMA-20261112-0851") });
+});
+
+// GET /api/admin/applications/:reference/email-preview?step=1..5
+router.get("/applications/:reference/email-preview", async (req, res) => {
+  const step = Number(req.query.step ?? 1);
+  if (!Number.isInteger(step) || step < 1 || step > 5) return sendError(res, 400, "step must be 1 to 5.");
+  const app = await findApplication(req.params.reference);
+  if (!app) return sendError(res, 404, "Application not found.");
+  return res.json(renderSequenceEmail(app, step - 1));
+});
+
+// ── Inbox (WhatsApp channel) ───────────────────────────────────────────────
 
 const REPLY_WINDOW_MS = 24 * 60 * 60 * 1000;
 

@@ -1,15 +1,18 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { db, applicationReviewsTable, whatsappMessagesTable } from "@workspace/db";
 import { ensureAdminTables } from "./adminTables";
-import { type AdminApplication, loadApplications, saveReview, sequenceOver } from "./applications";
+import { type AdminApplication, applicantChannel, loadApplications, saveReview, sequenceOver } from "./applications";
 import { logger } from "./logger";
 import { whatsappDigits } from "./phone";
-import { cloudApiConfigured, sendTemplate, WhatsAppError } from "./whatsappCloud";
+import { currentChannel } from "./channel";
+import { sendSequenceEmail } from "./emailSequence";
+import { sendTemplate, WhatsAppError } from "./whatsappCloud";
 import { detectChoice, isDue, isOptOut, withinSendingWindow } from "./whatsappRules";
 import { fillFirstName, firstNameOf, REPLY_TEMPLATES, SEQUENCE_TEMPLATES, TEMPLATE_LANGUAGE } from "./whatsappTemplates";
 
-// WhatsApp Cloud API automation: the five-message sequence, the scheduler that
-// sends follow-ups, and handling of incoming webhooks (replies, button taps,
+// Follow-up automation: the five-message sequence (sent as WhatsApp templates or
+// as emails, depending on the active channel), the scheduler that sends
+// follow-ups, and handling of incoming WhatsApp webhooks (replies, button taps,
 // opt-outs and delivery statuses).
 
 const RETRY_AFTER_ERROR_MS = 6 * 60 * 60 * 1000;
@@ -74,17 +77,19 @@ export async function sendFollowUp(app: AdminApplication, index: number): Promis
   if (claimed.length === 0) return;
 
   try {
-    await sendApplicantTemplate(app, SEQUENCE_TEMPLATES[app.form][index]);
+    if (applicantChannel(app) === "email") await sendSequenceEmail(app, index);
+    else await sendApplicantTemplate(app, SEQUENCE_TEMPLATES[app.form][index]);
     await db
       .update(applicationReviewsTable)
       .set({ sendError: null, sendErrorAt: null })
       .where(eq(applicationReviewsTable.referenceNumber, app.reference));
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    logger.warn({ err, reference: app.reference, step: index + 1 }, "WhatsApp follow-up failed");
+    logger.warn({ err, reference: app.reference, step: index + 1 }, "Follow-up failed");
+    const label = applicantChannel(app) === "email" ? "Email" : "Message";
     await db
       .update(applicationReviewsTable)
-      .set({ messagesSent: index, sendError: `Message ${index + 1}: ${message}`, sendErrorAt: new Date(), updatedAt: new Date() })
+      .set({ messagesSent: index, sendError: `${label} ${index + 1}: ${message}`, sendErrorAt: new Date(), updatedAt: new Date() })
       .where(and(eq(applicationReviewsTable.referenceNumber, app.reference), eq(applicationReviewsTable.messagesSent, index + 1)));
   }
 }
@@ -93,11 +98,14 @@ let schedulerRunning = false;
 
 /** Sends every follow-up that's due. Safe to call often; does nothing outside the sending window. */
 export async function runFollowUpScheduler(now = new Date()): Promise<void> {
-  if (!cloudApiConfigured() || schedulerRunning || !withinSendingWindow(now)) return;
+  if (currentChannel() === "manual" || schedulerRunning || !withinSendingWindow(now)) return;
   schedulerRunning = true;
   try {
     const apps = await loadApplications();
     for (const app of apps) {
+      // Only follow up through the channel this applicant was approved with, and only
+      // while that channel is still the active one.
+      if (applicantChannel(app) !== currentChannel()) continue;
       const index = dueStep(app, now);
       if (index === null || index === 0) continue;
       if (app.sendErrorAt && now.getTime() - Date.parse(app.sendErrorAt) < RETRY_AFTER_ERROR_MS) continue;
@@ -114,7 +122,7 @@ export function startFollowUpScheduler() {
   const tick = () => void runFollowUpScheduler();
   setTimeout(tick, 60_000).unref();
   setInterval(tick, 10 * 60_000).unref();
-  logger.info({ cloudApi: cloudApiConfigured() }, "WhatsApp follow-up scheduler started");
+  logger.info({ channel: currentChannel() }, "Follow-up scheduler started");
 }
 
 // ── Incoming webhooks ──────────────────────────────────────────────────────

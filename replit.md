@@ -30,13 +30,17 @@ Private banking and international capital transfer web app. Prospects complete a
 | `RESEND_API_KEY` | (Resend API key for OTP email delivery) |
 | `OTP_FROM_EMAIL` | (Verified Resend sender, e.g. Envoi & Co <no-reply@yourdomain.com>) |
 | `OTP_SECRET` | (Random secret used to hash OTP codes server-side) |
+| `APPLICATION_FROM_EMAIL` | (Optional) Sender for approval/follow-up emails, e.g. `Envoi & Co <clients@envoiandco.com>`; defaults to `OTP_FROM_EMAIL` |
+| `APPLICATION_REPLY_TO` | (Optional) Reply-to for those emails; defaults to `clients@envoiandco.com` |
+| `EMAIL_LINK_SECRET` | (Optional) Signs unsubscribe / WhatsApp links in emails; defaults to `OTP_SECRET` |
 | `WHATSAPP_ACCESS_TOKEN` | (Optional) Permanent Meta System User token with whatsapp_business_messaging + whatsapp_business_management |
 | `WHATSAPP_PHONE_NUMBER_ID` | (Optional) Phone number ID from Meta → WhatsApp → API Setup (not the number itself) |
 | `WHATSAPP_APP_SECRET` | (Optional) Meta app secret (App settings → Basic); verifies webhook signatures |
 | `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | (Optional) Any long random phrase; also entered in Meta's webhook settings |
 
-Admin review dashboard: `/envoi-dashboard/admin` (unauthenticated by design). Two WhatsApp modes:
-- **Automatic** (WhatsApp Cloud API) when `WHATSAPP_ACCESS_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set: approving sends template `mma_1_invite` / `pbi_1_invite`; the API's scheduler sends follow-ups on days 2, 5, 9, 14 (weekdays 08:00–20:00 UK) and stops when the applicant replies or opts out; replies arrive via the webhook `POST /api/whatsapp/webhook` (subscribe to the `messages` field) and show in the dashboard Inbox. Template names and texts: `artifacts/api-server/src/lib/whatsappTemplates.ts` (all `en_GB`, one `{{1}}` variable = first name; also `reply_chose_whatsapp`, `reply_chose_call` with a Calendly URL button, and `envoi_restart`).
+Admin review dashboard: `/envoi-dashboard/admin` (unauthenticated by design). Contact channel (`artifacts/api-server/src/lib/channel.ts`), fixed per applicant at approval:
+- **Email** (active when `RESEND_API_KEY`, a sender and a link secret are set, and the Cloud API isn't): approving sends an "approved" email with a "Message us on WhatsApp" button (opens wa.me/447886857463 with a pre-typed message quoting their reference; clicks are recorded via `/api/email/whatsapp`). Follow-up emails go out on days 2, 5, 9, 14 (weekdays 08:00–20:00 UK) until the admin presses "They've messaged us" or the applicant unsubscribes (`/api/email/unsubscribe`, also one-click). Copy: `artifacts/api-server/src/lib/emailSequence.ts`.
+- **WhatsApp** (Cloud API, takes priority) when `WHATSAPP_ACCESS_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set: approving sends template `mma_1_invite` / `pbi_1_invite`; the API's scheduler sends follow-ups on days 2, 5, 9, 14 (weekdays 08:00–20:00 UK) and stops when the applicant replies or opts out; replies arrive via the webhook `POST /api/whatsapp/webhook` (subscribe to the `messages` field) and show in the dashboard Inbox. Template names and texts: `artifacts/api-server/src/lib/whatsappTemplates.ts` (all `en_GB`, one `{{1}}` variable = first name; also `reply_chose_whatsapp`, `reply_chose_call` with a Calendly URL button, and `envoi_restart`).
 - **Manual** otherwise: each message opens WhatsApp pre-filled and the admin records what was sent.
 Review state and inbox messages live in `application_reviews` and `whatsapp_messages`, which the API creates (and adds new columns to) on first use.
 

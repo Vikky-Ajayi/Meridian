@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   approveApplication,
+  getEmailPreview,
   markMessageSent,
   saveApplicationNote,
   sendDueNow,
@@ -9,6 +10,7 @@ import {
   setReplied,
   undoMessage,
   type AdminApplication,
+  type RenderedEmail,
   type WhatsAppMode,
 } from '@/lib/admin-api';
 import {
@@ -51,7 +53,10 @@ const ghost = `${btn} bg-[#F8F9FB] hover:bg-[#EEF0F3] text-black`;
 const primary = `${btn} bg-black text-white hover:bg-gray-800`;
 
 export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode, onOpenConversation }: Props) {
-  const automatic = mode === 'automatic';
+  // automatic: WhatsApp Cloud API sends messages; autoSend: the server sends follow-ups (WhatsApp or email).
+  const automatic = mode === 'whatsapp';
+  const autoSend = mode !== 'manual';
+  const viaEmail = mode === 'email';
   const [note, setNote] = useState(app.note);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -165,8 +170,8 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
                   const detail = sent
                     ? step === seq.sent && app.lastMessageAt ? `Sent ${formatDate(app.lastMessageAt)}` : 'Sent'
                     : cancelled
-                      ? seq.kind === 'replied' ? 'Not needed, they replied' : seq.kind === 'optedOut' ? 'Cancelled, they asked not to be contacted' : 'Not needed, follow-ups stopped'
-                      : automatic
+                      ? seq.kind === 'replied' ? (viaEmail ? 'Not needed, they messaged you' : 'Not needed, they replied') : seq.kind === 'optedOut' ? (viaEmail ? 'Cancelled, they unsubscribed' : 'Cancelled, they asked not to be contacted') : 'Not needed, follow-ups stopped'
+                      : autoSend
                         ? isNext && seq.kind === 'due' ? 'Queued, sends automatically in business hours' : `Sends automatically on ${formatDate(dueAt.getTime())}`
                         : `Due ${formatDate(dueAt.getTime())}`;
                   return (
@@ -178,7 +183,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
                       <div className="min-w-0">
                         <div className="text-[13.5px] font-medium">{STEP_NAMES[i]}</div>
                         <div className="text-xs text-gray-500 mt-0.5">{detail}</div>
-                        {isNext && !automatic && (
+                        {isNext && !autoSend && (
                           <button
                             type="button"
                             disabled={busy !== null}
@@ -195,7 +200,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
                   );
                 })}
               </ol>
-              {automatic && app.sendError && !['replied', 'stopped', 'optedOut', 'finished'].includes(seq.kind) && (
+              {autoSend && app.sendError && !['replied', 'stopped', 'optedOut', 'finished'].includes(seq.kind) && (
                 <div className="mb-3 rounded-[10px] border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] leading-relaxed text-red-800 flex flex-col gap-2">
                   <span><b className="font-medium">Last send failed.</b> {app.sendError}</span>
                   {seq.kind === 'due' && (
@@ -211,10 +216,19 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
                 </p>
               )}
               <p className="text-xs text-gray-500">
-                {automatic
+                {viaEmail
+                  ? "Follow-up emails send automatically on weekdays between 08:00 and 20:00 UK time. They stop when you press “They've messaged us” or the applicant unsubscribes."
+                  : automatic
                   ? 'Follow-ups send automatically on weekdays between 08:00 and 20:00 UK time, and stop as soon as they reply.'
                   : `Each button opens WhatsApp with the message ready. Send it from the WhatsApp account ${SENDER_WHATSAPP}. If they reply, mark them as replied so the reminders stop.`}
               </p>
+              {viaEmail && (
+                <p className="mt-2 text-[13px]">
+                  {app.whatsappClickedAt
+                    ? `They clicked the WhatsApp button on ${formatDate(app.whatsappClickedAt)}. Check WhatsApp for a message quoting ${app.reference}.`
+                    : "They haven't clicked the WhatsApp button yet."}
+                </p>
+              )}
             </section>
           )}
 
@@ -310,7 +324,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
               <>
                 <button type="button" className={`${primary} flex-1 min-w-[200px]`} disabled={busy !== null} onClick={() => setApproving(true)}>
                   <WhatsAppGlyph />
-                  {automatic ? 'Approve & send WhatsApp' : 'Approve & open WhatsApp'}
+                  {automatic ? 'Approve & send WhatsApp' : viaEmail ? 'Approve & send email' : 'Approve & open WhatsApp'}
                 </button>
                 {app.status === 'new' ? (
                   <button type="button" className={ghost} disabled={busy !== null} onClick={() => run('hold', () => setApplicationStatus(app.reference, 'hold'), `${name} is on hold.`)}>
@@ -335,12 +349,12 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
             {app.status === 'approved' && (
               <>
                 {app.repliedAt ? (
-                  <button type="button" className={ghost} disabled={busy !== null} onClick={() => run('replied', () => setReplied(app.reference, false), `${name} is no longer marked as replied.`)}>
-                    Unmark replied
+                  <button type="button" className={ghost} disabled={busy !== null} onClick={() => run('replied', () => setReplied(app.reference, false), viaEmail ? `${name} is no longer marked as having messaged you.` : `${name} is no longer marked as replied.`)}>
+                    {viaEmail ? 'Undo “messaged us”' : 'Unmark replied'}
                   </button>
                 ) : (
-                  <button type="button" className={primary} disabled={busy !== null} onClick={() => run('replied', () => setReplied(app.reference, true), `${name} marked as replied. Reminders stopped.`)}>
-                    {busy === 'replied' ? 'Saving…' : 'Mark as replied'}
+                  <button type="button" className={primary} disabled={busy !== null} onClick={() => run('replied', () => setReplied(app.reference, true), viaEmail ? `${name} marked as having messaged you. Follow-up emails stopped.` : `${name} marked as replied. Reminders stopped.`)}>
+                    {busy === 'replied' ? 'Saving…' : viaEmail ? "They've messaged us" : 'Mark as replied'}
                   </button>
                 )}
                 {!app.repliedAt && seq?.kind !== 'optedOut' && (seq?.kind === 'stopped' ? (
@@ -373,12 +387,15 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
       {approving && (
         <ApproveDialog
           app={app}
-          automatic={automatic}
+          mode={mode}
           onCancel={() => setApproving(false)}
           onApproved={(updated) => {
             setApproving(false);
             onChanged(updated);
-            onToast(automatic ? `${name} approved. Message 1 sent on WhatsApp.` : `${name} approved. Message 1 is ready in WhatsApp. Press send.`, automatic ? undefined : undoStep(1));
+            onToast(
+              automatic ? `${name} approved. Message 1 sent on WhatsApp.` : viaEmail ? `${name} approved. Approval email sent to ${app.email}.` : `${name} approved. Message 1 is ready in WhatsApp. Press send.`,
+              autoSend ? undefined : undoStep(1),
+            );
           }}
         />
       )}
@@ -386,7 +403,16 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
   );
 }
 
-function ApproveDialog({ app, automatic, onCancel, onApproved }: { app: AdminApplication; automatic: boolean; onCancel: () => void; onApproved: (app: AdminApplication) => void }) {
+function ApproveDialog({ app, mode, onCancel, onApproved }: { app: AdminApplication; mode: WhatsAppMode; onCancel: () => void; onApproved: (app: AdminApplication) => void }) {
+  const automatic = mode === 'whatsapp';
+  const viaEmail = mode === 'email';
+  const [preview, setPreview] = useState<RenderedEmail | null>(null);
+  const [previewError, setPreviewError] = useState('');
+
+  useEffect(() => {
+    if (!viaEmail) return;
+    getEmailPreview(app.reference, 1).then(setPreview, (err) => setPreviewError(err instanceof Error ? err.message : 'Could not load the email preview.'));
+  }, [viaEmail, app.reference]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const confirmRef = useRef<HTMLButtonElement>(null);
@@ -410,7 +436,7 @@ function ApproveDialog({ app, automatic, onCancel, onApproved }: { app: AdminApp
   function confirm() {
     setSending(true);
     setError('');
-    (automatic ? approveApplication(app.reference) : openWhatsAppAfter(() => approveApplication(app.reference), whatsappLink(app, message)))
+    (automatic || viaEmail ? approveApplication(app.reference) : openWhatsAppAfter(() => approveApplication(app.reference), whatsappLink(app, message)))
       .then(({ application }) => onApproved(application))
       .catch((err) => {
         setError(err instanceof Error ? err.message : 'Could not approve. Try again.');
@@ -420,15 +446,32 @@ function ApproveDialog({ app, automatic, onCancel, onApproved }: { app: AdminApp
 
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center p-4 bg-[#020B2B]/45" role="dialog" aria-modal="true" aria-labelledby="approve-title" onClick={(e) => { if (e.target === e.currentTarget && !sending) onCancel(); }}>
-      <div className="bg-white rounded-2xl w-full max-w-[520px] max-h-[calc(100vh-32px)] overflow-y-auto flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-[600px] max-h-[calc(100vh-32px)] overflow-y-auto flex flex-col">
         <header className="px-6 pt-[22px] pb-1.5">
           <h2 id="approve-title" className="text-[21px] font-semibold tracking-[-0.03em] mb-1.5">Approve {firstName(app.fullName)}?</h2>
           <p className="text-[13.5px] text-gray-500 leading-relaxed">
-            {automatic
+            {viaEmail
+              ? `This email is sent to ${app.email} straight away. If they don't message you on WhatsApp, follow-up emails go out on days 2, 5, 9 and 14 until you mark that they've messaged you.`
+              : automatic
               ? `This message is sent to ${app.whatsappNumber} straight away. If they don't reply, follow-ups go out automatically on days 2, 5, 9 and 14, and stop as soon as they reply.`
               : `WhatsApp opens with this message ready to send to ${app.whatsappNumber}. Send it from ${SENDER_WHATSAPP}. The dashboard then reminds you about the follow-ups on days 2, 5, 9 and 14 unless they reply.`}
           </p>
         </header>
+        {viaEmail ? (
+          <div className="mx-6 my-4 flex flex-col gap-2">
+            <div className="text-[13px]"><span className="text-gray-500">Subject:</span> <span className="font-medium">{preview?.subject ?? '…'}</span></div>
+            {previewError ? (
+              <p className="text-[13px] text-red-600">{previewError}</p>
+            ) : (
+              <iframe
+                title="Approval email preview"
+                sandbox=""
+                srcDoc={preview?.html ?? '<p style="font-family:sans-serif;color:#6b7280;padding:16px">Loading preview…</p>'}
+                className="w-full h-[360px] rounded-xl border border-[#ECEEF2] bg-[#f4f6fb]"
+              />
+            )}
+          </div>
+        ) : (
         <div className="mx-6 my-4 bg-[#EFE7DD] rounded-xl p-3.5 flex flex-col gap-2">
           <div className="text-xs text-[#54656F] flex flex-wrap justify-between gap-2">
             <span>To {app.fullName}</span>
@@ -438,13 +481,14 @@ function ApproveDialog({ app, automatic, onCancel, onApproved }: { app: AdminApp
             {message}
           </div>
         </div>
+        )}
         {error && <p className="px-6 text-[13px] text-red-600" role="alert">{error}</p>}
         <footer className="px-6 pt-4 pb-[22px] flex flex-wrap justify-end gap-2.5">
           <button type="button" onClick={onCancel} disabled={sending} className="rounded-lg px-[18px] py-3 text-sm font-medium bg-[#F8F9FB] hover:bg-[#EEF0F3] disabled:opacity-50">
             Cancel
           </button>
           <button ref={confirmRef} type="button" onClick={confirm} disabled={sending} className="rounded-lg px-[18px] py-3 text-sm font-medium bg-black text-white hover:bg-gray-800 disabled:opacity-60">
-            {sending ? (automatic ? 'Sending…' : 'Opening WhatsApp…') : automatic ? 'Approve and send' : 'Approve and open WhatsApp'}
+            {sending ? (automatic || viaEmail ? 'Sending…' : 'Opening WhatsApp…') : automatic ? 'Approve and send' : viaEmail ? 'Approve and send email' : 'Approve and open WhatsApp'}
           </button>
         </footer>
       </div>

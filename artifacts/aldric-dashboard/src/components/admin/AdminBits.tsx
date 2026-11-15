@@ -23,16 +23,19 @@ const PILL = {
 export function statusInfo(app: AdminApplication, mode: WhatsAppMode = 'manual'): { label: string; tone: keyof typeof PILL } {
   const seq = sequenceState(app);
   if (seq) {
-    if (seq.kind === 'optedOut') return { label: 'Opted out', tone: 'red' };
+    const viaEmail = mode === 'email';
+    if (seq.kind === 'optedOut') return { label: viaEmail ? 'Unsubscribed' : 'Opted out', tone: 'red' };
+    if (seq.kind === 'replied' && viaEmail) return { label: 'Messaged us', tone: 'green' };
     if (seq.kind === 'replied') {
       const choice = app.choice === 'call' ? ' · wants a call' : app.choice === 'whatsapp' ? ' · chat on WhatsApp' : '';
       return { label: `Replied${choice}`, tone: 'green' };
     }
     if (seq.kind === 'stopped') return { label: 'Follow-ups stopped', tone: 'grey' };
     if (seq.kind === 'finished') return { label: 'All 5 messages sent', tone: 'grey' };
-    if (mode === 'automatic' && app.sendError) return { label: 'Send failed', tone: 'red' };
-    if (seq.kind === 'due') return { label: mode === 'automatic' ? `Message ${seq.next + 1} queued` : `Message ${seq.next + 1} due`, tone: 'orange' };
-    return { label: `Message ${seq.sent} of 5 sent`, tone: 'blue' };
+    if (mode !== 'manual' && app.sendError) return { label: 'Send failed', tone: 'red' };
+    const unit = viaEmail ? 'Email' : 'Message';
+    if (seq.kind === 'due') return { label: mode === 'manual' ? `Message ${seq.next + 1} due` : `${unit} ${seq.next + 1} queued`, tone: 'orange' };
+    return { label: `${unit} ${seq.sent} of 5 sent`, tone: 'blue' };
   }
   if (app.status === 'hold') return { label: 'On hold', tone: 'yellow' };
   if (app.status === 'rejected') return { label: 'Rejected', tone: 'red' };

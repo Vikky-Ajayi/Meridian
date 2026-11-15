@@ -20,30 +20,56 @@ export interface AdminApplication {
   status: AdminStatus;
   note: string;
   approvedAt: string | null;
+  /** Channel fixed at approval; null for older approvals (manual). */
+  contactChannel: WhatsAppMode | null;
   /** How many of the five WhatsApp sequence messages have been sent (0–5). */
   messagesSent: number;
   lastMessageAt: string | null;
   repliedAt: string | null;
   followUpsStoppedAt: string | null;
   optedOutAt: string | null;
-  /** What they chose in reply to Message 1 (automatic mode). */
+  /** What they chose in reply to Message 1 (WhatsApp channel). */
   choice: "whatsapp" | "call" | null;
   /** Most recent automatic-send failure, if any. */
   sendError: string | null;
   sendErrorAt: string | null;
+  /** When they clicked the WhatsApp button in an approval email (email channel). */
+  whatsappClickedAt: string | null;
   answers: AdminAnswer[];
 }
 
 /**
- * automatic: WhatsApp Cloud API connected; messages are sent by the server.
+ * How approved applicants are contacted:
+ * whatsapp: WhatsApp Cloud API connected; the server sends WhatsApp messages and replies land in the Inbox.
+ * email: the server sends an approval email with a "Message us on WhatsApp" button, then follow-up emails.
  * manual: the dashboard opens WhatsApp with each message pre-filled.
  */
-export type WhatsAppMode = "automatic" | "manual";
+export type WhatsAppMode = "whatsapp" | "email" | "manual";
+
+/**
+ * The flow that applies to this applicant: approved applicants keep the channel
+ * they were approved with; everyone else follows the currently active one.
+ */
+export const effectiveMode = (app: AdminApplication, current: WhatsAppMode): WhatsAppMode =>
+  app.status === "approved" ? app.contactChannel ?? "manual" : current;
 
 export interface WhatsAppInfo {
   mode: WhatsAppMode;
   /** Webhook secrets set, so replies and delivery updates arrive. */
   repliesConnected: boolean;
+  /** Settings still needed for the email channel (empty when it's ready). */
+  missingEmailConfig: string[];
+}
+
+export interface EmailTemplate {
+  subject: string;
+  paragraphs: string[];
+}
+
+export interface RenderedEmail {
+  subject: string;
+  html: string;
+  text: string;
 }
 
 export interface Conversation {
@@ -95,7 +121,7 @@ export function getApplications() {
   return request<{ applications: AdminApplication[]; whatsapp: WhatsAppInfo }>("/applications");
 }
 
-/** Approves; sends Message 1 (automatic mode) or records it as sent (manual mode). */
+/** Approves; sends Message / Email 1 (WhatsApp or email channel) or records it as sent (manual). */
 export const approveApplication = (reference: string) => post(reference, "approve");
 /** Automatic mode: send the follow-up that's due right now. */
 export const sendDueNow = (reference: string) => post(reference, "send-due");
@@ -107,6 +133,11 @@ export const setApplicationStatus = (reference: string, status: "new" | "hold" |
   post(reference, "status", { status });
 export const saveApplicationNote = (reference: string, note: string): One =>
   request(`${ref(reference)}/note`, { method: "PUT", body: { note } });
+
+export const getEmailPreview = (reference: string, step: number) =>
+  request<RenderedEmail>(`${ref(reference)}/email-preview?step=${step}`);
+export const getEmailTemplates = () =>
+  request<{ templates: Record<AdminForm, EmailTemplate[]>; prefilledWhatsAppText: string }>("/email-templates");
 
 export const getConversations = () => request<{ conversations: Conversation[] }>("/conversations");
 export const getThread = (waId: string) => request<Thread>(`/conversations/${waId}`);

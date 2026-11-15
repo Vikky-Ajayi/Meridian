@@ -17,6 +17,9 @@ export const applicationReviewsTable = pgTable("application_reviews", {
   status: text("status").notNull().default("new"),
   note: text("note").notNull().default(""),
   approvedAt: timestamp("approved_at"),
+  // How this applicant is contacted, fixed at approval: "whatsapp" | "email" | "manual".
+  // Each applicant keeps the flow they were approved with if the active channel changes.
+  contactChannel: text("contact_channel"),
   // WhatsApp sequence (sent by hand from the admin dashboard): how many of the
   // five messages have been sent, and when the applicant replied.
   messagesSent: integer("messages_sent").notNull().default(0),
@@ -29,6 +32,8 @@ export const applicationReviewsTable = pgTable("application_reviews", {
   choice: text("choice"),
   // Last automatic-send failure (WhatsApp Cloud API mode), shown in the dashboard.
   sendError: text("send_error"),
+  // When they clicked the "Message us on WhatsApp" button in an approval email.
+  whatsappClickedAt: timestamp("whatsapp_clicked_at"),
   sendErrorAt: timestamp("send_error_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
