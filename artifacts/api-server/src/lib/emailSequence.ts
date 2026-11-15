@@ -155,6 +155,46 @@ export const EMAIL_SEQUENCE: Record<FormType, readonly EmailTemplate[]> = {
       ],
     },
   ],
+  "other-service": [
+    {
+      subject: "Your Envoi & Co application has been approved",
+      paragraphs: [
+        "Thank you for your application to Envoi & Co.",
+        "Your application has been approved to progress to the next stage. Our team would like to discuss your requirements and guide you through the next steps.",
+        CTA_FIRST,
+      ],
+    },
+    {
+      subject: "Following up on your application",
+      paragraphs: [
+        "Just following up on your application to Envoi & Co.",
+        "Are you still looking for help with your requirements? Message us on WhatsApp and we’ll help you explore the next steps.",
+      ],
+    },
+    {
+      subject: "Any questions about your application?",
+      paragraphs: [
+        "Do you have any questions about your application with Envoi & Co?",
+        "Whether it’s the process, required documents, fees or timing, our team can talk you through the details before you decide to proceed.",
+        "What would you like to know? Message us on WhatsApp or reply to this email.",
+      ],
+    },
+    {
+      subject: "Is now a good time to discuss your requirements?",
+      paragraphs: [
+        "We understand your plans may have changed.",
+        "Would you like to discuss your requirements now, reconnect later, or pause your application? Let us know what suits you.",
+      ],
+    },
+    {
+      subject: "Our final follow-up about your application",
+      paragraphs: [
+        "This is our final follow-up about your application to Envoi & Co.",
+        "We’ll pause our emails for now. If you’d like to continue, simply message us on WhatsApp or reply to this email whenever you’re ready.",
+        "Thank you for considering Envoi & Co.",
+      ],
+    },
+  ],
 };
 
 // ── Rendering ──────────────────────────────────────────────────────────────

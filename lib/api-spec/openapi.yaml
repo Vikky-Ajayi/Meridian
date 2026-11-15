@@ -187,6 +187,82 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /applications:
+    post:
+      operationId: startServiceApplication
+      tags: [enquiries]
+      summary: Start a service application (step 1)
+      description: Saves the step 1 lead for one of the five service forms and returns a token for adding step 2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceLeadInput"
+      responses:
+        "201":
+          description: Lead saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceLeadResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /applications/{referenceNumber}/details:
+    post:
+      operationId: completeServiceApplication
+      tags: [enquiries]
+      summary: Complete a service application (step 2)
+      description: Adds the step 2 answers to a lead, or records that the applicant would rather explain on a call
+      parameters:
+        - name: referenceNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceDetailsInput"
+      responses:
+        "200":
+          description: Application updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceDetailsResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Unknown reference or token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -353,6 +429,89 @@ components:
         region:
           type: string
         message:
+          type: string
+
+    ServiceLeadInput:
+      type: object
+      required:
+        - service
+        - fullName
+        - whatsappNumber
+        - emailAddress
+        - currency
+        - amount
+        - consent
+      properties:
+        service:
+          type: string
+          description: "Service slug, e.g. large-capital-movement"
+        fullName:
+          type: string
+        whatsappNumber:
+          type: string
+        emailAddress:
+          type: string
+        countryOfResidence:
+          type: string
+        currency:
+          type: string
+          enum: [GBP, USD]
+        amount:
+          type: string
+          description: "Selected amount band, in the chosen currency"
+        timeline:
+          type: string
+        extraAnswer:
+          type: string
+          description: "Answer to the service-specific step 1 question, if the service has one"
+        consent:
+          type: boolean
+          description: "Agreed to be contacted about the enquiry"
+
+    ServiceLeadResult:
+      type: object
+      required:
+        - referenceNumber
+        - token
+        - belowMinimum
+      properties:
+        referenceNumber:
+          type: string
+        token:
+          type: string
+          description: "Secret needed to add the step 2 answers"
+        belowMinimum:
+          type: boolean
+          description: "The amount is below the minimum, so step 2 is skipped"
+
+    ServiceDetailsInput:
+      type: object
+      required:
+        - token
+        - action
+      properties:
+        token:
+          type: string
+        action:
+          type: string
+          enum: [apply, call]
+          description: "apply = submitted the answers; call = would rather explain on a call"
+        answers:
+          type: object
+          additionalProperties:
+            type: string
+          description: "Step 2 answers keyed by question key"
+        confirmsAccuracy:
+          type: boolean
+        acceptsAdvisoryFee:
+          type: boolean
+
+    ServiceDetailsResult:
+      type: object
+      required:
+        - stage
+      properties:
+        stage:
           type: string
 
     EnquiryResult:

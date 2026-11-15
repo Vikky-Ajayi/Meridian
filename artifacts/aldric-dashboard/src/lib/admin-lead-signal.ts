@@ -11,7 +11,25 @@ export function leadSignal(app: AdminApplication): { level: SignalLevel; reasons
   const reasons: SignalReason[] = [];
   const add = (tone: SignalReason['tone'], text: string) => reasons.push({ tone, text });
 
-  if (app.form === 'move-money') {
+  if (a.stage !== undefined) {
+    // Landing page service forms (artifacts/meridian/src/lib/services.ts).
+    const amount = a.amount ?? '';
+    const lower = /([\d.]+)(k|m)/i.exec(amount);
+    const lowerValue = lower ? Number(lower[1]) * (lower[2].toLowerCase() === 'm' ? 1_000_000 : 1_000) : 0;
+    if (/^Less than/.test(amount)) add('poor', `Below the minimum: ${amount}`);
+    else if (lowerValue >= 500_000) add('good', `Amount ${amount}`);
+    else if (amount) add('mixed', `Amount ${amount}`);
+
+    const timeline = a.timeline ?? '';
+    if (/Within 1 month|1–3 months/.test(timeline)) add('good', `Timeline: ${timeline.toLowerCase()}`);
+    else if (/exploring/i.test(timeline)) add('poor', 'Only exploring');
+    else if (timeline) add('mixed', `Timeline: ${timeline.toLowerCase()}`);
+
+    const stage = a.stage ?? '';
+    if (/Completed/.test(stage)) add('good', 'Completed the full application');
+    else if (/call/.test(stage)) add('mixed', 'Asked to explain on a call');
+    else if (/Lead only/.test(stage)) add('poor', 'Stopped after step 1');
+  } else if (app.form === 'move-money') {
     const amount = a.amount ?? '';
     if (/£1 million – £10 million|£10 million\+/.test(amount)) add('good', `Moving ${amount}`);
     else if (/£500,000 – £1 million/.test(amount)) add('good', 'Moving £500,000 – £1 million');

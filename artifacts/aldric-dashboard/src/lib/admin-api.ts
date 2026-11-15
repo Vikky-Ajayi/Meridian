@@ -1,6 +1,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
-export type AdminForm = "move-money" | "private-banking";
+/** "other-service" = the Real Estate, Trust & Offshore and Bespoke service forms. */
+export type AdminForm = "move-money" | "private-banking" | "other-service";
 export type AdminStatus = "new" | "approved" | "hold" | "rejected";
 
 export interface AdminAnswer {
@@ -12,6 +13,8 @@ export interface AdminAnswer {
 export interface AdminApplication {
   reference: string;
   form: AdminForm;
+  /** Service form name (landing page forms); null for the older Move Money / Private Banking forms. */
+  service: string | null;
   fullName: string;
   email: string;
   whatsappNumber: string;

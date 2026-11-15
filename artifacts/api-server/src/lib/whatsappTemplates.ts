@@ -4,7 +4,9 @@
 // record in the dashboard inbox; keep it identical to the approved template
 // (and to TEMPLATES in artifacts/aldric-dashboard/src/lib/admin-sequences.ts).
 
-export type FormType = "move-money" | "private-banking";
+// "other-service" covers the Real Estate, Trust & Offshore and Bespoke service
+// forms, which share one sequence (see serviceCatalog.ts).
+export type FormType = "move-money" | "private-banking" | "other-service";
 
 export const TEMPLATE_LANGUAGE = "en_GB";
 
@@ -25,6 +27,13 @@ export const SEQUENCE_TEMPLATES: Record<FormType, readonly { name: string; text:
     { name: "pbi_3_questions", text: "Hi {{1}}, do you have any questions before progressing with your private banking introduction?\n\nOur team can explain the process, the information required and what to expect next.\n\nWhat would you like to know?" },
     { name: "pbi_4_checkin", text: "Hi {{1}}, we appreciate you may be busy.\n\nWould you like to discuss your private banking requirements now, reconnect later, or pause your enquiry? Let us know what suits you." },
     { name: "pbi_5_final", text: "Hi {{1}}, this is our final follow-up about your private banking introduction request.\n\nWe’ll pause our messages for now. If you’d like to continue, simply reply here whenever you’re ready.\n\nThank you for considering Envoi & Co." },
+  ],
+  "other-service": [
+    { name: "svc_1_invite", text: "Hi {{1}}, thank you for your application to Envoi & Co.\n\nYour application has been approved to progress to the next stage. Our team would like to discuss your requirements and guide you through the next steps.\n\nWould you prefer to chat here on WhatsApp or schedule a call?" },
+    { name: "svc_2_followup", text: "Hi {{1}}, just following up on your application to Envoi & Co.\n\nAre you still looking for help with your requirements? Reply here and we’ll help you explore the next steps." },
+    { name: "svc_3_questions", text: "Hi {{1}}, do you have any questions about your application with Envoi & Co?\n\nWhether it’s the process, required documents, fees or timing, our team can talk you through the details before you decide to proceed.\n\nWhat would you like to know?" },
+    { name: "svc_4_checkin", text: "Hi {{1}}, we understand your plans may have changed.\n\nWould you like to discuss your requirements now, reconnect later, or pause your application? Let us know what suits you." },
+    { name: "svc_5_final", text: "Hi {{1}}, this is our final follow-up about your application to Envoi & Co.\n\nWe’ll pause our messages for now. If you’d like to continue, simply reply here whenever you’re ready.\n\nThank you for considering Envoi & Co." },
   ],
 };
 

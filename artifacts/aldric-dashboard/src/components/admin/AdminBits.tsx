@@ -2,11 +2,18 @@ import type { AdminApplication, AdminForm, WhatsAppMode } from '@/lib/admin-api'
 import { FORM_NAMES, sequenceState } from '@/lib/admin-sequences';
 import type { SignalLevel } from '@/lib/admin-lead-signal';
 
-export function FormChip({ form }: { form: AdminForm }) {
+const FORM_COLOURS: Record<AdminForm, string> = {
+  'move-money': 'bg-[#0F61E9]',
+  'private-banking': 'bg-[#020B2B]',
+  'other-service': 'bg-[#8A94A6]',
+};
+
+/** `service` (the landing page form's name) is shown instead of the form group when known. */
+export function FormChip({ form, service }: { form: AdminForm; service?: string | null }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium whitespace-nowrap">
-      <i className={`inline-block w-2 h-2 rounded-[2px] ${form === 'move-money' ? 'bg-[#0F61E9]' : 'bg-[#020B2B]'}`} />
-      {FORM_NAMES[form]}
+      <i className={`inline-block w-2 h-2 rounded-[2px] ${FORM_COLOURS[form]}`} />
+      {service || FORM_NAMES[form]}
     </span>
   );
 }

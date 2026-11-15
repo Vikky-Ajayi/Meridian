@@ -135,3 +135,60 @@ export async function readSheetStrict(sheetName: string): Promise<string[][]> {
 
   return (result.data.values ?? []) as string[][];
 }
+
+/**
+ * Writes `row` to the row whose column A equals `reference`, or appends it if
+ * there is none. Adds `headers` as row 1 when the tab is empty. Used by the
+ * service applications, whose step 1 row is filled in when step 2 arrives.
+ */
+export async function upsertSheetRowStrict(
+  sheetName: string,
+  headers: string[],
+  reference: string,
+  row: string[],
+): Promise<void> {
+  if (!SPREADSHEET_ID) {
+    throw new Error("GOOGLE_SHEETS_ID is not set");
+  }
+  const auth = getAuth();
+  if (!auth) {
+    throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY is not set or invalid");
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+  await ensureSheetExists(sheets, SPREADSHEET_ID, sheetName);
+  const escaped = sheetName.replaceAll("'", "''");
+  const existing = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `'${escaped}'!A1:A10000`,
+  });
+  const colA = (existing.data.values ?? []).map((r) => String(r[0] ?? ""));
+
+  if (colA.length === 0 || colA[0] === "") {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `'${escaped}'!A1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [headers] },
+    });
+  }
+
+  const index = colA.indexOf(reference);
+  if (index > 0) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `'${escaped}'!A${index + 1}`,
+      valueInputOption: "RAW",
+      requestBody: { values: [row] },
+    });
+  } else {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: formatSheetRange(sheetName),
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      requestBody: { values: [row] },
+    });
+  }
+  logger.info({ sheetName, reference }, "Wrote service application row to Google Sheets");
+}

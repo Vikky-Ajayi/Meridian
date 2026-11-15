@@ -17,6 +17,7 @@ export const SEQUENCE_DAYS = [0, 2, 5, 9, 14] as const;
 export const META_TEMPLATE_NAMES: Record<AdminForm, readonly string[]> = {
   'move-money': ['mma_1_invite', 'mma_2_followup', 'mma_3_questions', 'mma_4_checkin', 'mma_5_final'],
   'private-banking': ['pbi_1_invite', 'pbi_2_followup', 'pbi_3_questions', 'pbi_4_checkin', 'pbi_5_final'],
+  'other-service': ['svc_1_invite', 'svc_2_followup', 'svc_3_questions', 'svc_4_checkin', 'svc_5_final'],
 };
 
 export const STEP_NAMES = [
@@ -42,6 +43,13 @@ export const TEMPLATES: Record<AdminForm, readonly string[]> = {
     'Hi {{1}}, we appreciate you may be busy.\n\nWould you like to discuss your private banking requirements now, reconnect later, or pause your enquiry? Let us know what suits you.',
     'Hi {{1}}, this is our final follow-up about your private banking introduction request.\n\nWe’ll pause our messages for now. If you’d like to continue, simply reply here whenever you’re ready.\n\nThank you for considering Envoi & Co.',
   ],
+  'other-service': [
+    'Hi {{1}}, thank you for your application to Envoi & Co.\n\nYour application has been approved to progress to the next stage. Our team would like to discuss your requirements and guide you through the next steps.\n\nWould you prefer to chat here on WhatsApp or schedule a call?',
+    'Hi {{1}}, just following up on your application to Envoi & Co.\n\nAre you still looking for help with your requirements? Reply here and we’ll help you explore the next steps.',
+    'Hi {{1}}, do you have any questions about your application with Envoi & Co?\n\nWhether it’s the process, required documents, fees or timing, our team can talk you through the details before you decide to proceed.\n\nWhat would you like to know?',
+    'Hi {{1}}, we understand your plans may have changed.\n\nWould you like to discuss your requirements now, reconnect later, or pause your application? Let us know what suits you.',
+    'Hi {{1}}, this is our final follow-up about your application to Envoi & Co.\n\nWe’ll pause our messages for now. If you’d like to continue, simply reply here whenever you’re ready.\n\nThank you for considering Envoi & Co.',
+  ],
 };
 
 /** Ready-made answers for when the applicant replies to Message 1. */
@@ -61,6 +69,7 @@ export const QUICK_REPLIES = [
 export const FORM_NAMES: Record<AdminForm, string> = {
   'move-money': 'Move Money Abroad',
   'private-banking': 'Private Banking',
+  'other-service': 'Other services',
 };
 
 export const firstName = (fullName: string) => fullName.trim().split(/\s+/)[0] ?? '';

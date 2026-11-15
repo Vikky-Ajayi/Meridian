@@ -4,15 +4,18 @@ import {
   moveMoneySbmissionsTable,
   privateBankingSubmissionsTable,
   applicationReviewsTable,
+  serviceApplicationsTable,
   type MoveMoney,
   type PrivateBanking,
   type ApplicationReview,
+  type ServiceApplication,
 } from "@workspace/db";
 import { ensureAdminTables } from "./adminTables";
+import { serviceBySlug, STAGE_LABELS } from "./serviceCatalog";
 import type { FormType } from "./whatsappTemplates";
 
-// Move Money Abroad and Private Banking submissions joined with their admin
-// review state, as used by the admin dashboard, the WhatsApp webhook and the
+// Move Money Abroad and Private Banking submissions, plus the five service
+// application forms, joined with their admin review state, as used by the admin dashboard, the WhatsApp webhook and the
 // follow-up scheduler.
 
 export const STATUSES = ["new", "approved", "hold", "rejected"] as const;
@@ -28,6 +31,8 @@ export interface Answer {
 export interface AdminApplication {
   reference: string;
   form: FormType;
+  /** Service form name for applications from the landing page forms; null for the older forms. */
+  service: string | null;
   fullName: string;
   email: string;
   whatsappNumber: string;
@@ -78,17 +83,36 @@ function privateBankingAnswers(row: PrivateBanking): Answer[] {
   ];
 }
 
+function serviceAnswers(row: ServiceApplication): Answer[] {
+  const def = serviceBySlug(row.service);
+  const d = row.details ?? {};
+  return [
+    { key: "stage", question: "Application stage", answer: STAGE_LABELS[row.stage] ?? row.stage },
+    { key: "amount", question: def?.amountLabel ?? "Amount", answer: row.amount },
+    { key: "timeline", question: def?.timelineLabel ?? "Timeline", answer: row.timeline },
+    ...(def?.extra ? [{ key: def.extra.key, question: def.extra.label, answer: d[def.extra.key] ?? "" }] : []),
+    ...(def?.questions ?? []).map((q) => ({ key: q.key, question: q.label, answer: d[q.key] ?? "" })),
+  ];
+}
+
+function fromService(row: ServiceApplication, review: ApplicationReview | undefined): AdminApplication {
+  const def = serviceBySlug(row.service);
+  return toApplication(def?.formType ?? "other-service", row, serviceAnswers(row), review, def?.name ?? row.service);
+}
+
 const iso = (d: Date | null | undefined) => d?.toISOString() ?? null;
 
 function toApplication(
   form: FormType,
-  row: MoveMoney | PrivateBanking,
+  row: MoveMoney | PrivateBanking | ServiceApplication,
   answers: Answer[],
   review: ApplicationReview | undefined,
+  service: string | null = null,
 ): AdminApplication {
   return {
     reference: row.referenceNumber,
     form,
+    service,
     fullName: row.fullName,
     email: row.emailAddress,
     whatsappNumber: row.whatsappNumber,
@@ -116,15 +140,17 @@ function toApplication(
 
 export async function loadApplications(): Promise<AdminApplication[]> {
   await ensureAdminTables();
-  const [moveRows, bankRows, reviews] = await Promise.all([
+  const [moveRows, bankRows, serviceRows, reviews] = await Promise.all([
     db.select().from(moveMoneySbmissionsTable).orderBy(desc(moveMoneySbmissionsTable.submittedAt)),
     db.select().from(privateBankingSubmissionsTable).orderBy(desc(privateBankingSubmissionsTable.submittedAt)),
+    db.select().from(serviceApplicationsTable).orderBy(desc(serviceApplicationsTable.submittedAt)),
     db.select().from(applicationReviewsTable),
   ]);
   const reviewByRef = new Map(reviews.map((r) => [r.referenceNumber, r]));
   return [
     ...moveRows.map((row) => toApplication("move-money", row, moveMoneyAnswers(row), reviewByRef.get(row.referenceNumber))),
     ...bankRows.map((row) => toApplication("private-banking", row, privateBankingAnswers(row), reviewByRef.get(row.referenceNumber))),
+    ...serviceRows.map((row) => fromService(row, reviewByRef.get(row.referenceNumber))),
   ].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
 }
 
@@ -134,6 +160,13 @@ export async function findApplication(reference: string): Promise<AdminApplicati
     .select()
     .from(applicationReviewsTable)
     .where(eq(applicationReviewsTable.referenceNumber, reference));
+
+  // Service applications (any prefix) first; their references carry a random suffix.
+  const [serviceRow] = await db
+    .select()
+    .from(serviceApplicationsTable)
+    .where(eq(serviceApplicationsTable.referenceNumber, reference));
+  if (serviceRow) return fromService(serviceRow, review);
 
   if (reference.startsWith("MMA-")) {
     const [row] = await db.select().from(moveMoneySbmissionsTable).where(eq(moveMoneySbmissionsTable.referenceNumber, reference));

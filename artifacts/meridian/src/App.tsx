@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
+import { Redirect, Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 import { Layout } from '@/components/layout/Layout';
+import { Navbar } from '@/components/layout/Navbar';
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -11,15 +12,12 @@ function ScrollToTop() {
   return null;
 }
 
-import Home from '@/pages/Home';
+import Home, { LandingFooter } from '@/pages/Home';
 import About from '@/pages/About';
 import AMLPolicy from '@/pages/AMLPolicy';
 import Privacy from '@/pages/Privacy';
 import Contact from '@/pages/Contact';
-import MoveMoneyAbroad from '@/pages/MoveMoneyAbroad';
-import MoveMoneySuccess from '@/pages/MoveMoneySuccess';
-import PrivateBankingIntroduction from '@/pages/PrivateBankingIntroduction';
-import PrivateBankingSuccess from '@/pages/PrivateBankingSuccess';
+import ServiceApplication from '@/pages/ServiceApplication';
 import Introductions from '@/pages/Introductions';
 import NotFound from '@/pages/not-found';
 
@@ -28,13 +26,21 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/move-money-abroad" component={MoveMoneyAbroad} />
-      <Route path="/move-money-success" component={MoveMoneySuccess} />
-      <Route path="/private-banking-introduction" component={PrivateBankingIntroduction} />
-      <Route path="/private-banking-success" component={PrivateBankingSuccess} />
+      {/* Service applications (two-step forms linked from the landing page) */}
+      <Route path="/large-capital-movement"><ServiceApplication slug="large-capital-movement" /></Route>
+      <Route path="/private-banking-introduction"><ServiceApplication slug="private-banking-introduction" /></Route>
+      <Route path="/high-value-real-estate"><ServiceApplication slug="high-value-real-estate" /></Route>
+      <Route path="/trust-offshore-company"><ServiceApplication slug="trust-offshore-company" /></Route>
+      <Route path="/bespoke-services"><ServiceApplication slug="bespoke-services" /></Route>
+      {/* The old forms and their success pages were replaced by the service applications */}
+      <Route path="/move-money-abroad"><Redirect to="/large-capital-movement" replace /></Route>
+      <Route path="/move-money-success"><Redirect to="/" replace /></Route>
+      <Route path="/private-banking-success"><Redirect to="/" replace /></Route>
       <Route path="/introductions" component={Introductions} />
       <Route path="/">
-        <Layout><Home /></Layout>
+        <Navbar />
+        <main className="pt-[62px]"><Home /></main>
+        <LandingFooter />
       </Route>
       <Route path="/about">
         <Layout><About /></Layout>

@@ -238,7 +238,8 @@ export default function AdminPage() {
   }
 
   const openApp = apps.find((a) => a.reference === openRef) ?? null;
-  const headline = (a: AdminApplication) => a.answers.find((x) => x.key === (a.form === 'move-money' ? 'amount' : 'wealth'))?.answer ?? '–';
+  const headline = (a: AdminApplication) =>
+    (a.answers.find((x) => x.key === 'amount') ?? a.answers.find((x) => x.key === 'wealth'))?.answer || '–';
   const timeline = (a: AdminApplication) => a.answers.find((x) => x.key === 'timeline')?.answer ?? '–';
   const rowProps = (a: AdminApplication) => ({
     tabIndex: 0,
@@ -311,7 +312,7 @@ export default function AdminPage() {
             </div>
 
             <div className="flex flex-wrap gap-2.5 items-center mb-3.5">
-              <Segmented<'all' | AdminForm> label="Form" value={form} onChange={setForm} options={[['all', 'All forms'], ['move-money', 'Move Money Abroad'], ['private-banking', 'Private Banking']]} />
+              <Segmented<'all' | AdminForm> label="Form" value={form} onChange={setForm} options={[['all', 'All forms'], ['move-money', 'Move Money Abroad'], ['private-banking', 'Private Banking'], ['other-service', 'Other services']]} />
               <Segmented<'all' | AdminStatus> label="Status" value={status} onChange={setStatus} options={[['new', 'To review'], ['approved', 'Approved'], ['hold', 'On hold'], ['rejected', 'Rejected'], ['all', 'All']]} />
               <label className="relative flex-1 basis-full md:basis-auto min-w-[180px] md:max-w-[320px] md:ml-auto" htmlFor="admin-search">
                 <svg viewBox="0 0 24 24" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
@@ -345,7 +346,7 @@ export default function AdminPage() {
                         <div className="font-medium">{a.fullName}</div>
                         <div className="text-xs text-gray-500 mt-0.5">{a.country} · <span className="tabular-nums">{a.reference}</span></div>
                       </td>
-                      <td className={td}><FormChip form={a.form} /></td>
+                      <td className={td}><FormChip form={a.form} service={a.service} /></td>
                       <td className={`${td} tabular-nums whitespace-nowrap`}>{headline(a)}</td>
                       <td className={td}>{timeline(a)}</td>
                       <td className={td}><SignalBars level={leadSignal(a).level} /></td>
@@ -388,7 +389,7 @@ export default function AdminPage() {
                       {failing.map(({ app: a }) => (
                         <tr key={a.reference} {...rowProps(a)} className="cursor-pointer hover:bg-[#FAFBFC] last:[&>td]:border-b-0">
                           <td className={td}><div className="font-medium">{a.fullName}</div><div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div></td>
-                          <td className={td}><FormChip form={a.form} /></td>
+                          <td className={td}><FormChip form={a.form} service={a.service} /></td>
                           <td className={`${td} text-red-700`}>{a.sendError}</td>
                         </tr>
                       ))}
@@ -422,7 +423,7 @@ export default function AdminPage() {
                             <button type="button" className="text-left font-medium hover:underline" onClick={() => setOpenRef(a.reference)}>{a.fullName}</button>
                             <div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div>
                           </td>
-                          <td className={td}><FormChip form={a.form} /></td>
+                          <td className={td}><FormChip form={a.form} service={a.service} /></td>
                           <td className={`${td} tabular-nums`}>{a.approvedAt ? formatDate(a.approvedAt) : '–'}</td>
                           <td className={td}>
                             <div>{STEP_NAMES[step - 1]}</div>
@@ -468,7 +469,7 @@ export default function AdminPage() {
                       return (
                         <tr key={a.reference} {...rowProps(a)} className="cursor-pointer hover:bg-[#FAFBFC] last:[&>td]:border-b-0">
                           <td className={td}><div className="font-medium">{a.fullName}</div><div className="text-xs text-gray-500 mt-0.5 tabular-nums">{a.whatsappNumber}</div></td>
-                          <td className={td}><FormChip form={a.form} /></td>
+                          <td className={td}><FormChip form={a.form} service={a.service} /></td>
                           <td className={`${td} tabular-nums`}>{a.approvedAt ? formatDate(a.approvedAt) : '–'}</td>
                           <td className={td}><StatusPill app={a} mode={effectiveMode(a, whatsapp.mode)} /></td>
                           <td className={td}>{next}</td>

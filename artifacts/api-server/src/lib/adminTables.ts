@@ -1,8 +1,10 @@
 import { pool } from "@workspace/db";
 
-// Creates the admin dashboard's tables (and any columns added since) on first
-// use, so a deploy doesn't depend on someone running `drizzle-kit push`.
-// Mirrors lib/db/src/schema/applicationReviews.ts and whatsappMessages.ts.
+// Creates the admin dashboard's tables and the service application table (and
+// any columns added since) on first use, so a deploy doesn't depend on someone
+// running `drizzle-kit push`.
+// Mirrors lib/db/src/schema/applicationReviews.ts, whatsappMessages.ts and
+// serviceApplications.ts.
 const SQL = `
 CREATE TABLE IF NOT EXISTS application_reviews (
   id serial PRIMARY KEY,
@@ -45,6 +47,25 @@ CREATE TABLE IF NOT EXISTS whatsapp_messages (
   CONSTRAINT whatsapp_messages_meta_message_id_unique UNIQUE (meta_message_id)
 );
 CREATE INDEX IF NOT EXISTS whatsapp_messages_wa_id_idx ON whatsapp_messages (wa_id);
+
+CREATE TABLE IF NOT EXISTS service_applications (
+  id serial PRIMARY KEY,
+  reference_number text NOT NULL,
+  service text NOT NULL,
+  stage text DEFAULT 'lead' NOT NULL,
+  token text NOT NULL,
+  full_name text NOT NULL,
+  email_address text NOT NULL,
+  whatsapp_number text NOT NULL,
+  country_of_residence text DEFAULT '' NOT NULL,
+  currency text DEFAULT '' NOT NULL,
+  amount text DEFAULT '' NOT NULL,
+  timeline text DEFAULT '' NOT NULL,
+  details jsonb DEFAULT '{}'::jsonb NOT NULL,
+  submitted_at timestamp DEFAULT now() NOT NULL,
+  completed_at timestamp,
+  CONSTRAINT service_applications_reference_number_unique UNIQUE (reference_number)
+);
 `;
 
 let ready: Promise<void> | null = null;

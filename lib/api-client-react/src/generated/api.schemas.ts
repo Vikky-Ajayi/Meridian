@@ -85,6 +85,69 @@ export interface IntroductionRequestInput {
   message?: string;
 }
 
+export type ServiceLeadInputCurrency = typeof ServiceLeadInputCurrency[keyof typeof ServiceLeadInputCurrency];
+
+
+export const ServiceLeadInputCurrency = {
+  GBP: 'GBP',
+  USD: 'USD',
+} as const;
+
+export interface ServiceLeadInput {
+  /** Service slug, e.g. large-capital-movement */
+  service: string;
+  fullName: string;
+  whatsappNumber: string;
+  emailAddress: string;
+  countryOfResidence?: string;
+  currency: ServiceLeadInputCurrency;
+  /** Selected amount band, in the chosen currency */
+  amount: string;
+  timeline?: string;
+  /** Answer to the service-specific step 1 question, if the service has one */
+  extraAnswer?: string;
+  /** Agreed to be contacted about the enquiry */
+  consent: boolean;
+}
+
+export interface ServiceLeadResult {
+  referenceNumber: string;
+  /** Secret needed to add the step 2 answers */
+  token: string;
+  /** The amount is below the minimum, so step 2 is skipped */
+  belowMinimum: boolean;
+}
+
+/**
+ * apply = submitted the answers; call = would rather explain on a call
+ */
+export type ServiceDetailsInputAction = typeof ServiceDetailsInputAction[keyof typeof ServiceDetailsInputAction];
+
+
+export const ServiceDetailsInputAction = {
+  apply: 'apply',
+  call: 'call',
+} as const;
+
+/**
+ * Step 2 answers keyed by question key
+ */
+export type ServiceDetailsInputAnswers = {[key: string]: string};
+
+export interface ServiceDetailsInput {
+  token: string;
+  /** apply = submitted the answers; call = would rather explain on a call */
+  action: ServiceDetailsInputAction;
+  /** Step 2 answers keyed by question key */
+  answers?: ServiceDetailsInputAnswers;
+  confirmsAccuracy?: boolean;
+  acceptsAdvisoryFee?: boolean;
+}
+
+export interface ServiceDetailsResult {
+  stage: string;
+}
+
 export interface EnquiryResult {
   /** Generated reference number for the enquiry */
   referenceNumber: string;

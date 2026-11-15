@@ -136,7 +136,7 @@ export function ApplicationDrawer({ app, all, onClose, onChanged, onToast, mode,
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-[12.5px] text-gray-500">
-            <FormChip form={app.form} />
+            <FormChip form={app.form} service={app.service} />
             <span>·</span>
             <span className="tabular-nums">{app.reference}</span>
             <span>·</span>

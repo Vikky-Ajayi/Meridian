@@ -130,3 +130,48 @@ export const SubmitIntroductionRequestResponse = zod.object({
 })
 
 
+/**
+ * Saves the step 1 lead for one of the five service forms and returns a token for adding step 2
+ * @summary Start a service application (step 1)
+ */
+export const StartServiceApplicationBody = zod.object({
+  "service": zod.string().describe('Service slug, e.g. large-capital-movement'),
+  "fullName": zod.string(),
+  "whatsappNumber": zod.string(),
+  "emailAddress": zod.string(),
+  "countryOfResidence": zod.string().optional(),
+  "currency": zod.enum(['GBP', 'USD']),
+  "amount": zod.string().describe('Selected amount band, in the chosen currency'),
+  "timeline": zod.string().optional(),
+  "extraAnswer": zod.string().optional().describe('Answer to the service-specific step 1 question, if the service has one'),
+  "consent": zod.boolean().describe('Agreed to be contacted about the enquiry')
+})
+
+export const StartServiceApplicationResponse = zod.object({
+  "referenceNumber": zod.string(),
+  "token": zod.string().describe('Secret needed to add the step 2 answers'),
+  "belowMinimum": zod.boolean().describe('The amount is below the minimum, so step 2 is skipped')
+})
+
+
+/**
+ * Adds the step 2 answers to a lead, or records that the applicant would rather explain on a call
+ * @summary Complete a service application (step 2)
+ */
+export const CompleteServiceApplicationParams = zod.object({
+  "referenceNumber": zod.coerce.string()
+})
+
+export const CompleteServiceApplicationBody = zod.object({
+  "token": zod.string(),
+  "action": zod.enum(['apply', 'call']).describe('apply = submitted the answers; call = would rather explain on a call'),
+  "answers": zod.record(zod.string(), zod.string()).optional().describe('Step 2 answers keyed by question key'),
+  "confirmsAccuracy": zod.boolean().optional(),
+  "acceptsAdvisoryFee": zod.boolean().optional()
+})
+
+export const CompleteServiceApplicationResponse = zod.object({
+  "stage": zod.string()
+})
+
+

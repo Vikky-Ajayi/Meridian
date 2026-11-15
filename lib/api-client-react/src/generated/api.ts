@@ -28,7 +28,11 @@ import type {
   HealthStatus,
   IntroductionRequestInput,
   MoveMoneyInput,
-  PrivateBankingInput
+  PrivateBankingInput,
+  ServiceDetailsInput,
+  ServiceDetailsResult,
+  ServiceLeadInput,
+  ServiceLeadResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -494,5 +498,150 @@ export const useSubmitIntroductionRequest = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getSubmitIntroductionRequestMutationOptions(options));
+    }
+
+export const getStartServiceApplicationUrl = () => {
+
+
+
+
+  return `/api/applications`
+}
+
+/**
+ * Saves the step 1 lead for one of the five service forms and returns a token for adding step 2
+ * @summary Start a service application (step 1)
+ */
+export const startServiceApplication = async (serviceLeadInput: ServiceLeadInput, options?: RequestInit): Promise<ServiceLeadResult> => {
+
+  return customFetch<ServiceLeadResult>(getStartServiceApplicationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(serviceLeadInput)
+  }
+);}
+
+
+
+
+
+export const getStartServiceApplicationMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startServiceApplication>>, TError,{data: BodyType<ServiceLeadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startServiceApplication>>, TError,{data: BodyType<ServiceLeadInput>}, TContext> => {
+
+const mutationKey = ['startServiceApplication'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startServiceApplication>>, {data: BodyType<ServiceLeadInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  startServiceApplication(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartServiceApplicationMutationResult = NonNullable<Awaited<ReturnType<typeof startServiceApplication>>>
+    export type StartServiceApplicationMutationBody = BodyType<ServiceLeadInput>
+    export type StartServiceApplicationMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Start a service application (step 1)
+ */
+export const useStartServiceApplication = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startServiceApplication>>, TError,{data: BodyType<ServiceLeadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof startServiceApplication>>,
+        TError,
+        {data: BodyType<ServiceLeadInput>},
+        TContext
+      > => {
+      return useMutation(getStartServiceApplicationMutationOptions(options));
+    }
+
+export const getCompleteServiceApplicationUrl = (referenceNumber: string,) => {
+
+
+
+
+  return `/api/applications/${referenceNumber}/details`
+}
+
+/**
+ * Adds the step 2 answers to a lead, or records that the applicant would rather explain on a call
+ * @summary Complete a service application (step 2)
+ */
+export const completeServiceApplication = async (referenceNumber: string,
+    serviceDetailsInput: ServiceDetailsInput, options?: RequestInit): Promise<ServiceDetailsResult> => {
+
+  return customFetch<ServiceDetailsResult>(getCompleteServiceApplicationUrl(referenceNumber),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(serviceDetailsInput)
+  }
+);}
+
+
+
+
+
+export const getCompleteServiceApplicationMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeServiceApplication>>, TError,{referenceNumber: string;data: BodyType<ServiceDetailsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeServiceApplication>>, TError,{referenceNumber: string;data: BodyType<ServiceDetailsInput>}, TContext> => {
+
+const mutationKey = ['completeServiceApplication'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeServiceApplication>>, {referenceNumber: string;data: BodyType<ServiceDetailsInput>}> = (props) => {
+          const {referenceNumber,data} = props ?? {};
+
+          return  completeServiceApplication(referenceNumber,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteServiceApplicationMutationResult = NonNullable<Awaited<ReturnType<typeof completeServiceApplication>>>
+    export type CompleteServiceApplicationMutationBody = BodyType<ServiceDetailsInput>
+    export type CompleteServiceApplicationMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Complete a service application (step 2)
+ */
+export const useCompleteServiceApplication = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeServiceApplication>>, TError,{referenceNumber: string;data: BodyType<ServiceDetailsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof completeServiceApplication>>,
+        TError,
+        {referenceNumber: string;data: BodyType<ServiceDetailsInput>},
+        TContext
+      > => {
+      return useMutation(getCompleteServiceApplicationMutationOptions(options));
     }
 
