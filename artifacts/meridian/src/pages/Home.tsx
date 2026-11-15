@@ -38,14 +38,14 @@ const STEPS = [
 ] as const;
 
 const FIT = [
-  'Have $100,000 or more to move, hold or invest',
+  'Have £50,000 ($65,000) or more to move, hold or invest',
   'Can show where your money came from',
   'Have been slowed down, capped or refused by your bank',
   'Want expert, paid support to get it done properly',
 ];
 
 const FAQS = [
-  ['What is the minimum amount?', 'We work with amounts from $100,000 up to $1 billion. Below that, we can point you to a suitable provider.'],
+  ['What is the minimum amount?', 'We work with amounts from £50,000 ($65,000) up to $1 billion. Below that, we can point you to a suitable provider.'],
   ['Are you a bank? Who holds my money?', 'No, Envoi & Co is a private client desk. Your money is held and moved by regulated banks and licensed partners. We coordinate the process and stay with you throughout.'],
   ['Do you charge a fee?', 'Yes. We charge an advisory fee, based on the size and complexity of your transaction. You get a clear quote on your consultation call, before any work begins.'],
   ['What documents will I need?', 'Usually ID, proof of address and evidence of where the funds came from. We tell you exactly what is needed and help you prepare it.'],
@@ -127,7 +127,7 @@ export default function Home() {
     <div className="bg-white text-[#0A1633]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Hero + service picker */}
       <section className={`${WRAP} pt-10 sm:pt-14 text-center`}>
-        <p className="inline-block m-0 rounded-full bg-[#EAF1FF] px-3.5 py-1.5 text-[13px] font-semibold text-[#1767E8]">For amounts from $100,000 to $1 billion</p>
+        <p className="inline-block m-0 rounded-full bg-[#EAF1FF] px-3.5 py-1.5 text-[13px] font-semibold text-[#1767E8]">For amounts from £50,000 ($65,000) to $1 billion</p>
         <h1 className="mx-auto mt-5 mb-0 max-w-[760px] text-[38px] sm:text-[56px] leading-[1.04] font-bold tracking-[-2px]" style={HEADING}>
           Move Significant Capital Across Borders, On Your Terms.
         </h1>
