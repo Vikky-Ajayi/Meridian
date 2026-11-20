@@ -71,7 +71,7 @@ function Progress({ step }: { step: 1 | 2 }) {
   );
 }
 
-// Every question is compulsory; "I'd rather explain on a call" is the way to skip step 2.
+// Every question is compulsory.
 function FieldInput({ field, value, onChange }: { field: Field; value: string; onChange: (v: string) => void }) {
   if (field.kind === 'select') {
     return (
@@ -142,7 +142,6 @@ function ServiceForm({ service }: { service: Service }) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [confirms, setConfirms] = useState({ accuracy: false, fee: false });
   const [session, setSession] = useState<{ reference: string; token: string } | null>(null);
-  const [skipped, setSkipped] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const start = useStartServiceApplication();
@@ -185,23 +184,21 @@ function ServiceForm({ service }: { service: Service }) {
     }
   }
 
-  async function finish(action: 'apply' | 'call', form?: HTMLFormElement) {
-    if (!session || complete.isPending) return;
-    if (action === 'apply' && form && !form.reportValidity()) return;
+  async function apply(form: HTMLFormElement) {
+    if (!session || complete.isPending || !form.reportValidity()) return;
     setError(null);
     try {
       await complete.mutateAsync({
         referenceNumber: session.reference,
         data: {
           token: session.token,
-          action,
-          answers: action === 'apply' ? answers : undefined,
+          action: 'apply',
+          answers,
           confirmsAccuracy: confirms.accuracy,
           acceptsAdvisoryFee: confirms.fee,
         },
       });
-      window.fbq?.('trackCustom', action === 'apply' ? 'SubmitApplication' : 'CallRequested', { content_name: service.name });
-      setSkipped(action === 'call');
+      window.fbq?.('trackCustom', 'SubmitApplication', { content_name: service.name });
       show('done');
     } catch (err) {
       setError(errorText(err));
@@ -305,7 +302,7 @@ function ServiceForm({ service }: { service: Service }) {
           {stage === 'situation' && (
             <form
               className="flex flex-col gap-6"
-              onSubmit={(e) => { e.preventDefault(); finish('apply', e.currentTarget); }}
+              onSubmit={(e) => { e.preventDefault(); apply(e.currentTarget); }}
             >
               <div className={`${CARD} px-6 py-8 sm:px-9 flex flex-col gap-5`}>
                 <Progress step={2} />
@@ -344,10 +341,7 @@ function ServiceForm({ service }: { service: Service }) {
                   <span>I understand Envoi & Co charges an advisory fee, which is confirmed with me before any work begins.</span>
                 </label>
                 {error && <p role="alert" className="m-0 text-sm text-[#B42318]">{error}</p>}
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <button type="button" disabled={complete.isPending} onClick={() => finish('call')} className="min-h-[44px] bg-transparent border-0 p-0 text-[15px] text-[#0A1633] underline cursor-pointer">
-                    I'd rather explain on a call
-                  </button>
+                <div className="flex justify-end">
                   <button type="submit" disabled={complete.isPending} className="min-h-[56px] px-10 rounded bg-black text-white font-semibold text-[17px] disabled:opacity-60">
                     {complete.isPending ? 'Sending…' : 'Apply'}
                   </button>
@@ -362,12 +356,10 @@ function ServiceForm({ service }: { service: Service }) {
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1767E8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10" /></svg>
               </span>
               <h2 className="m-0 text-[30px] leading-tight font-bold tracking-[-1px]" style={HEADING}>
-                {skipped ? "No problem. We'll call you." : 'Thank you. Your application is in.'}
+                Thank you. Your application is in.
               </h2>
               <p className="m-0 text-base leading-relaxed text-[#4A5468] max-w-[560px]">
-                {skipped
-                  ? 'A member of our desk will contact you within 24 hours to talk it through. Have your ID and details of where the funds came from to hand.'
-                  : 'A member of our desk will review your answers and contact you within 24 hours to arrange a private consultation.'}
+                A member of our desk will review your answers and contact you within 24 hours to arrange a private consultation.
               </p>
               {session && <p className="m-0 text-sm text-[#4A5468]">Your reference: <strong className="text-[#0A1633]">{session.reference}</strong></p>}
               <Link href="/" className="mt-2 inline-flex items-center gap-2 text-[15px] font-semibold text-[#1767E8]">Back to home</Link>
