@@ -70,10 +70,11 @@ function Progress({ step }: { step: 1 | 2 }) {
   );
 }
 
+// Every question is compulsory; "I'd rather explain on a call" is the way to skip step 2.
 function FieldInput({ field, value, onChange }: { field: Field; value: string; onChange: (v: string) => void }) {
   if (field.kind === 'select') {
     return (
-      <select className={INPUT} value={value} onChange={(e) => onChange(e.target.value)}>
+      <select className={INPUT} required value={value} onChange={(e) => onChange(e.target.value)}>
         <option value="">Select…</option>
         {field.options?.map((o) => <option key={o}>{o}</option>)}
       </select>
@@ -83,6 +84,7 @@ function FieldInput({ field, value, onChange }: { field: Field; value: string; o
     return (
       <textarea
         className={`${INPUT} py-3 leading-relaxed resize-y`}
+        required
         rows={field.rows ?? 3}
         maxLength={4000}
         placeholder={field.placeholder}
@@ -91,7 +93,7 @@ function FieldInput({ field, value, onChange }: { field: Field; value: string; o
       />
     );
   }
-  return <input className={INPUT} type="text" placeholder={field.placeholder} value={value} onChange={(e) => onChange(e.target.value)} />;
+  return <input className={INPUT} required type="text" placeholder={field.placeholder} value={value} onChange={(e) => onChange(e.target.value)} />;
 }
 
 function Aside() {
@@ -244,7 +246,7 @@ function ServiceForm({ service }: { service: Service }) {
                     <input className={INPUT} required type="email" autoComplete="email" placeholder="you@example.com" value={lead.emailAddress} onChange={(e) => setL('emailAddress', e.target.value)} />
                   </label>
                   <label className={LABEL}>Country of residence
-                    <input className={INPUT} type="text" autoComplete="country-name" placeholder="e.g. United Kingdom" value={lead.countryOfResidence} onChange={(e) => setL('countryOfResidence', e.target.value)} />
+                    <input className={INPUT} required type="text" autoComplete="country-name" placeholder="e.g. United Kingdom" value={lead.countryOfResidence} onChange={(e) => setL('countryOfResidence', e.target.value)} />
                   </label>
                   <div className={LABEL}>
                     <span id="currency-label">Currency</span>
@@ -272,7 +274,7 @@ function ServiceForm({ service }: { service: Service }) {
                     </select>
                   </label>
                   <label className={LABEL}>{service.timelineLabel}
-                    <select className={INPUT} value={lead.timeline} onChange={(e) => setL('timeline', e.target.value)}>
+                    <select className={INPUT} required value={lead.timeline} onChange={(e) => setL('timeline', e.target.value)}>
                       <option value="">Select…</option>
                       {service.timelineOptions.map((o) => <option key={o}>{o}</option>)}
                     </select>

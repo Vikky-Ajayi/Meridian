@@ -130,7 +130,7 @@ export const SERVICES: readonly Service[] = [
         fields: [
           { key: 'pep', label: 'Are you, or is a close family member, a politically exposed person?', kind: 'select', options: ['No', 'Yes', 'Not sure'], full: true },
           { key: 'existingAccounts', label: 'Do you have any existing private banking or offshore accounts?', kind: 'textarea', rows: 3, hint: 'Where, and whether any bank has declined or closed an account for you before.', placeholder: 'e.g. I had an account in Switzerland that closed in 2022 when I dropped below their minimum.' },
-          { key: 'companyDetails', label: 'For corporate accounts: tell us about the company', kind: 'textarea', rows: 3, hint: 'Name, country of registration, what it does, who owns it and annual turnover. Leave blank for personal.', placeholder: 'e.g. ABC Logistics Ltd, registered in England, freight forwarding, I own 70%, turnover about $5m.' },
+          { key: 'companyDetails', label: 'For corporate accounts: tell us about the company', kind: 'textarea', rows: 3, hint: 'Name, country of registration, what it does, who owns it and annual turnover. For a personal account, write "Personal".', placeholder: 'e.g. ABC Logistics Ltd, registered in England, freight forwarding, I own 70%, turnover about $5m.' },
         ],
       },
     ],
@@ -191,7 +191,7 @@ export const SERVICES: readonly Service[] = [
           { key: 'preferredJurisdiction', label: 'Preferred jurisdiction', kind: 'select', options: ['Not sure, please advise', 'British Virgin Islands', 'Cayman Islands', 'Jersey', 'Guernsey', 'Isle of Man', 'Mauritius', 'UAE', 'Singapore', 'Other'] },
           { key: 'needsBankAccount', label: 'Will the structure need its own bank account?', kind: 'select', options: ['Yes', 'No', 'Not sure'] },
           { key: 'structureGoals', label: 'What do you want the structure to achieve?', kind: 'textarea', rows: 4, hint: 'Protecting assets, passing wealth to your children, holding property or investments, international trade, or privacy.', placeholder: 'e.g. I want my property and investments held so my children can inherit without delays, and protected if anything happens to my business.' },
-          { key: 'jurisdictionReason', label: 'Why that jurisdiction, if you have one in mind?', kind: 'textarea', rows: 3, hint: "Leave blank if you'd like us to advise.", placeholder: "e.g. My lawyer suggested Jersey, but I'd like to compare it with Mauritius." },
+          { key: 'jurisdictionReason', label: 'Why that jurisdiction, if you have one in mind?', kind: 'textarea', rows: 3, hint: 'If you would like us to advise, write "Please advise".', placeholder: "e.g. My lawyer suggested Jersey, but I'd like to compare it with Mauritius." },
         ],
       },
       {

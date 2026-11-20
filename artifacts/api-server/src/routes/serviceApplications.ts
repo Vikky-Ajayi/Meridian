@@ -70,13 +70,20 @@ router.post("/", async (req, res) => {
   const whatsappNumber = clean(data.whatsappNumber, 40);
   const emailAddress = clean(data.emailAddress, SHORT);
   const amount = clean(data.amount, SHORT);
+  const countryOfResidence = clean(data.countryOfResidence, SHORT);
+  const timeline = clean(data.timeline, SHORT);
+  const extraAnswer = clean(data.extraAnswer, SHORT);
   if (!fullName || !whatsappNumber || !EMAIL.test(emailAddress) || !amount || !data.consent) {
     return res.status(400).json({ error: "Please complete your name, phone, email, amount and consent." });
+  }
+  // Every field on the form is compulsory.
+  if (!countryOfResidence || !timeline || (service.extra && !extraAnswer)) {
+    return res.status(400).json({ error: "Please answer every question before continuing." });
   }
 
   const belowMinimum = amount.startsWith("Less than");
   const details: Record<string, string> = {};
-  if (service.extra) details[service.extra.key] = clean(data.extraAnswer, SHORT);
+  if (service.extra) details[service.extra.key] = extraAnswer;
 
   try {
     await ensureAdminTables();
@@ -90,10 +97,10 @@ router.post("/", async (req, res) => {
         fullName,
         emailAddress,
         whatsappNumber,
-        countryOfResidence: clean(data.countryOfResidence, SHORT),
+        countryOfResidence,
         currency: data.currency,
         amount,
-        timeline: clean(data.timeline, SHORT),
+        timeline,
         details,
       })
       .returning();
@@ -136,6 +143,9 @@ router.post("/:reference/details", async (req, res) => {
     const details = { ...(existing.details ?? {}) };
     if (data.action === "apply") {
       for (const q of service.questions) details[q.key] = clean(data.answers?.[q.key], LONG);
+      if (service.questions.some((q) => !details[q.key])) {
+        return res.status(400).json({ error: "Please answer every question before applying." });
+      }
     }
 
     const [app] = await db
