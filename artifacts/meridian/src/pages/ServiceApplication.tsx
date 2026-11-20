@@ -5,6 +5,7 @@ import {
   useStartServiceApplication,
 } from '@workspace/api-client-react';
 import { Logo } from '@/components/ui/Logo';
+import { COUNTRIES } from '@/lib/countries';
 import { DESK_WHATSAPP_LINK, DESK_WHATSAPP_NUMBER } from '@/lib/contact';
 import {
   AMOUNT_OPTIONS,
@@ -246,7 +247,10 @@ function ServiceForm({ service }: { service: Service }) {
                     <input className={INPUT} required type="email" autoComplete="email" placeholder="you@example.com" value={lead.emailAddress} onChange={(e) => setL('emailAddress', e.target.value)} />
                   </label>
                   <label className={LABEL}>Country of residence
-                    <input className={INPUT} required type="text" autoComplete="country-name" placeholder="e.g. United Kingdom" value={lead.countryOfResidence} onChange={(e) => setL('countryOfResidence', e.target.value)} />
+                    <select className={INPUT} required autoComplete="country-name" value={lead.countryOfResidence} onChange={(e) => setL('countryOfResidence', e.target.value)}>
+                      <option value="">Select…</option>
+                      {COUNTRIES.map((c) => <option key={c}>{c}</option>)}
+                    </select>
                   </label>
                   <div className={LABEL}>
                     <span id="currency-label">Currency</span>
